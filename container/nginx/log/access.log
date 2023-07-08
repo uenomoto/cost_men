@@ -1,0 +1,2 @@
+192.168.224.1 - - [09/Jul/2023:01:29:29 +0900] "GET /api/v1/health_check HTTP/1.1" 200 53 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+192.168.224.1 - - [09/Jul/2023:01:29:31 +0900] "GET /api/v1/health_check HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
