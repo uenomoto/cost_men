@@ -1,0 +1,63 @@
+version: "3.8"
+
+volumes:
+  db_data:
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: container/frontend/Dockerfile
+    volumes:
+      - ./frontend:/cost_men
+    command: sh -c "npm run dev"
+    ports:
+      - "8000:8000"
+    tty: true
+    depends_on:
+      - api
+
+  cost_men:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: container/nginx/Dockerfile
+    environment:
+      TZ: Asia/Tokyo
+      API_HOST: api
+      API_PORT: 3000
+    volumes:
+      - ./container/nginx/log:/var/log/nginx
+      - ./backend/public:/cost_men/public
+      - ./backend/tmp:/cost_men/tmp
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+  api:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: container/backend/Dockerfile
+    volumes:
+      - ./backend:/cost_men
+    environment:
+      RAILS_ENV: development
+    ports:
+      - "3000:3000"
+    tty: true
+    depends_on:
+      - db
+
+  db:
+    container_name: postgres
+    image: postgres:14.6
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
