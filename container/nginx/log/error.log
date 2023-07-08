@@ -8,3 +8,26 @@
 2023/07/09 01:19:16 [notice] 1#1: start worker process 9
 2023/07/09 01:19:16 [notice] 1#1: start worker process 10
 2023/07/09 01:19:16 [notice] 1#1: start worker process 11
+2023/07/09 01:44:01 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2023/07/09 01:44:01 [notice] 8#8: gracefully shutting down
+2023/07/09 01:44:01 [notice] 9#9: gracefully shutting down
+2023/07/09 01:44:01 [notice] 10#10: gracefully shutting down
+2023/07/09 01:44:01 [notice] 11#11: gracefully shutting down
+2023/07/09 01:44:01 [notice] 8#8: exiting
+2023/07/09 01:44:01 [notice] 9#9: exiting
+2023/07/09 01:44:01 [notice] 10#10: exiting
+2023/07/09 01:44:01 [notice] 11#11: exiting
+2023/07/09 01:44:01 [notice] 11#11: exit
+2023/07/09 01:44:01 [notice] 8#8: exit
+2023/07/09 01:44:01 [notice] 9#9: exit
+2023/07/09 01:44:01 [notice] 10#10: exit
+2023/07/09 01:44:01 [notice] 1#1: signal 17 (SIGCHLD) received from 11
+2023/07/09 01:44:01 [notice] 1#1: worker process 11 exited with code 0
+2023/07/09 01:44:01 [notice] 1#1: signal 29 (SIGIO) received
+2023/07/09 01:44:01 [notice] 1#1: signal 17 (SIGCHLD) received from 9
+2023/07/09 01:44:01 [notice] 1#1: worker process 9 exited with code 0
+2023/07/09 01:44:01 [notice] 1#1: signal 29 (SIGIO) received
+2023/07/09 01:44:01 [notice] 1#1: signal 17 (SIGCHLD) received from 8
+2023/07/09 01:44:01 [notice] 1#1: worker process 8 exited with code 0
+2023/07/09 01:44:01 [notice] 1#1: worker process 10 exited with code 0
+2023/07/09 01:44:01 [notice] 1#1: exit
