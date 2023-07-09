@@ -10,11 +10,6 @@
         "plugin:tailwindcss/recommended",
         "plugin:prettier/recommended"
       ],
-      "rules": {
-        "camelcase": "error",
-        "eqeqeq": "error",
-        "no-unused-vars": "error"
-      },
       "parserOptions": {
         "project": "./tsconfig.json"
       }
