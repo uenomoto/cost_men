@@ -7,10 +7,17 @@
       "extends": [
         "next/core-web-vitals",
         "plugin:@typescript-eslint/recommended",
-        "plugin:tailwindcss/recommended"
+        "plugin:tailwindcss/recommended",
+        "plugin:prettier/recommended"
       ],
       "rules": {
-        // 必要に応じて追加のルールをここに記述します
+        "camelcase": "error",
+        "eqeqeq": "error",
+        "no-unused-vars": "error",
+        "prettier/prettier": "error"
+      },
+      "parserOptions": {
+        "project": "./tsconfig.json"
       }
     }
   ]
