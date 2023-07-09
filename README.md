@@ -1,3 +1,5 @@
+[![Test and Lint CI](https://github.com/uenomoto/cost_men/actions/workflows/rspec-and-rubocop.yml/badge.svg)](https://github.com/uenomoto/cost_men/actions/workflows/rspec-and-rubocop.yml)
+
 # オリジナルプロダクトざっくりタスクリスト
 
 # 8/13 日までに完成させること
