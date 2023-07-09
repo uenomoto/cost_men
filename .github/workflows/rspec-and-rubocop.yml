@@ -47,7 +47,9 @@ jobs:
         run: |
           bin/rails db:drop:_unsafe
           bin/rails db:create
-          bin/rails db:schema:load
+          bin/rails db:migrate
+      # まだスキーマない為コメントアウトしエラー回避
+      # bin/rails db:schema:load
       # ここにテストランナーを追加または置き換える
       - name: Run RSpecs
         run: bundle exec rspec
