@@ -13,8 +13,7 @@
       "rules": {
         "camelcase": "error",
         "eqeqeq": "error",
-        "no-unused-vars": "error",
-        "prettier/prettier": "error"
+        "no-unused-vars": "error"
       },
       "parserOptions": {
         "project": "./tsconfig.json"
