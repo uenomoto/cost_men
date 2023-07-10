@@ -3,16 +3,12 @@
     {
       "files": ["*.ts", "*.tsx", "*.js"],
       "parser": "@typescript-eslint/parser",
-      "plugins": ["@typescript-eslint", "tailwindcss"],
+      "plugins": ["tailwindcss"],
       "extends": [
         "next/core-web-vitals",
-        "plugin:@typescript-eslint/recommended",
         "plugin:tailwindcss/recommended",
         "plugin:prettier/recommended"
-      ],
-      "parserOptions": {
-        "project": "./frontend/tsconfig.json"
-      }
+      ]
     }
   ]
 }
