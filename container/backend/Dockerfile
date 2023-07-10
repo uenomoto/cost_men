@@ -21,7 +21,7 @@ COPY ./container/backend/entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
-VOLUME /cost_men/public
-VOLUME /cost_men/tmp
+# VOLUME /cost_men/public
+# VOLUME /cost_men/tmp
 
 CMD ["rails", "server", "-b", "0.0.0.0", "-e", "development"]
