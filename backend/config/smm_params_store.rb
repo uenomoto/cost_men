@@ -14,7 +14,7 @@ ENV['RAILS_MASTER_KEY'] = resp.parameter.value
   ENV["DATABASE_#{key.upcase}"] = resp.parameter.value
 end
 
-# これでデバックできる
+# これでデバック
 puts "key: #{ENV['RAILS_MASTER_KEY']}"
 puts "DB:#{ENV['DATABASE_HOST']}"
 puts "DB:#{ENV['DATABASE_NAME']}"
