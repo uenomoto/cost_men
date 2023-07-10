@@ -13,8 +13,8 @@ export default function Home() {
       </Head>
       <div className="container mx-auto">
         <div className=" text-4xl">Hello Next! Hello Vercel!</div>
-          <PrimaryButton>Primary Button</PrimaryButton>
-          <SuccessButton>Success Button</SuccessButton>
+        <PrimaryButton>Primary Button</PrimaryButton>
+        <SuccessButton>Success Button</SuccessButton>
       </div>
     </>
   );
