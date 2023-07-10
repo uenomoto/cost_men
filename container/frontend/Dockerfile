@@ -1,11 +1,9 @@
 FROM node:lts-buster-slim
 
-ENV APP_PATH /cost_men
-
-WORKDIR $APP_PATH
+WORKDIR /cost_men
 
 ADD ./frontend/package.json ./
 ADD ./frontend/package-lock.json ./
 
 RUN npm install
-ADD . $APP_PATH
+ADD . /cost_men

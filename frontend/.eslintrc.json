@@ -3,11 +3,9 @@
     {
       "files": ["*.ts", "*.tsx", "*.js"],
       "parser": "@typescript-eslint/parser",
-      "plugins": ["tailwindcss"],
+      "plugins": [],
       "extends": [
-        "next/core-web-vitals",
-        "plugin:tailwindcss/recommended",
-        "plugin:prettier/recommended"
+        "next/core-web-vitals"
       ]
     }
   ]
