@@ -3,6 +3,8 @@ name: "Test and Lint CI"
 on:
   pull_request:
     branches: ["main", "develop"]
+    paths:
+      - "backend/**"
 
 defaults:
   run:
