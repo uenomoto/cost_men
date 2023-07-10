@@ -1,4 +1,4 @@
-[ヘルスチェック](https://workoutkeep.com/api/v1/health_check)
+[ヘルスチェック(接続チェック)](https://workoutkeep.com/api/v1/health_check)
 
 [![Test and Lint CI](https://github.com/uenomoto/cost_men/actions/workflows/rspec-and-rubocop.yml/badge.svg)](https://github.com/uenomoto/cost_men/actions/workflows/rspec-and-rubocop.yml)
 
