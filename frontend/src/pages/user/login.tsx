@@ -3,20 +3,17 @@ import { FormEvent } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import LoginButton from "../../../components/atoms/button/LoginButton";
 import LineLoginButton from "../../../components/atoms/button/LineLoginButton";
 import { Input } from "../../../components/atoms/form/Input";
-import { SuccessButton } from "../../../components/atoms/button/SuccessButton";
 
-const SignUp = () => {
+const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(
-      `お名前：${name}、パスワード：${password}, パスワード確認用：${passwordConfirmation}`
-    );
+    console.log(`お名前：${name}、パスワード：${password}`);
   };
 
   return (
@@ -25,7 +22,7 @@ const SignUp = () => {
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div>
             <h2 className="mt-8 text-3xl font-bold leading-9 tracking-tight text-gray-900">
-              新規登録はこちらから！
+              ログインはこちらから！
             </h2>
             <p className="mt-2 mb-20 text-sm leading-6 text-gray-500">
               さぁ、原価計算をはじめよう！
@@ -66,25 +63,13 @@ const SignUp = () => {
                       onChange={setPassword}
                     />
                   </div>
-                  <div className="mt-10">
-                    <Input
-                      text="password_confirmation"
-                      htmlfor="passwordConfirmation"
-                      id="passwordConfirmation"
-                      name="passwordConfirmation"
-                      type="password"
-                      placeholder="パスワード確認用を記入"
-                      value={passwordConfirmation}
-                      onChange={setPasswordConfirmation}
-                    />
-                  </div>
                 </div>
                 <div>
-                  <SuccessButton>新規登録はこちら</SuccessButton>
+                  <LoginButton>ログインする</LoginButton>
                 </div>
               </form>
               <div className="mt-5 hover:text-blue-500 transition-all ease-in animate-pulse">
-                <Link href="/user/login">会員の方はこちらからログイン→</Link>
+                <Link href="/user/signup">新規登録がまだな方はこちら→</Link>
               </div>
             </div>
 
@@ -123,4 +108,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Login;
