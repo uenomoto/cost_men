@@ -11,7 +11,7 @@ export const EditSupplierModel = () => {
 
   const supplierHandleSubmit = () => {
     console.log(
-      `仕入れ先名前: ${supplierName}, 仕入れ先連絡先: ${contactInfo}`
+      `仕入れ先名前: ${supplierName}, 仕入れ先連絡先: ${contactInfo}`,
     );
 
     setSupplierName("");

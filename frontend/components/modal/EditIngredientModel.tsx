@@ -13,7 +13,7 @@ export const EditIngredientModel = () => {
 
   const ingredientHandleSubmit = () => {
     console.log(
-      `原材料名: ${ingredientName}, 買ったときの値段: ${buyCost}, 買ったときの数量: ${buyQuantity}, 単位: ${unit}`
+      `原材料名: ${ingredientName}, 買ったときの値段: ${buyCost}, 買ったときの数量: ${buyQuantity}, 単位: ${unit}`,
     );
 
     setIngredientName("");
