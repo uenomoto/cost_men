@@ -3,6 +3,8 @@ name: Deploy to Rails ECS
 on:
   push:
     branches: ["main"]
+    paths:
+      - "backend/**"
 
 permissions:
   id-token: write

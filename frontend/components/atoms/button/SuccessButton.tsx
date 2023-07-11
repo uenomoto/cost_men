@@ -6,8 +6,8 @@ interface ButtonProps {
 
 export const SuccessButton = ({ children }: ButtonProps) => {
   return (
-    <div className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded cursor-pointer inline-block">
+    <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
       {children}
-    </div>
+    </button>
   );
 };
