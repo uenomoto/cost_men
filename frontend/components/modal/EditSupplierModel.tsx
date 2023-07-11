@@ -11,7 +11,7 @@ export const EditSupplierModel = () => {
 
   const supplierHandleSubmit = () => {
     console.log(
-      `仕入れ先名前: ${supplierName}, 仕入れ先連絡先: ${contactInfo}`
+      `仕入れ先名前: ${supplierName}, 仕入れ先連絡先: ${contactInfo}`,
     );
 
     setSupplierName("");
@@ -32,37 +32,39 @@ export const EditSupplierModel = () => {
             仕入れ先を編集する
           </h3>
         </div>
-        <div className="p-7">
-          <div className="">
+        <form action="#" method="PUT" className="py-10">
+          <div className="p-7">
+            <div className="">
+              <Input
+                text="仕入れ先名"
+                htmlfor="supplierName"
+                type="text"
+                name="supplierName"
+                id="supplierName"
+                placeholder="仕入れ先名"
+                value={supplierName}
+                onChange={setSupplierName}
+              />
+            </div>
             <Input
-              text="仕入れ先名"
-              htmlfor="supplierName"
+              text="連絡先情報"
+              htmlfor="contactInfo"
               type="text"
-              name="supplierName"
-              id="supplierName"
-              placeholder="仕入れ先名"
-              value={supplierName}
-              onChange={setSupplierName}
+              name="contactInfo"
+              id="contactInfo"
+              placeholder="連絡先情報"
+              value={contactInfo}
+              onChange={setContactInfo}
             />
           </div>
-          <Input
-            text="連絡先情報"
-            htmlfor="contactInfo"
-            type="text"
-            name="contactInfo"
-            id="contactInfo"
-            placeholder="連絡先情報"
-            value={contactInfo}
-            onChange={setContactInfo}
+          <EditSubmit
+            text="編集する"
+            onClick={() => {
+              supplierHandleSubmit();
+              setSupplierOpen(false);
+            }}
           />
-        </div>
-        <EditSubmit
-          text="編集する"
-          onClick={() => {
-            supplierHandleSubmit();
-            setSupplierOpen(false);
-          }}
-        />
+        </form>
       </Modal>
     </>
   );

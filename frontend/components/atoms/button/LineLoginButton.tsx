@@ -2,7 +2,7 @@ import React from "react";
 
 const LineLoginButton = () => {
   return (
-    <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+    <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-flex items-center ease-in transition-all">
       <svg
         className="fill-current w-4 h-4 mr-2"
         xmlns="http://www.w3.org/2000/svg"

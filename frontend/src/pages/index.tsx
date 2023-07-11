@@ -29,21 +29,21 @@ export default function Home() {
                   誰でも簡単に原価計算アプリ！
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
-                  <Link href="/sgin_up">
+                  <Link href="/user/signup">
                     <SuccessButton>新規会員登録はこちら！！</SuccessButton>
                   </Link>
-                  <Link href="#">
+                  <Link href="/user/login">
                     <PrimaryButton>ログインはこちら！！</PrimaryButton>
                   </Link>
                 </div>
               </div>
               <Image
-                src="/sample.jpg"
+                src="/ramen.png"
                 alt="ラーメン"
                 width={600}
                 height={700}
                 priority
-                className="mt-10 aspect-[7/5] w-full max-w-lg rounded-2xl object-cover flex justify-center sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-10 xl:ml-36"
+                className="mt-10 aspect-[11/7] w-45 lg:w-90 max-w-lg rounded-3xl object-cover flex justify-center sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-10 xl:ml-20"
               />
             </div>
           </div>
