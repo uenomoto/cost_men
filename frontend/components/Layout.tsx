@@ -6,10 +6,8 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex flex-col items-center min-h-screen py-2">
-      <main className="flex flex-col items-center flex-1 text-center">
-        {children}
-      </main>
-    </div>
+    <main className="flex flex-col items-center text-center py-3">
+      {children}
+    </main>
   );
 };
