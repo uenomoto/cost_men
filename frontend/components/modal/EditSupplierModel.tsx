@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal } from "./Modal";
 import { Input } from "../atoms/form/Input";
-import { Label } from "../atoms/form/Label";
 import { EditSubmit } from "../atoms/form/EditSubmit";
 
 export const EditSupplierModel = () => {
@@ -35,17 +34,23 @@ export const EditSupplierModel = () => {
         </div>
         <div className="p-7">
           <div className="">
-            <Label text="name" />
             <Input
+              text="仕入れ先名"
+              htmlfor="supplierName"
               type="text"
+              name="supplierName"
+              id="supplierName"
               placeholder="仕入れ先名"
               value={supplierName}
               onChange={setSupplierName}
             />
           </div>
-          <Label text="password" />
           <Input
+            text="連絡先情報"
+            htmlfor="contactInfo"
             type="text"
+            name="contactInfo"
+            id="contactInfo"
             placeholder="連絡先情報"
             value={contactInfo}
             onChange={setContactInfo}

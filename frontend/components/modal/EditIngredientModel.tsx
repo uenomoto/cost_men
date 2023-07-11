@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal } from "./Modal";
 import { Input } from "../atoms/form/Input";
-import { Label } from "../atoms/form/Label";
 import { EditSubmit } from "../atoms/form/EditSubmit";
 
 export const EditIngredientModel = () => {
@@ -13,7 +12,9 @@ export const EditIngredientModel = () => {
   const [unit, setUnit] = useState("");
 
   const ingredientHandleSubmit = () => {
-    console.log(ingredientName, buyCost, buyQuantity, unit);
+    console.log(
+      `原材料名: ${ingredientName}, 買ったときの値段: ${buyCost}, 買ったときの数量: ${buyQuantity}, 単位: ${unit}`
+    );
 
     setIngredientName("");
     setBuyCost("");
@@ -36,31 +37,43 @@ export const EditIngredientModel = () => {
         </div>
         <div className="p-7">
           <div className="">
-            <Label text="name" />
             <Input
+              text="材料名"
+              htmlfor="ingredientName"
               type="text"
+              name="ingredientName"
+              id="ingredientName"
               placeholder="原材料名"
               value={ingredientName}
               onChange={setIngredientName}
             />
           </div>
-          <Label text="値段" />
           <Input
+            text="購入時価格"
+            htmlfor="buyCost"
             type="text"
+            name="buyCost"
+            id="buyCost"
             placeholder="買ったときの値段"
             value={buyCost}
             onChange={setBuyCost}
           />
-          <Label text="数量" />
           <Input
+            text="購入時数量"
+            htmlfor="buyQuantity"
             type="number"
+            name="buyQuantity"
+            id="buyQuantity"
             placeholder="買ったときの数量"
             value={buyQuantity}
             onChange={setBuyQuantity}
           />
-          <Label text="単位" />
           <Input
+            text="単位"
+            htmlfor="unit"
             type="text"
+            name="unit"
+            id="unit"
             placeholder="単位"
             value={unit}
             onChange={setUnit}
