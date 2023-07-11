@@ -32,7 +32,7 @@ export default function Home() {
                   <Link href="/user/signup">
                     <SuccessButton>新規会員登録はこちら！！</SuccessButton>
                   </Link>
-                  <Link href="#">
+                  <Link href="/user/login">
                     <PrimaryButton>ログインはこちら！！</PrimaryButton>
                   </Link>
                 </div>
