@@ -82,7 +82,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 8,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -96,7 +96,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 10,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -110,7 +110,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 11,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -124,7 +124,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 14,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -138,7 +138,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 16,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -152,7 +152,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 17,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
