@@ -82,7 +82,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 8,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -96,7 +96,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 10,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -110,7 +110,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 11,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -124,7 +124,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 14,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -138,7 +138,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 16,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -152,7 +152,7 @@ const recipes: Recipe[] = [
         },
       },
       {
-        id: 3,
+        id: 17,
         recipe_id: 1,
         ingredient_id: 2,
         quantity: 1000.0,
@@ -230,7 +230,7 @@ const RecipesIndex = () => {
         <meta name="description" content="一覧画面" />
       </Head>
       <SelectBox />
-      <div className="grid grid-cols-1 gap-24 xl:gap-64 sm:grid-cols-1 lg:grid-cols-2 mt-7">
+      <div className="grid grid-cols-1 lg:gap-10 xl:gap-64 sm:grid-cols-1 lg:grid-cols-2 mt-7">
         <ul className="grid-cols-1">
           {recipes.map((recipe: Recipe, index) => (
             <li key={recipe.id}>
@@ -238,7 +238,7 @@ const RecipesIndex = () => {
                 <div className={`${index !== 0 ? "mt-24" : ""}`}>
                   <div className="text-left mt-10">
                     <div className="flex items-center mb-3">
-                      <h2 className="text-5xl">{recipe.name}</h2>
+                      <h2 className="xl:text-4xl md:text-2xl">{recipe.name}</h2>
                       <div className="ml-5">
                         <span className="inline-flex px-3 py-1 mr-2 rounded-full text-sm font-medium bg-red-100 text-red-800">
                           販売価格未定義
