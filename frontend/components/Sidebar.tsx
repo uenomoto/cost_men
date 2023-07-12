@@ -1,29 +1,21 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import Link from "next/link";
 import {
   Bars3Icon,
-  CalendarIcon,
-  ChartPieIcon,
-  DocumentDuplicateIcon,
+  HomeModernIcon,
   FolderIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import Link from "next/link";
 
 const navigation = [
-  { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-  { name: "Team", href: "#", icon: UsersIcon, current: false },
-  { name: "Projects", href: "#", icon: FolderIcon, current: false },
-  { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-  { name: "Documents", href: "#", icon: DocumentDuplicateIcon, current: false },
-  { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
-];
-const teams = [
-  { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
-  { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
-  { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
+  { name: "レシピ一覧", href: "/recipes", icon: HomeIcon, current: true },
+  { name: "レシピ登録", href: "#", icon: UsersIcon, current: false },
+  { name: "仕入れ先登録", href: "#", icon: FolderIcon, current: false },
+  { name: "原材料登録", href: "#", icon: FolderIcon, current: false },
+  { name: "ログアウト", href: "/", icon: HomeModernIcon, current: false },
 ];
 
 const classNames = (...classes: (string | false)[]): string => {
@@ -89,7 +81,7 @@ export const Sidebar = () => {
                     </div>
                   </Transition.Child>
                   {/* ↓ハンバーガーサイドバー */}
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto pt-5 bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
+                  <div className="flex grow flex-col gap-y-5 overflow-y-auto pt-5 bg-sky-600 px-6 pb-2 ring-1 ring-white/10">
                     <nav className="flex flex-1 flex-col">
                       <div className="text-white mb-4">LOGO</div>
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -101,8 +93,8 @@ export const Sidebar = () => {
                                   href={item.href}
                                   className={classNames(
                                     item.current
-                                      ? "bg-gray-800 text-white"
-                                      : "text-gray-400 hover:text-white hover:bg-gray-800",
+                                      ? "bg-sky-800 text-white"
+                                      : "text-gray-400 hover:text-white hover:bg-sky-800",
                                     "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                   )}
                                 >
@@ -126,7 +118,7 @@ export const Sidebar = () => {
         </Transition.Root>
 
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-sky-400 px-6">
             <div className="flex h-16 shrink-0 items-center"></div>
             <nav className="flex flex-1 flex-col">
               <div className="text-white mb-4">LOGO</div>
@@ -135,12 +127,12 @@ export const Sidebar = () => {
                   <ul role="list" className="-mx-2 space-y-1">
                     {navigation.map((item) => (
                       <li key={item.name}>
-                        <a
+                        <Link
                           href={item.href}
                           className={classNames(
                             item.current
-                              ? "bg-gray-800 text-white"
-                              : "text-gray-400 hover:text-white hover:bg-gray-800",
+                              ? "bg-sky-800 text-white"
+                              : "text-gray-700 hover:text-white hover:bg-sky-800",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
                         >
@@ -149,7 +141,7 @@ export const Sidebar = () => {
                             aria-hidden="true"
                           />
                           {item.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
