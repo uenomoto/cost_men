@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SuccessButton } from "../../atoms/button/SuccessButton";
 import { IngredientIndex } from "../../../components/organisms/IngredientIndex";
+import Procedure from "./Procedure";
 
 type Tab = {
   name: string;
@@ -34,7 +35,7 @@ export const Tab = () => {
         ))}
       </nav>
       {currentTab === "原材料一覧" && <IngredientIndex />}
-      {currentTab === "手順一覧" && <SuccessButton>初たぶ実装</SuccessButton>}
+      {currentTab === "手順一覧" && <Procedure />}
     </div>
   );
 };
