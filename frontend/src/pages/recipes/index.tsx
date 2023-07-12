@@ -214,6 +214,14 @@ const recipes: Recipe[] = [
 
 const RecipesIndex = () => {
   const router = useRouter;
+
+  const recipeCost: (recipe: Recipe) => number = (recipe) => {
+    return recipe.ingredients.reduce(
+      (total, ingredient) => total + ingredient.ingredient.buy_cost,
+      0
+    );
+  };
+
   return (
     <>
       <SelectBox />
@@ -293,6 +301,9 @@ const RecipesIndex = () => {
                       </div>
                     </li>
                   ))}
+                  <div className="font-bold text-xl text-right mr-10">
+                    原価合計金額: {recipeCost(recipe)}円
+                  </div>
                 </ul>
               </div>
             </div>
