@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { SelectBox } from "../../../components/molecules/selectbox/SelectBox";
 import { Pagination } from "../../../components/molecules/pagination/Pagination";
@@ -224,6 +225,10 @@ const RecipesIndex = () => {
 
   return (
     <>
+      <Head>
+        <title>CostMen</title>
+        <meta name="description" content="一覧画面" />
+      </Head>
       <SelectBox />
       <div className="grid grid-cols-1 gap-24 xl:gap-64 sm:grid-cols-1 lg:grid-cols-2 mt-7">
         <ul className="grid-cols-1">
