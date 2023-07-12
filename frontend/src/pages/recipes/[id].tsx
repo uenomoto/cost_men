@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Modal } from "../../../components/modal/Modal";
+import { Tab } from "../../../components/molecules/tab/Tab";
+import { EditButton } from "../../../components/atoms/button/EditButton";
 
 type Tag = {
   id: number;
@@ -77,11 +79,11 @@ const RecipeShow = () => {
             <Modal open={sellingPriceOpen} setModalOpen={setSellingPriceOpen}>
               販売価格設定する
             </Modal>
-            <PrimaryButton>
+            <EditButton>
               <div onClick={() => setEditSellingPriceOpen(true)}>
                 販売価格を編集する
               </div>
-            </PrimaryButton>
+            </EditButton>
             <Modal
               open={editSellingPriceOpen}
               setModalOpen={setEditSellingPriceOpen}
@@ -97,17 +99,23 @@ const RecipeShow = () => {
             </span>
           </div>
         </div>
-        <div className="col-span-1 h-96">
+        <div className="col-span-1 h-96 relative mt-10 max-w-lg lg:mt-0 xl:mt-1 xl:ml-1">
           <Image
             src="/ramen.png"
             alt="recipe"
             width={450}
             height={500}
             priority
-            className="mt-10 max-w-lg rounded-full lg:mt-0 xl:mt-1 xl:ml-1"
+            className="mt-10 max-w-lg rounded-full transition-transform duration-500 hover:scale-105 lg:mt-0 xl:mt-1 xl:ml-1"
           />
         </div>
       </div>
+      <section>
+        <h3 className="text-2xl font-bold my-7 text-gray-900">
+          こちらから原材料名か手順かを選択してください
+        </h3>
+        <Tab />
+      </section>
     </>
   );
 };

@@ -252,7 +252,7 @@ const RecipesIndex = () => {
                       画像をタップして詳細画面へ
                     </span>
                     <Image
-                      className="h-72 w-96 rounded-3xl object-cover"
+                      className="h-72 w-96 rounded-3xl object-cover transition-transform duration-500 hover:scale-105 hover:opacity-90"
                       src={recipe.imageUrl}
                       alt="めん"
                       width={500}

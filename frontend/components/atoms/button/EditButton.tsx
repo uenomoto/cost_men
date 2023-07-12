@@ -4,11 +4,11 @@ interface ButtonProps {
   children: ReactNode;
 }
 
-export const SuccessButton = ({ children }: ButtonProps) => {
+export const EditButton = ({ children }: ButtonProps) => {
   return (
     <button
       type="button"
-      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+      className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
     >
       {children}
     </button>

@@ -3,19 +3,30 @@ import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 import {
   Bars3Icon,
-  HomeModernIcon,
-  FolderIcon,
-  HomeIcon,
-  UsersIcon,
   XMarkIcon,
+  InboxIcon,
+  ReceiptRefundIcon,
+  ReceiptPercentIcon,
+  BuildingStorefrontIcon,
+  ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: "レシピ一覧", href: "/recipes", icon: HomeIcon, current: true },
-  { name: "レシピ登録", href: "#", icon: UsersIcon, current: false },
-  { name: "仕入れ先登録", href: "#", icon: FolderIcon, current: false },
-  { name: "原材料登録", href: "#", icon: FolderIcon, current: false },
-  { name: "ログアウト", href: "/", icon: HomeModernIcon, current: false },
+  { name: "レシピ一覧", href: "/recipes", icon: InboxIcon, current: true },
+  { name: "レシピ登録", href: "#", icon: ReceiptPercentIcon, current: false },
+  {
+    name: "仕入れ先登録",
+    href: "#",
+    icon: BuildingStorefrontIcon,
+    current: false,
+  },
+  { name: "原材料登録", href: "#", icon: ReceiptRefundIcon, current: false },
+  {
+    name: "ログアウト",
+    href: "/",
+    icon: ArrowLeftOnRectangleIcon,
+    current: false,
+  },
 ];
 
 const classNames = (...classes: (string | false)[]): string => {
