@@ -31,8 +31,11 @@ export const Divider = () => {
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      console.log(texts);
+      const validTexts =
+        texts[texts.length - 1] === "" ? texts.slice(0, -1) : texts;
+      console.log(validTexts);
       setIsEdit(isEdit.map(() => false));
+      setTexts([...validTexts, ""]);
     },
     [isEdit]
   );
