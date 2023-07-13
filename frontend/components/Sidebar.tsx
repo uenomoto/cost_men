@@ -132,7 +132,7 @@ export const Sidebar = () => {
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-sky-400 px-6">
             <div className="flex h-16 shrink-0 items-center"></div>
             <nav className="flex flex-1 flex-col">
-              <div className="text-white mb-4">LOGO</div>
+              <div className="text-white mb-4">CostMenLogo</div>
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-5">

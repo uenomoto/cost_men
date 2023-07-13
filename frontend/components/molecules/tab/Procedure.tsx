@@ -19,8 +19,7 @@ const Procedure = () => {
       <h2 className="text-5xl mt-5 text-left">手順</h2>
       <form onSubmit={hendlSubmit} action="#">
         <Divider />
-        <TextArea text={text} setText={setText} />
-        <div className="mt-5 flex justify-end">
+        <div className="my-5 flex justify-end">
           <SaveButton>手順を保存</SaveButton>
         </div>
       </form>
