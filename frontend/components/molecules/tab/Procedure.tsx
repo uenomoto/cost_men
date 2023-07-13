@@ -19,12 +19,7 @@ const Procedure = () => {
       <h2 className="text-5xl my-5 pb-2 text-left border-b-2 border-sky-300">
         手順
       </h2>
-      <form onSubmit={hendlSubmit} action="#">
-        <Divider />
-        <div className="my-5 flex justify-end">
-          <SaveButton>手順を保存</SaveButton>
-        </div>
-      </form>
+      <Divider />
     </>
   );
 };
