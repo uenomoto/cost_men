@@ -34,10 +34,10 @@ export const Divider = () => {
       const validTexts =
         texts[texts.length - 1] === "" ? texts.slice(0, -1) : texts;
       console.log(validTexts);
-      setIsEdit(isEdit.map(() => false));
+      setIsEdit(validTexts.map(() => false).concat(true));
       setTexts([...validTexts, ""]);
     },
-    [isEdit]
+    [texts]
   );
 
   return (

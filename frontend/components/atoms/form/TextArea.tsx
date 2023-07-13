@@ -22,11 +22,11 @@ export const TextArea = ({ text, setText }: Props) => {
                   selected
                     ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
                     : "bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-900",
-                  "rounded-md border border-transparent px-3 py-1.5 text-sm font-medium"
+                  "rounded-md border border-transparent px-3 py-1.5 text-md font-medium"
                 )
               }
             >
-              Write
+              入力欄
             </Tab>
             <Tab
               className={({ selected }) =>
@@ -34,11 +34,11 @@ export const TextArea = ({ text, setText }: Props) => {
                   selected
                     ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
                     : "bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-900",
-                  "ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium"
+                  "ml-2 rounded-md border border-transparent px-3 py-1.5 text-md font-medium"
                 )
               }
             >
-              Preview
+              プレビュー
             </Tab>
           </Tab.List>
           <Tab.Panels className="mt-2">
