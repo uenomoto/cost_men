@@ -87,7 +87,7 @@ export const IngredientIndex = () => {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center mt-5">
           <div className="sm:flex-auto">
-            <h2 className="text-base font-semibold leading-6 text-gray-900">
+            <h2 className="text-2xl font-semibold leading-6 text-gray-900">
               原材料一覧
             </h2>
           </div>

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { SuccessButton } from "../../atoms/button/SuccessButton";
-import { IngredientIndex } from "../../../components/organisms/IngredientIndex";
-import Procedure from "./Procedure";
+import { IngredientIndex } from "../../organisms/IngredientIndex";
+import { Procedure } from "../../organisms/Procedure";
 
 type Tab = {
   name: string;
@@ -15,14 +14,14 @@ export const Tab = () => {
 
   return (
     <div className="mt-10">
-      <nav className="isolate flex divide-x divide-gray-200 rounded-lg shadow">
+      <nav className="isolate flex divide-x divide-gray-200 rounded-lg shadow-lg">
         {tabs.map((tab) => (
           <button
             key={tab.name}
             onClick={() => {
               setCurrentTab(tab.name);
             }}
-            className="relative min-w-0 md:w-60 shadow-lg flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10"
+            className="relative min-w-0 md:w-60 shadow-lg flex-1 overflow-hidden bg-white py-4 px-5 text-center text-lg font-medium hover:bg-gray-100 focus:z-10"
           >
             <span>{tab.name}</span>
             {/* タブが現在選択中のCSS↓ */}
