@@ -3,19 +3,30 @@ import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 import {
   Bars3Icon,
-  HomeModernIcon,
-  FolderIcon,
-  HomeIcon,
-  UsersIcon,
   XMarkIcon,
+  InboxIcon,
+  ReceiptRefundIcon,
+  ReceiptPercentIcon,
+  BuildingStorefrontIcon,
+  ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: "レシピ一覧", href: "/recipes", icon: HomeIcon, current: true },
-  { name: "レシピ登録", href: "#", icon: UsersIcon, current: false },
-  { name: "仕入れ先登録", href: "#", icon: FolderIcon, current: false },
-  { name: "原材料登録", href: "#", icon: FolderIcon, current: false },
-  { name: "ログアウト", href: "/", icon: HomeModernIcon, current: false },
+  { name: "レシピ一覧", href: "/recipes", icon: InboxIcon, current: true },
+  { name: "レシピ登録", href: "#", icon: ReceiptPercentIcon, current: false },
+  {
+    name: "仕入れ先登録",
+    href: "#",
+    icon: BuildingStorefrontIcon,
+    current: false,
+  },
+  { name: "原材料登録", href: "#", icon: ReceiptRefundIcon, current: false },
+  {
+    name: "ログアウト",
+    href: "/",
+    icon: ArrowLeftOnRectangleIcon,
+    current: false,
+  },
 ];
 
 const classNames = (...classes: (string | false)[]): string => {
@@ -121,10 +132,10 @@ export const Sidebar = () => {
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-sky-400 px-6">
             <div className="flex h-16 shrink-0 items-center"></div>
             <nav className="flex flex-1 flex-col">
-              <div className="text-white mb-4">LOGO</div>
+              <div className="text-white mb-4">CostMenLogo</div>
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
-                  <ul role="list" className="-mx-2 space-y-1">
+                  <ul role="list" className="-mx-2 space-y-5">
                     {navigation.map((item) => (
                       <li key={item.name}>
                         <Link

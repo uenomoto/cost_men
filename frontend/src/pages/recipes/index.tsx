@@ -252,7 +252,7 @@ const RecipesIndex = () => {
                       画像をタップして詳細画面へ
                     </span>
                     <Image
-                      className="h-72 w-96 rounded-3xl object-cover"
+                      className="h-72 w-96 rounded-3xl object-cover transition-transform duration-500 hover:scale-105 hover:opacity-90"
                       src={recipe.imageUrl}
                       alt="めん"
                       width={500}
@@ -284,7 +284,7 @@ const RecipesIndex = () => {
                       className="relative flex justify-between py-5 px-6 hover:bg-gray-100"
                     >
                       <div className="flex items-center min-w-0">
-                        <p className="text-lg font-semibold leading-6 text-gray-900">
+                        <p className="text-lg font-semibold pr-3 leading-6 text-gray-900">
                           {ingredient.ingredient.name}
                         </p>
                       </div>
