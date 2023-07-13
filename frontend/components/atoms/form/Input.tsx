@@ -26,7 +26,7 @@ export const Input = ({
       <div className="relative">
         <label
           htmlFor={htmlfor}
-          className="absolute -top-2 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-900"
+          className="absolute -top-2 left-2 inline-block bg-gray-100 rounded-3xl px-1 text-xs font-medium text-gray-900"
         >
           {text}
         </label>
