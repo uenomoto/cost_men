@@ -64,9 +64,9 @@ const Login = () => {
                     />
                   </div>
                 </div>
-                <div>
+                <Link href="/recipes">
                   <LoginButton>ログインする</LoginButton>
-                </div>
+                </Link>
               </form>
               <div className="mt-5 hover:text-blue-500 transition-all ease-in animate-pulse">
                 <Link href="/user/signup">新規登録がまだな方はこちら→</Link>
