@@ -6,31 +6,7 @@ import { useRouter } from "next/router";
 import { SelectBox } from "../../../components/molecules/selectbox/SelectBox";
 import { Pagination } from "../../../components/molecules/pagination/Pagination";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-
-type Recipe = {
-  id: number;
-  name: string;
-  total_cost: number;
-  imageUrl: string;
-  ingredients: RecipeIngredient[];
-};
-
-type Ingredient = {
-  id: number;
-  supplier_id: number;
-  buy_cost: number;
-  buy_quantity: number;
-  unit: string;
-  name: string;
-};
-
-type RecipeIngredient = {
-  id: number;
-  recipe_id: number;
-  ingredient_id: number;
-  quantity: number;
-  ingredient: Ingredient;
-};
+import { Recipe, RecipeIngredient } from "@/types";
 
 const recipes: Recipe[] = [
   {

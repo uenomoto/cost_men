@@ -3,23 +3,7 @@ import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
-
-type Ingredient = {
-  id: number;
-  supplier_id: number;
-  buy_cost: number;
-  buy_quantity: number;
-  unit: string;
-  name: string;
-};
-
-type Supplier = {
-  id: number;
-  user_id: number;
-  name: string;
-  contact_info: string;
-  ingredients: Ingredient[];
-};
+import { Supplier, Ingredient } from "@/types";
 
 // 仕入れ先が配列であることを明示
 type Suppliers = Supplier[];

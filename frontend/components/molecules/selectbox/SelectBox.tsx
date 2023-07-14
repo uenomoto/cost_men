@@ -1,11 +1,7 @@
 import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-
-type Tag = {
-  id: number;
-  name: string;
-};
+import { Tag } from "@/types";
 
 const tags: Tag[] = [
   { id: 1, name: "スープ" },

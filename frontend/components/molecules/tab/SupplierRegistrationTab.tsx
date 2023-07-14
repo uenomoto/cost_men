@@ -16,7 +16,7 @@ export const SupplierRegistrationTab = () => {
     <>
       <div className="mt-10">
         <nav className="isolate flex divide-x divide-gray-200 rounded-lg shadow-lg">
-          {tabs.map((tab) => (
+          {tabs.map((tab: Tab) => (
             <button
               key={tab.name}
               onClick={() => {
