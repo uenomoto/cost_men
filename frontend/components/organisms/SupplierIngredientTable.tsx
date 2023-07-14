@@ -4,6 +4,7 @@ import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { Supplier, Ingredient } from "@/types";
+import { SlideOver } from "../molecules/slide-overs/SlideOver";
 
 // 仕入れ先が配列であることを明示
 type Suppliers = Supplier[];
@@ -188,6 +189,8 @@ export const SupplierIngredientTable = () => {
     number | null
   >(null);
 
+  const [slideOpen, setSlideOpen] = useState(false);
+
   const costCalculation = (ingredient: Ingredient) => {
     return (
       Math.round((ingredient.buy_cost / ingredient.buy_quantity) * 10) / 10
@@ -206,7 +209,10 @@ export const SupplierIngredientTable = () => {
               仕入れ先と原材料の一覧です。編集・削除を行うことができます。
             </p>
           </div>
-          <PrimaryButton>検索する</PrimaryButton>
+          <PrimaryButton>
+            <div onClick={() => setSlideOpen(true)}>検索する</div>
+          </PrimaryButton>
+          <SlideOver slideOpen={slideOpen} setSlideOpen={setSlideOpen} />
         </div>
         <div className="mt-8 flow-root">
           <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
