@@ -56,7 +56,7 @@ export const TagCheckBox = () => {
     <fieldset>
       <span className="font-bold">タグを選択してください</span>
       <legend className="sr-only">タグ</legend>
-      <div className="grid grid-cols-3 gap-7 lg:gap-x-40 overflow-y-auto px-3 py-1 h-40 border-2 border-sky-300 rounded-md">
+      <div className="grid grid-cols-3 gap-4 lg:gap-x-4 overflow-y-auto px-3 py-1 h-40 border-2 border-sky-300 rounded-md">
         {tags.map((tag) => (
           <div className="relative flex items-start" key={tag.id}>
             <div className="flex h-6 items-center">
