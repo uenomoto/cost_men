@@ -2,17 +2,33 @@ import React, { FormEvent, useState } from "react";
 import { Input } from "../../atoms/form/Input";
 import { SaveButton } from "../../atoms/form/SaveSubmit";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
+import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
+import { SupplierSelect } from "@/types";
+
+const suppliers: SupplierSelect[] = [
+  { id: 1, name: "上野商店(直接)" },
+  { id: 2, name: "あいうえお商店" },
+  { id: 3, name: "ダミー仕入れ先3" },
+  { id: 4, name: "ダミー仕入れ先4" },
+  { id: 5, name: "ダミー仕入れ先5" },
+  { id: 6, name: "ダミー仕入れ先6" },
+  { id: 7, name: "ダミー仕入れ先7" },
+  { id: 8, name: "ダミー仕入れ先8" },
+  { id: 9, name: "ダミー仕入れ先9" },
+  { id: 10, name: "ダミー仕入れ先10" },
+];
 
 export const IngredidentForm = () => {
   const [valueName, setValueName] = useState("");
   const [valueBuyCost, setValueBuyCost] = useState("");
   const [valueBuyQuantity, setValueBuyQuantity] = useState("");
   const [valueUnit, setValueUnit] = useState("");
+  const [selectedSupplier, setSelectedSupplier] = useState(suppliers[0]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(
-      `原材料名:${valueName}, 購入時の値段:${valueBuyCost}, 購入時の数量:${valueBuyQuantity}, 単位:${valueUnit}`
+      `原材料名:${valueName}, 購入時の値段:${valueBuyCost}, 購入時の数量:${valueBuyQuantity}, 単位:${valueUnit}, 仕入れ先: ${selectedSupplier.name}`
     );
   };
 
@@ -24,6 +40,13 @@ export const IngredidentForm = () => {
         </h3>
         <div className="mt-2 max-w-xl text-sm text-gray-500">
           <p>こちらから原材料と購入時の値段、数量が登録できます</p>
+        </div>
+        <div className="mt-3">
+          <SuppliersSelectBox
+            selected={selectedSupplier}
+            setSelected={setSelectedSupplier}
+            suppliers={suppliers}
+          />
         </div>
         <form onSubmit={handleSubmit} className="mt-5">
           <div className="grid gap-1 grid-cols-2">

@@ -21,7 +21,7 @@ type Supplier = {
   ingredients: Ingredient[];
 };
 
-// 仕入れ先の配列であることを明示
+// 仕入れ先が配列であることを明示
 type Suppliers = Supplier[];
 
 const suppliers: Suppliers = [
@@ -204,8 +204,7 @@ export const SupplierIngredientTable = () => {
     number | null
   >(null);
 
-  // 1つの原価を計算し四捨五入する関数
-  const costPerGram = (ingredient: Ingredient) => {
+  const costCalculation = (ingredient: Ingredient) => {
     return (
       Math.round((ingredient.buy_cost / ingredient.buy_quantity) * 10) / 10
     );
@@ -219,7 +218,7 @@ export const SupplierIngredientTable = () => {
             <h1 className="text-md lg:text-2xl font-semibold leading-6 text-gray-900">
               仕入れ先 原材料一覧
             </h1>
-            <p className="mt-2 text-sm text-gray-700">
+            <p className="mt-2 mb-3 text-sm text-gray-700 md:mb-0">
               仕入れ先と原材料の一覧です。編集・削除を行うことができます。
             </p>
           </div>
@@ -356,7 +355,7 @@ export const SupplierIngredientTable = () => {
                             "whitespace-nowrap px-3 py-4 text-md lg:text-2xl text-gray-900"
                           )}
                         >
-                          <span>{costPerGram(ingredient)}円</span>
+                          <span>{costCalculation(ingredient)}円</span>
                         </td>
                         <td
                           className={classNames(
@@ -369,15 +368,17 @@ export const SupplierIngredientTable = () => {
                           <EditButton>
                             <div
                               onClick={() =>
-                                setSupplierIngredientEditOpen(supplier.id)
+                                setSupplierIngredientEditOpen(ingredient.id)
                               }
                             >
                               編集
                             </div>
                           </EditButton>
-                          {supplierIngredienteditOpen === supplier.id && (
+                          {supplierIngredienteditOpen === ingredient.id && (
                             <Modal
-                              open={supplierIngredienteditOpen === supplier.id}
+                              open={
+                                supplierIngredienteditOpen === ingredient.id
+                              }
                               setModalOpen={() =>
                                 setSupplierIngredientEditOpen(null)
                               }
