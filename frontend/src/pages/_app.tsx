@@ -22,9 +22,11 @@ export default function App({ Component, pageProps }: AppProps) {
       <div
         className={`lg:col-span-${hideSidebar ? "12" : "10"} md:col-span-12`}
       >
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <div className="max-w-6xl mx-auto">
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </div>
       </div>
     </div>
   );

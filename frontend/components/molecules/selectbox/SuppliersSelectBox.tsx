@@ -1,33 +1,23 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { Tag } from "@/types";
-
-const tags: Tag[] = [
-  { id: 1, name: "スープ" },
-  { id: 2, name: "上物" },
-  { id: 3, name: "デザート" },
-  { id: 4, name: "副食" },
-  { id: 5, name: "ごはんもの" },
-  { id: 6, name: "なんか" },
-  { id: 7, name: "なんか２" },
-];
+import { SupplierSelectProps } from "@/types";
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
 };
 
-export const SelectBox = () => {
-  const [selected, setSelected] = useState(tags[0]);
-
+export const SuppliersSelectBox = ({
+  selected,
+  setSelected,
+  suppliers,
+}: SupplierSelectProps) => {
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
           <div className="flex items-baseline">
-            <div className="text-lg font-bold mr-56 text-gray-700">
-              タグ検索
-            </div>
+            <div className="text-lg font-bold mr-3 text-gray-700">仕入れ先</div>
             <div className="relative mt-2">
               <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-600 sm:text-sm sm:leading-6">
                 <span className="block truncate px-32">{selected.name}</span>
@@ -47,16 +37,16 @@ export const SelectBox = () => {
                 leaveTo="opacity-0"
               >
                 <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                  {tags.map((tag) => (
+                  {suppliers.map((supplier) => (
                     <Listbox.Option
-                      key={tag.id}
+                      key={supplier.id}
                       className={({ active }) =>
                         classNames(
                           active ? "bg-sky-400 text-white" : "text-gray-900",
                           "relative cursor-default select-none py-2 pl-8 pr-4"
                         )
                       }
-                      value={tag}
+                      value={supplier}
                     >
                       {({ selected, active }) => (
                         <>
@@ -66,7 +56,7 @@ export const SelectBox = () => {
                               "block truncate"
                             )}
                           >
-                            {tag.name}
+                            {supplier.name}
                           </span>
 
                           {selected ? (

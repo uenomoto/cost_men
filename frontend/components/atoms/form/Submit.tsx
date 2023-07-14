@@ -2,7 +2,7 @@ import React from "react";
 
 type SubmitProps = {
   text: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
 };
 
 export const Submit = ({ text, onClick }: SubmitProps) => {

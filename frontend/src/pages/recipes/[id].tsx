@@ -6,11 +6,7 @@ import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Modal } from "../../../components/modal/Modal";
 import { Tab } from "../../../components/molecules/tab/Tab";
 import { EditButton } from "../../../components/atoms/button/EditButton";
-
-type Tag = {
-  id: number;
-  name: string;
-};
+import { Tag } from "@/types";
 
 const tags: Tag[] = [
   {
