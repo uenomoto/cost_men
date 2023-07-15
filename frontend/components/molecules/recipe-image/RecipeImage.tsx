@@ -45,7 +45,7 @@ export const RecipeImage = ({ onImageChange }: Props) => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 place-items-center lg:gap-20 lg:grid-cols-2">
+    <>
       <div className="col-span-1">
         <input
           type="file"
@@ -59,7 +59,7 @@ export const RecipeImage = ({ onImageChange }: Props) => {
           onClick={handleButtonClick}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
         >
-          画像を選択してください
+          画像を選択
         </button>
       </div>
       <div className="col-span-1">
@@ -67,6 +67,6 @@ export const RecipeImage = ({ onImageChange }: Props) => {
           <Image src={preview} alt="recipe" width={300} height={400} priority />
         )}
       </div>
-    </div>
+    </>
   );
 };

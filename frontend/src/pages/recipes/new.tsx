@@ -128,7 +128,7 @@ const RecipesNew = () => {
     // 送信処理本来はここでAPIを叩く
     console.log(data);
 
-    router.push("/recipes");
+    // router.push("/recipes");
     setRecipeName("");
     setRecipeImage(null);
     setCheckedTags({});
@@ -152,13 +152,12 @@ const RecipesNew = () => {
           />
         </div>
       </div>
-      <RecipeImage onImageChange={setRecipeImage} />
-      <div className="flex items-center justify-start mt-5 w-full">
-        <p className="text-xl font-bold mr-7 ml-10 lg:ml-0">タグ</p>
+      <div className="grid grid-cols-1 place-items-center md:grid-cols-2 lg:grid-cols-5">
+        <RecipeImage onImageChange={setRecipeImage} />
         <PrimaryButton>
           <div onClick={() => setOpen(true)}>タグを追加</div>
         </PrimaryButton>
-        <div className="flex ml-auto">
+        <div className="lg:col-span-2">
           <TagCheckBox onTagCheckChange={setCheckedTags} />
         </div>
       </div>
