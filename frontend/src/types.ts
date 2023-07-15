@@ -45,7 +45,6 @@ export interface Supplier {
   user_id: number;
   name: string;
   contact_info: string;
-  ingredients: Ingredient[];
 }
 
 // タグの型定義

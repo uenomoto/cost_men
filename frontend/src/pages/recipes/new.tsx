@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useState, useEffect } from "react";
 import { Tag } from "@/types";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
@@ -9,6 +9,8 @@ import { EditButton } from "../../../components/atoms/button/EditButton";
 import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
 import { RecipesTable } from "../../../components/organisms/RecipesTable";
 import { RecipeImage } from "../../../components/molecules/recipe-image/RecipeImage";
+import { Ingredient } from "@/types";
+import { useRouter } from "next/router";
 
 const tags: Tag[] = [
   {
@@ -61,16 +63,76 @@ const tags: Tag[] = [
   },
 ];
 
+// 架空のデータ
+const ingredients = [
+  {
+    id: 1,
+    name: "にんじん",
+    supplier_id: 1,
+    buy_cost: 400,
+    buy_quantity: 500,
+    unit: "g",
+  },
+  {
+    id: 2,
+    name: "じゃがいも",
+    supplier_id: 1,
+    buy_cost: 700,
+    buy_quantity: 1000,
+    unit: "g",
+  },
+];
+
+const suppliers = [
+  {
+    id: 1,
+    user_id: 1,
+    name: "上野商店",
+    contact_info: "03-1234-5678",
+  },
+];
+
 const RecipesNew = () => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
+  // タグの名前登録とレシピの名前登録
   const [recipeName, setRecipeName] = useState("");
   const [tagName, setTagName] = useState("");
 
+  // 子コンポーネント達の状態を管理する
+  const [recipeImage, setRecipeImage] = useState<File | null>(null);
+  const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
+  const [recipes, setRecipes] = useState<Ingredient[]>([]);
+
+  // タグ名送信
   const tagHendleSubmit = (e: FormEvent) => {
     e.preventDefault();
     console.log(tagName);
     setTagName("");
+  };
+
+  // 子コンポーネント(recipeTableForm)から渡されたレシピで状態を更新
+  const handleRecipeChange = (recipe: Ingredient[]) => {
+    setRecipes(recipe);
+  };
+
+  // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
+  const handleSubmissions = () => {
+    const data = {
+      recipeName,
+      recipeImage,
+      checkedTags,
+      recipes,
+    };
+    // 送信処理本来はここでAPIを叩く
+    console.log(data);
+
+    router.push("/recipes");
+    setRecipeName("");
+    setRecipeImage(null);
+    setCheckedTags({});
+    setRecipes([]);
   };
 
   return (
@@ -90,18 +152,22 @@ const RecipesNew = () => {
           />
         </div>
       </div>
-      <RecipeImage />
+      <RecipeImage onImageChange={setRecipeImage} />
       <div className="flex items-center justify-start mt-5 w-full">
         <p className="text-xl font-bold mr-7 ml-10 lg:ml-0">タグ</p>
         <PrimaryButton>
           <div onClick={() => setOpen(true)}>タグを追加</div>
         </PrimaryButton>
         <div className="flex ml-auto">
-          <TagCheckBox />
+          <TagCheckBox onTagCheckChange={setCheckedTags} />
         </div>
       </div>
-      <RecipesTable />
-      <Submit text="登録" />
+      <RecipesTable
+        ingredients={ingredients}
+        suppliers={suppliers}
+        onRecipeChange={handleRecipeChange}
+      />
+      <Submit text="登録" onClick={handleSubmissions} />
 
       <Modal open={open} setModalOpen={setOpen}>
         <div className="grid grid-cols-2 font-bold text-center w-full max-w-6xl m-auto p-3 lg:p-5">

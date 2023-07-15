@@ -1,5 +1,5 @@
 import { Tag } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const tags: Tag[] = [
   {
@@ -50,25 +50,36 @@ const tags: Tag[] = [
     id: 12,
     name: "なんか7",
   },
+  {
+    id: 13,
+    name: "なんか8",
+  },
 ];
 
-export const TagCheckBox = () => {
+type Props = {
+  onTagCheckChange: (checkedTags: Record<number, boolean>) => void; // 親コンポーネントにチェック状態を渡す
+};
+
+export const TagCheckBox = ({ onTagCheckChange }: Props) => {
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>(
-    tags.reduce((acc, current) => ({ ...acc, [current.id]: false }), {})
+    tags.reduce(
+      (accumulator, current) => ({ ...accumulator, [current.id]: false }),
+      {}
+    )
   );
 
   const handleCheckChange = (tagId: number, isChecked: boolean) => {
-    setCheckedTags((prevState) => ({
-      ...prevState,
-      [tagId]: isChecked,
-    }));
+    setCheckedTags((prevState) => {
+      const newState = {
+        ...prevState,
+        [tagId]: isChecked,
+      };
 
-    console.log(
-      `タグのID ${tagId} とチェック状態 ${
-        isChecked ? "checked" : "unchecked"
-      }. 現在の全てのタグチェックの状態:`,
-      checkedTags
-    );
+      // 親コンポーネントに新しい状態を通知する
+      onTagCheckChange(newState);
+
+      return newState;
+    });
   };
 
   return (

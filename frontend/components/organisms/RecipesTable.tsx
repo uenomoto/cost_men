@@ -1,50 +1,19 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { calculateSubTotalCost } from "../../utils/calculateCost";
+import { Ingredient } from "@/types";
+import { Supplier } from "@/types";
 
-// 型定義
-type recipeIngredients = [
-  {
-    id: number;
-    name: string;
-    ingredients: [
-      {
-        ingredient_id: number;
-        quantity: number;
-      },
-    ];
-  },
-];
+type RecipesTableProps = {
+  ingredients: Ingredient[];
+  suppliers: Supplier[];
+  onRecipeChange: (recipe: Ingredient[]) => void;
+};
 
-export const RecipesTable = () => {
-  // 架空のデータ
-  const ingredients = [
-    {
-      id: 1,
-      name: "にんじん",
-      supplier_id: 1,
-      buy_cost: 400,
-      buy_quantity: 500,
-      unit: "g",
-    },
-    {
-      id: 2,
-      name: "じゃがいも",
-      supplier_id: 1,
-      buy_cost: 700,
-      buy_quantity: 1000,
-      unit: "g",
-    },
-  ];
-
-  const suppliers = [
-    {
-      id: 1,
-      user_id: 1,
-      name: "上野商店",
-      contact_info: "03-1234-5678",
-    },
-  ];
-
+export const RecipesTable: React.FC<RecipesTableProps> = ({
+  ingredients, // 親コンポーネントから受け取る(架空データのため将来的に消す)
+  suppliers,
+  onRecipeChange,
+}) => {
   // フォームのデータ管理
   const [recipe, setRecipe] = useState({
     ingredients: ingredients.map((ingredient) => ({
@@ -62,6 +31,9 @@ export const RecipesTable = () => {
       values[i].name = e.target.value;
     }
     setRecipe({ ingredients: values });
+
+    // レシピが変更されたので親コンポーネントに渡す
+    onRecipeChange(values);
   };
 
   // 原材料追加ボタンを押した時に呼ばれる関数
