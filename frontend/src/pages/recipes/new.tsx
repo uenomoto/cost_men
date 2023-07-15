@@ -75,7 +75,7 @@ const RecipesNew = () => {
 
   return (
     <>
-      <h1 className="text-2xl lg:text-3xl">レシピ新規登録</h1>
+      <h1 className="text-2xl font-bold  lg:text-3xl">レシピ新規登録</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
           <Input

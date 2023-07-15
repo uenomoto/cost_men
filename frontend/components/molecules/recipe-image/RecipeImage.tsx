@@ -1,8 +1,11 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import Image from "next/image";
 
 export const RecipeImage = () => {
   const [preview, setPreview] = useState<string | null>("/no_image.png");
+
+  // DOM操作したい時はuseRefを使う
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ファイルが選択された時に発火するイベントハンドラ関数
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -19,13 +22,35 @@ export const RecipeImage = () => {
     reader.readAsDataURL(file);
   };
 
-  return (
-    <div>
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+  // 画像選択ボタンを押した時に発火するイベントハンドラ関数(useRefを使う)
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    fileInputRef.current?.click();
+  };
 
-      {preview && (
-        <Image src={preview} alt="chosen" width={400} height={500} priority />
-      )}
+  return (
+    <div className="grid grid-cols-1 place-items-center lg:gap-20 lg:grid-cols-2">
+      <div className="col-span-1">
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          ref={fileInputRef}
+          onChange={handleImageChange}
+        />
+        <button
+          type="button"
+          onClick={handleButtonClick}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+        >
+          画像を選択してください
+        </button>
+      </div>
+      <div className="col-span-1">
+        {preview && (
+          <Image src={preview} alt="recipe" width={300} height={400} priority />
+        )}
+      </div>
     </div>
   );
 };
