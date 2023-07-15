@@ -6,6 +6,7 @@ import { Modal } from "../../../components/modal/Modal";
 import { Submit } from "../../../components/atoms/form/Submit";
 import { EditButton } from "../../../components/atoms/button/EditButton";
 import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
+import { RecipesTable } from "../../../components/organisms/RecipesTable";
 import { Tag } from "@/types";
 
 const tags: Tag[] = [
@@ -65,7 +66,7 @@ const RecipesNew = () => {
   const [recipeName, setRecipeName] = useState("");
   const [tagName, setTagName] = useState("");
 
-  const hendleSubmit = (e: FormEvent) => {
+  const tagHendleSubmit = (e: FormEvent) => {
     e.preventDefault();
     console.log(tagName);
     setTagName("");
@@ -109,7 +110,7 @@ const RecipesNew = () => {
                   onChange={setTagName}
                 />
               </div>
-              <Submit text="登録" onClick={hendleSubmit} />
+              <Submit text="登録" onClick={tagHendleSubmit} />
             </div>
             <div className="col-span-1 overflow-auto px-16 h-72">
               <h3 className="mb-5">タグ一覧</h3>
@@ -136,6 +137,7 @@ const RecipesNew = () => {
           <TagCheckBox />
         </div>
       </div>
+      <RecipesTable />
     </>
   );
 };
