@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useRef, useState } from "react";
 import Image from "next/image";
 
 export const RecipeImage = () => {
@@ -8,7 +8,7 @@ export const RecipeImage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ファイルが選択された時に発火するイベントハンドラ関数
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (!file) {
       setPreview(null);
@@ -20,13 +20,13 @@ export const RecipeImage = () => {
       setPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
-  };
+  }, []);
 
   // 画像選択ボタンを押した時に発火するイベントハンドラ関数(useRefを使う)
-  const handleButtonClick = (e: React.MouseEvent) => {
+  const handleButtonClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     fileInputRef.current?.click();
-  };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 place-items-center lg:gap-20 lg:grid-cols-2">

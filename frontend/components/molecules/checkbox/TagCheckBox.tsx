@@ -1,4 +1,5 @@
 import { Tag } from "@/types";
+import { useState } from "react";
 
 const tags: Tag[] = [
   {
@@ -52,6 +53,24 @@ const tags: Tag[] = [
 ];
 
 export const TagCheckBox = () => {
+  const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>(
+    tags.reduce((acc, current) => ({ ...acc, [current.id]: false }), {})
+  );
+
+  const handleCheckChange = (tagId: number, isChecked: boolean) => {
+    setCheckedTags((prevState) => ({
+      ...prevState,
+      [tagId]: isChecked,
+    }));
+
+    console.log(
+      `タグのID ${tagId} とチェック状態 ${
+        isChecked ? "checked" : "unchecked"
+      }. 現在の全てのタグチェックの状態:`,
+      checkedTags
+    );
+  };
+
   return (
     <fieldset>
       <span className="font-bold">タグを選択してください</span>
@@ -66,6 +85,8 @@ export const TagCheckBox = () => {
                 id={tag.id.toString()}
                 name={tag.name}
                 className="h-4 w-4 rounded border-gray-300 text-sky-400 focus:ring-sky-400"
+                checked={checkedTags[tag.id]}
+                onChange={(e) => handleCheckChange(tag.id, e.target.checked)}
               />
             </div>
             <div className="ml-3 text-sm leading-6">

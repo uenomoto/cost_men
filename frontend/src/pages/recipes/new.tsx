@@ -96,10 +96,22 @@ const RecipesNew = () => {
         <PrimaryButton>
           <div onClick={() => setOpen(true)}>タグを追加</div>
         </PrimaryButton>
-        <Modal open={open} setModalOpen={setOpen}>
-          <div className="grid grid-cols-2 font-bold text-center w-full max-w-6xl m-auto p-3 lg:p-5">
-            <div className="grid col-span-1 px-16">
-              <h3>タグ登録</h3>
+        <div className="flex ml-auto">
+          <TagCheckBox />
+        </div>
+      </div>
+      <RecipesTable />
+      <Submit text="登録" />
+
+      <Modal open={open} setModalOpen={setOpen}>
+        <div className="grid grid-cols-2 font-bold text-center w-full max-w-6xl m-auto p-3 lg:p-5">
+          <form
+            className="grid col-span-1 px-16"
+            action="#"
+            onSubmit={tagHendleSubmit}
+          >
+            <div>
+              <h3 className="mb-16">タグ登録</h3>
               <div className="mt-auto">
                 <Input
                   htmlfor="tagName"
@@ -112,34 +124,30 @@ const RecipesNew = () => {
                   onChange={setTagName}
                 />
               </div>
-              <Submit text="登録" onClick={tagHendleSubmit} />
+              <Submit text="登録" />
             </div>
-            <div className="col-span-1 overflow-auto px-16 h-72">
-              <h3 className="mb-5">タグ一覧</h3>
-              <ul className="space-y-3">
-                {tags.map((tag) => (
-                  <li
-                    className="grid grid-cols-3 items-center gap-4"
-                    key={tag.id}
-                  >
-                    <span className="col-span-1">{tag.name}</span>
-                    <EditButton>
-                      <div className="col-span-1 text-xs">編集</div>
-                    </EditButton>
-                    <div className="text-xs">
-                      <DeleteButton />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          </form>
+          <div className="col-span-1 overflow-auto px-16 h-72">
+            <h3 className="mb-5">タグ一覧</h3>
+            <ul className="space-y-3">
+              {tags.map((tag) => (
+                <li
+                  className="grid grid-cols-3 items-center gap-4"
+                  key={tag.id}
+                >
+                  <span className="col-span-1">{tag.name}</span>
+                  <EditButton>
+                    <div className="col-span-1 text-xs">編集</div>
+                  </EditButton>
+                  <div className="text-xs">
+                    <DeleteButton />
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
-        </Modal>
-        <div className="flex ml-auto">
-          <TagCheckBox />
         </div>
-      </div>
-      <RecipesTable />
+      </Modal>
     </>
   );
 };
