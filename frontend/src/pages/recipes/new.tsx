@@ -1,4 +1,5 @@
 import React, { FormEvent, useState } from "react";
+import { Tag } from "@/types";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../components/molecules/checkbox/TagCheckBox";
@@ -7,7 +8,7 @@ import { Submit } from "../../../components/atoms/form/Submit";
 import { EditButton } from "../../../components/atoms/button/EditButton";
 import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
 import { RecipesTable } from "../../../components/organisms/RecipesTable";
-import { Tag } from "@/types";
+import { RecipeImage } from "../../../components/molecules/recipe-image/RecipeImage";
 
 const tags: Tag[] = [
   {
@@ -89,6 +90,7 @@ const RecipesNew = () => {
           />
         </div>
       </div>
+      <RecipeImage />
       <div className="flex items-center justify-start mt-5 w-full">
         <p className="text-xl font-bold mr-7 ml-10 lg:ml-0">タグ</p>
         <PrimaryButton>

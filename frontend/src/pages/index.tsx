@@ -38,7 +38,7 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="/ramen.png"
+                src="/no_image.png"
                 alt="ラーメン"
                 width={600}
                 height={700}
