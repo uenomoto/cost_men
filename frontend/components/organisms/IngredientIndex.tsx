@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Modal } from "../modal/Modal";
 import { EditButton } from "../atoms/button/EditButton";
 import { Input } from "../atoms/form/Input";
+import Link from "next/link";
 
 // 架空データ
 const ingredients = [
@@ -93,7 +94,9 @@ export const IngredientIndex = () => {
           </div>
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
             <EditButton>
-              <div>レシピ編集</div>
+              <Link href="/recipes/edit/1">
+                <div className="text-xl">レシピ編集</div>
+              </Link>
             </EditButton>
           </div>
         </div>
