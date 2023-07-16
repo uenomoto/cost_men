@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEvent } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
@@ -6,11 +6,11 @@ import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Modal } from "../../../components/modal/Modal";
 import { Tab } from "../../../components/molecules/tab/Tab";
 import { EditButton } from "../../../components/atoms/button/EditButton";
-
-type Tag = {
-  id: number;
-  name: string;
-};
+import { Tag } from "@/types";
+import { Input } from "../../../components/atoms/form/Input";
+import { AlertBadge } from "../../../components/atoms/badge/AlertBadge";
+import { Submit } from "../../../components/atoms/form/Submit";
+import { EditSubmit } from "../../../components/atoms/form/EditSubmit";
 
 const tags: Tag[] = [
   {
@@ -46,6 +46,32 @@ const tags: Tag[] = [
 const RecipeShow = () => {
   const [sellingPriceOpen, setSellingPriceOpen] = useState(false);
   const [editSellingPriceOpen, setEditSellingPriceOpen] = useState(false);
+
+  // 販売価格のinputのstate
+  const [price, setPrice] = useState("");
+  const [changedDate, setChangedDate] = useState("");
+
+  // 本来は販売価格登録したデータが入るが今は仮の値です
+  const [editPrice, setEditPrice] = useState("1200");
+  const [editChangedDate, setEditChangedDate] = useState("2023-07-15");
+
+  const handlePriceSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log(`販売価格: ${price} 円, 設定日: ${changedDate}`);
+    setPrice("");
+    setChangedDate("");
+    setSellingPriceOpen(false);
+  };
+
+  // 編集用
+  const handleEditPriceSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log(`販売価格: ${editPrice} 円, 設定日: ${editChangedDate}`);
+    setEditPrice("");
+    setEditChangedDate("");
+    setEditSellingPriceOpen(false);
+  };
+
   return (
     <>
       <Head>
@@ -76,20 +102,11 @@ const RecipeShow = () => {
                 販売価格を設定する
               </div>
             </PrimaryButton>
-            <Modal open={sellingPriceOpen} setModalOpen={setSellingPriceOpen}>
-              販売価格設定する
-            </Modal>
             <EditButton>
               <div onClick={() => setEditSellingPriceOpen(true)}>
                 販売価格を編集する
               </div>
             </EditButton>
-            <Modal
-              open={editSellingPriceOpen}
-              setModalOpen={setEditSellingPriceOpen}
-            >
-              販売価格編集する
-            </Modal>
           </div>
           <small>※販売価格後に価格が表示されます</small>
           <div className="flex justify-between items-center">
@@ -110,6 +127,75 @@ const RecipeShow = () => {
           />
         </div>
       </div>
+      <Modal open={sellingPriceOpen} setModalOpen={setSellingPriceOpen}>
+        <div className="p-3">
+          <h3 className="text-xl lg:text-3xl font-bold mb-5">
+            販売価格を登録する
+          </h3>
+          <div className="flex flex-col items-center">
+            <div className="w-full">
+              <AlertBadge />
+              <Input
+                htmlfor="price"
+                text="販売価格"
+                type="number"
+                id="price"
+                name="price"
+                placeholder="販売価格を入力してください"
+                value={price}
+                onChange={setPrice}
+              />
+              <AlertBadge />
+              {/* 最初からToDayが値で入っていればuserフレンドリー */}
+              <Input
+                htmlfor="changedDate"
+                text="価格設定日"
+                type="date"
+                id="changedDate"
+                name="changedDate"
+                placeholder="価格の設定または変更日を設定してください"
+                value={changedDate}
+                onChange={setChangedDate}
+              />
+              <Submit text="価格登録する" onClick={handlePriceSubmit} />
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal open={editSellingPriceOpen} setModalOpen={setEditSellingPriceOpen}>
+        <div className="p-3">
+          <h3 className="text-xl lg:text-3xl font-bold mb-5">
+            販売価格を編集する
+          </h3>
+          <div className="flex flex-col items-center">
+            <div className="w-full">
+              <AlertBadge />
+              <Input
+                htmlfor="price"
+                text="販売価格"
+                type="number"
+                id="price"
+                name="price"
+                placeholder="販売価格を入力してください"
+                value={editPrice}
+                onChange={setEditPrice}
+              />
+              <AlertBadge />
+              <Input
+                htmlfor="changedDate"
+                text="価格設定日"
+                type="date"
+                id="changedDate"
+                name="changedDate"
+                placeholder="価格の設定または変更日を設定してください"
+                value={editChangedDate}
+                onChange={setEditChangedDate}
+              />
+              <EditSubmit text="価格編集する" onClick={handleEditPriceSubmit} />
+            </div>
+          </div>
+        </div>
+      </Modal>
       <section>
         <h3 className="text-2xl font-bold my-7 text-gray-900">
           こちらから原材料名か手順かを選択してください

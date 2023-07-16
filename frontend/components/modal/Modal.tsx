@@ -15,7 +15,7 @@ export const Modal = ({ open, setModalOpen, children }: ModalProps) => {
       <Dialog
         as="div"
         initialFocus={cancelButtonRef}
-        onClose={setModalOpen}
+        onClose={(value) => setModalOpen(value)} // しっかりとvalueを渡さないとエラーになる
         className="fixed z-10 inset-0 overflow-y-auto"
       >
         <div className="flex items-end justify-center min-h-full pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -43,7 +43,7 @@ export const Modal = ({ open, setModalOpen, children }: ModalProps) => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block bg-white p-5 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="inline-block bg-white lg:p-5 lg:px-12 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:align-middle h-full md:max-w-6xl">
               {children}
             </div>
           </Transition.Child>
