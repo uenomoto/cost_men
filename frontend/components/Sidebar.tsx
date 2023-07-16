@@ -23,7 +23,7 @@ export const Sidebar = () => {
 
   const navigation = [
     { name: "レシピ一覧", href: "/recipes", icon: InboxIcon },
-    { name: "レシピ登録", href: "#", icon: ReceiptPercentIcon },
+    { name: "レシピ登録", href: "/recipes/new", icon: ReceiptPercentIcon },
     {
       name: "仕入れ先登録",
       href: "/suppliers/ingredients/new",
