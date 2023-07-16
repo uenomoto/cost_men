@@ -170,28 +170,22 @@ const RecipesNew = () => {
 
       <Modal open={open} setModalOpen={setOpen}>
         <div className="grid grid-cols-2 font-bold text-center w-full max-w-6xl m-auto p-3 lg:p-5">
-          <form
-            className="grid col-span-1 px-16"
-            action="#"
-            onSubmit={tagHendleSubmit}
-          >
-            <div>
-              <h3 className="mb-16">タグ登録</h3>
-              <div className="mt-auto">
-                <Input
-                  htmlfor="tagName"
-                  text="タグ名"
-                  type="text"
-                  placeholder="タグ名を入力してください"
-                  name="tagName"
-                  id="tagName"
-                  value={tagName}
-                  onChange={setTagName}
-                />
-              </div>
-              <Submit text="登録" />
+          <div className="grid col-span-1 px-16">
+            <h3 className="mb-16">タグ登録</h3>
+            <div className="mb-11">
+              <Input
+                htmlfor="tagName"
+                text="タグ名"
+                type="text"
+                placeholder="タグ名を入力してください"
+                name="tagName"
+                id="tagName"
+                value={tagName}
+                onChange={setTagName}
+              />
+              <Submit text="タグ登録" onClick={tagHendleSubmit} />
             </div>
-          </form>
+          </div>
           <div className="col-span-1 overflow-auto px-16 h-72">
             <h3 className="mb-5">タグ一覧</h3>
             <ul className="space-y-3">
