@@ -1,13 +1,10 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth0 } from "@auth0/auth0-react";
 import { SuccessButton } from "../../components/atoms/button/SuccessButton";
 import { PrimaryButton } from "../../components/atoms/button/PrimaryButton";
-import LoginButton from "../../components/atoms/button/LoginButton";
 
 export default function Home() {
-  const { loginWithRedirect } = useAuth0();
   return (
     <>
       <Head>
@@ -35,11 +32,9 @@ export default function Home() {
                   <Link href="/user/signup">
                     <SuccessButton>新規会員登録はこちら！！</SuccessButton>
                   </Link>
-                  {/* <Link href="/user/login"> */}
-                  <LoginButton loginWithRedirect={loginWithRedirect}>
-                    ログインする
-                  </LoginButton>
-                  {/* </Link> */}
+                  <Link href="/user/login">
+                    <PrimaryButton>ログインはこちら！！</PrimaryButton>
+                  </Link>
                 </div>
               </div>
               <Image
