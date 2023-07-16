@@ -3,11 +3,19 @@ import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
-import { Supplier, Ingredient } from "@/types";
+import { Ingredient } from "@/types";
 import { SlideOver } from "../molecules/slide-overs/SlideOver";
 
 // 仕入れ先が配列であることを明示
 type Suppliers = Supplier[];
+
+type Supplier = {
+  id: number;
+  user_id: number;
+  name: string;
+  contact_info: string;
+  ingredients: Ingredient[];
+};
 
 const suppliers: Suppliers = [
   {
