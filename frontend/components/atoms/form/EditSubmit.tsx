@@ -1,8 +1,8 @@
-import React from "react";
+import React, { FormEvent } from "react";
 
 type SubmitProps = {
   text: string;
-  onClick: () => void;
+  onClick: (e: FormEvent) => void;
 };
 
 export const EditSubmit = ({ text, onClick }: SubmitProps) => {

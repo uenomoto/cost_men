@@ -2,7 +2,10 @@ import React from "react";
 import { useState } from "react";
 import { Modal } from "../modal/Modal";
 import { EditButton } from "../atoms/button/EditButton";
+import { Input } from "../atoms/form/Input";
+import Link from "next/link";
 
+// 架空データ
 const ingredients = [
   {
     id: 1,
@@ -77,8 +80,6 @@ const ingredients = [
 ];
 
 export const IngredientIndex = () => {
-  const [ingredientsOpen, setIngredientsOpen] = useState<boolean>(false);
-
   // map関数で回しているので、idをkeyにしているこれをやらないと全てのモーダルが開いてしまう
   const [openIngredientId, setOpenIngredientId] = useState<number | null>(null);
 
@@ -93,13 +94,10 @@ export const IngredientIndex = () => {
           </div>
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
             <EditButton>
-              <div onClick={() => setIngredientsOpen(true)}>
-                原材料全てを編集する
-              </div>
+              <Link href="/recipes/edit/1">
+                <div className="text-xl">レシピ編集</div>
+              </Link>
             </EditButton>
-            <Modal open={ingredientsOpen} setModalOpen={setIngredientsOpen}>
-              ここにモーダルの内容を書く、原材料編集モーダル
-            </Modal>
           </div>
         </div>
         <div className="mt-8 flow-root">
@@ -153,7 +151,16 @@ export const IngredientIndex = () => {
                             open={openIngredientId === ingredient.id}
                             setModalOpen={() => setOpenIngredientId(null)}
                           >
-                            1つの原材料の編集
+                            <ul>
+                              <li>できたら実装する</li>
+                              <li>レシピ登録からの編集する部分</li>
+                              <li>原材料</li>
+                              <li>仕入れ先</li>
+                              <li>数量</li>
+                              <li>
+                                これらピンポイントだから実装は難しそう。。。
+                              </li>
+                            </ul>
                           </Modal>
                         )}
                       </td>
