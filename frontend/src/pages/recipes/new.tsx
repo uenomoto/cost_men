@@ -118,7 +118,8 @@ const RecipesNew = () => {
   };
 
   // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
-  const handleSubmissions = () => {
+  const handleSubmissions = (e: FormEvent) => {
+    e.preventDefault();
     const data = {
       recipeName,
       recipeImage,
