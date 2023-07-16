@@ -3,18 +3,22 @@ import { FormEvent } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "../../../components/atoms/button/LoginButton";
 import LineLoginButton from "../../../components/atoms/button/LineLoginButton";
 import { Input } from "../../../components/atoms/form/Input";
 
 const Login = () => {
+  // 保留でここに置いておく↓
+  const { loginWithRedirect } = useAuth0();
+
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(`お名前：${name}、パスワード：${password}`);
-  };
+  // const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   console.log(`お名前：${name}、パスワード：${password}`);
+  // };
 
   return (
     <div className="grid lg:grid-cols-2 grid-cols-1 gap-7 items-center min-h-full">
@@ -30,12 +34,7 @@ const Login = () => {
           </div>
           <div className="mt-10">
             <div>
-              <form
-                onSubmit={handleSubmit}
-                action="#"
-                method="POST"
-                className="space-y-6"
-              >
+              <div className="space-y-6">
                 <div>
                   <div className="mt-2">
                     <Input
@@ -64,10 +63,12 @@ const Login = () => {
                     />
                   </div>
                 </div>
-                <Link href="/recipes">
-                  <LoginButton>ログインする</LoginButton>
-                </Link>
-              </form>
+                {/* <Link href="/recipes"> */}
+                <LoginButton loginWithRedirect={loginWithRedirect}>
+                  ログインする
+                </LoginButton>
+                {/* </Link> */}
+              </div>
               <div className="mt-5 hover:text-blue-500 transition-all ease-in animate-pulse">
                 <Link href="/user/signup">新規登録がまだな方はこちら→</Link>
               </div>
