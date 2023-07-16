@@ -26,7 +26,7 @@ export const RecipesTable: React.FC<RecipesTableProps> = ({
   const handleChange = (i: number, e: ChangeEvent<HTMLInputElement>) => {
     const values = [...recipe.ingredients];
     if (e.target.name === "quantity") {
-      values[i].quantity = e.target.value;
+      values[i].quantity = parseInt(e.target.value, 10);
     } else if (e.target.name === "name") {
       values[i].name = e.target.value;
     }
@@ -39,7 +39,18 @@ export const RecipesTable: React.FC<RecipesTableProps> = ({
   // 原材料追加ボタンを押した時に呼ばれる関数
   const handleAddIngredient = () => {
     setRecipe({
-      ingredients: [...recipe.ingredients, { name: "", quantity: 0 }],
+      ingredients: [
+        ...recipe.ingredients,
+        {
+          id: 3,
+          name: "にんじん",
+          quantity: 0,
+          supplier_id: 1,
+          buy_cost: 400,
+          buy_quantity: 500,
+          unit: "g",
+        },
+      ],
     });
   };
 
