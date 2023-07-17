@@ -1,5 +1,6 @@
-class User < ApplicationRecord
+# frozen_string_literal: true
 
+class User < ApplicationRecord
   # Authテストとしてとりあえずpostを紐付け
   has_many :posts, dependent: :destroy
 

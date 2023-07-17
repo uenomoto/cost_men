@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AuthorizationService
   def initialize(headers = {})
     @headers = headers
@@ -13,7 +15,7 @@ class AuthorizationService
 
   # Authorizationヘッダーからトークンを取り出す
   def http_token
-    @headers['Authorization'].split(' ').last if @headers['Authorization'].present?
+    @headers['Authorization'].split.last if @headers['Authorization'].present?
   end
 
   # トークンを検証する
