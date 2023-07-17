@@ -178,7 +178,7 @@ export const Sidebar = () => {
                 </>
               )}
             </div>
-            <nav className="flex flex-1 flex-col">
+            <nav className="flex flex-1 flex-col mt-10">
               <div className="text-white mb-4">CostMenLogo</div>
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>

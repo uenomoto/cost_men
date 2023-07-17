@@ -1,10 +1,30 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
+import { Ingredient } from "@/types";
+import { SupplierSelect } from "@/types";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
-import { Ingredient } from "@/types";
 import { SlideOver } from "../molecules/slide-overs/SlideOver";
+import { SuppliersSelectBox } from "../molecules/selectbox/SuppliersSelectBox";
+import { AlertBadge } from "../atoms/badge/AlertBadge";
+import { Input } from "../atoms/form/Input";
+import { Submit } from "../atoms/form/Submit";
+import { EditSubmit } from "../atoms/form/EditSubmit";
+
+// 架空の仕入れ先セレクトkボックスデータ
+const suppliersSelect: SupplierSelect[] = [
+  { id: 1, name: "上野商店(直接)" },
+  { id: 2, name: "あいうえお商店" },
+  { id: 3, name: "ダミー仕入れ先3" },
+  { id: 4, name: "ダミー仕入れ先4" },
+  { id: 5, name: "ダミー仕入れ先5" },
+  { id: 6, name: "ダミー仕入れ先6" },
+  { id: 7, name: "ダミー仕入れ先7" },
+  { id: 8, name: "ダミー仕入れ先8" },
+  { id: 9, name: "ダミー仕入れ先9" },
+  { id: 10, name: "ダミー仕入れ先10" },
+];
 
 // 仕入れ先が配列であることを明示
 type Suppliers = Supplier[];
@@ -17,6 +37,7 @@ type Supplier = {
   ingredients: Ingredient[];
 };
 
+// 架空の仕入れ先とその原材料データ
 const suppliers: Suppliers = [
   {
     id: 1,
@@ -197,7 +218,22 @@ export const SupplierIngredientTable = () => {
     number | null
   >(null);
 
+  const [editName, setEditName] = useState("");
+  const [editBuyCost, setEditBuyCost] = useState("");
+  const [editBuyQuantity, setEditBuyQuantity] = useState("");
+  const [editUnit, setEditUnit] = useState("");
+  const [suppliersSelected, setSuppliersSelected] = useState<SupplierSelect>(
+    suppliersSelect[0]
+  );
+
   const [slideOpen, setSlideOpen] = useState(false);
+
+  const editHandleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log(
+      `原材料名:${editName}, 購入時の値段:${editBuyCost}, 購入時の数量:${editBuyQuantity}, 単位:${editUnit}, 仕入れ先: ${suppliersSelected.name}`
+    );
+  };
 
   const costCalculation = (ingredient: Ingredient) => {
     return (
@@ -381,7 +417,74 @@ export const SupplierIngredientTable = () => {
                                 setSupplierIngredientEditOpen(null)
                               }
                             >
-                              ここに編集フォーム
+                              <div className="md:p-5">
+                                <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
+                                  原材料編集
+                                </h3>
+                                <div className="mt-3">
+                                  <SuppliersSelectBox
+                                    selected={suppliersSelected}
+                                    setSelected={setSuppliersSelected}
+                                    suppliers={suppliersSelect}
+                                  />
+                                </div>
+                                <div className="mt-5">
+                                  <div className="grid gap-1 grid-cols-2">
+                                    <div className="col-span-1">
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="name"
+                                        text="原材料名"
+                                        type="text"
+                                        placeholder="原材料名を入力してください"
+                                        id="name"
+                                        name="name"
+                                        value={editName}
+                                        onChange={setEditName}
+                                      />
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="buy_quantity"
+                                        text="購入時の数量"
+                                        type="number"
+                                        placeholder="購入時の数量を入力"
+                                        id="buy_quantity"
+                                        name="buy_quantity"
+                                        value={editBuyQuantity}
+                                        onChange={setEditBuyQuantity}
+                                      />
+                                    </div>
+                                    <div className="col-span-1">
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="buy_cost"
+                                        text="購入時の値段"
+                                        type="number"
+                                        placeholder="購入時の値段を入力"
+                                        id="buy_cost"
+                                        name="buy_cost"
+                                        value={editBuyCost}
+                                        onChange={setEditBuyCost}
+                                      />
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="unit"
+                                        text="単位"
+                                        type="text"
+                                        placeholder="単位を入力してください"
+                                        id="unit"
+                                        name="unit"
+                                        value={editUnit}
+                                        onChange={setEditUnit}
+                                      />
+                                    </div>
+                                  </div>
+                                  <EditSubmit
+                                    text="編集する"
+                                    onClick={editHandleSubmit}
+                                  />
+                                </div>
+                              </div>
                             </Modal>
                           )}
                         </td>
