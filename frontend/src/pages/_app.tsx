@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { Auth0Provider } from "@auth0/auth0-react";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import { RecoilRoot } from "recoil";
 import { Layout } from "../../components/Layout";
 import { Sidebar } from "../../components/Sidebar";
 
@@ -33,7 +34,9 @@ export default function App({ Component, pageProps }: AppProps) {
           )}
           <div className="lg:col-span-2 md:col-span-1 max-w-7xl mx-auto">
             <Layout>
-              <Component {...pageProps} />
+              <RecoilRoot>
+                <Component {...pageProps} />
+              </RecoilRoot>
             </Layout>
           </div>
         </div>
