@@ -1,1 +1,3 @@
-wrap_parameters format: []
+ActiveSupport.on_load(:action_controller) do
+  wrap_parameters format: []
+end
