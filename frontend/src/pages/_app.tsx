@@ -20,9 +20,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <Auth0Provider
         domain={process.env["NEXT_PUBLIC_AUTH0_DOMAIN"]!}
         clientId={process.env["NEXT_PUBLIC_AUTH0_CLIENT_ID"]!}
-        // audience={process.env["NEXT_PUBLIC_AUTH0_AUDIENCE"]!}
         authorizationParams={{
           redirect_uri: redirectUri,
+          audience: process.env["NEXT_PUBLIC_AUTH0_AUDIENCE"],
         }}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2">
