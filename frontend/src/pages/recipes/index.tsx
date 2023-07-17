@@ -1,8 +1,8 @@
 import React from "react";
+import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { SelectBox } from "../../../components/molecules/selectbox/SelectBox";
 import { Pagination } from "../../../components/molecules/pagination/Pagination";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
@@ -189,9 +189,7 @@ const recipes: Recipe[] = [
   },
 ];
 
-const RecipesIndex = () => {
-  const router = useRouter;
-
+const RecipesIndex: NextPage = () => {
   const recipeCost: (recipe: Recipe) => number = (recipe) => {
     return recipe.ingredients.reduce(
       (total, ingredient) => total + ingredient.ingredient.buy_cost,

@@ -1,13 +1,16 @@
 import React, { ReactNode } from "react";
+import { RedirectLoginOptions } from "@auth0/auth0-react";
 
 interface ButtonProps {
   children: ReactNode;
+  loginWithRedirect: (options?: RedirectLoginOptions) => Promise<void>;
 }
 
-const LoginButton = ({ children }: ButtonProps) => {
+const LoginButton = ({ children, loginWithRedirect }: ButtonProps) => {
   return (
     <button
       type="submit"
+      onClick={() => loginWithRedirect()}
       className="bg-blue-600 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded-full inline-flex items-center ease-in transition-all"
     >
       <svg
