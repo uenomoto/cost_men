@@ -24,7 +24,7 @@ const BlogPage: NextPage = () => {
     console.log(token);
 
     axios
-      .post("http://192.168.2.108:3000/api/v1/posts", parems, {
+      .post(`${process.env.NEXT_PUBLIC_IP_ENDPOINT}/posts`, parems, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,17 +44,20 @@ const BlogPage: NextPage = () => {
     setState(e.target.value);
   };
 
-  // useEffect(() => {
-  //   const getPosts = async () => {
-  //     try {
-  //       const res = await axios.get("http://192.168.2.108:3000/api/v1/posts");
-  //       console.log(res.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   getPosts();
-  // });
+  // 投稿一覧一回限り取得する。変更があるたびに再レンダリングする。
+  useEffect(() => {
+    const getPosts = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/posts`
+        );
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getPosts();
+  }, []);
 
   return (
     <div>
