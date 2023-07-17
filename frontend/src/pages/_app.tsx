@@ -13,7 +13,6 @@ export default function App({ Component, pageProps }: AppProps) {
   // ログイン、サインアップ、ホームページでサイドバーを非表示
   const hideSidebar = hideSidebarPages.includes(router.pathname);
 
-  // ログイン後のリダイレクト先
   const redirectUri = `${process.env["NEXT_PUBLIC_BASE_URL"]}/recipes`;
 
   return (
@@ -21,25 +20,21 @@ export default function App({ Component, pageProps }: AppProps) {
       <Auth0Provider
         domain={process.env["NEXT_PUBLIC_AUTH0_DOMAIN"]!}
         clientId={process.env["NEXT_PUBLIC_AUTH0_CLIENT_ID"]!}
-        audience={process.env["NEXT_PUBLIC_AUTH0_AUDIENCE"]!}
-        redirectUri={redirectUri}
+        // audience={process.env["NEXT_PUBLIC_AUTH0_AUDIENCE"]!}
+        authorizationParams={{
+          redirect_uri: redirectUri,
+        }}
       >
-        <div className="grid md:grid-cols-2 lg:grid-cols-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
           {!hideSidebar && (
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-1">
               <Sidebar />
             </div>
           )}
-          <div
-            className={`lg:col-span-${
-              hideSidebar ? "12" : "10"
-            } md:col-span-12`}
-          >
-            <div className="max-w-6xl mx-auto">
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </div>
+          <div className="lg:col-span-2 md:col-span-1 max-w-7xl mx-auto">
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
           </div>
         </div>
       </Auth0Provider>

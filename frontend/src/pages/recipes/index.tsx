@@ -3,7 +3,6 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import { LogoutOptions, useAuth0 } from "@auth0/auth0-react";
 import { SelectBox } from "../../../components/molecules/selectbox/SelectBox";
 import { Pagination } from "../../../components/molecules/pagination/Pagination";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
@@ -191,8 +190,6 @@ const recipes: Recipe[] = [
 ];
 
 const RecipesIndex: NextPage = () => {
-  const { isAuthenticated, logout } = useAuth0();
-
   const recipeCost: (recipe: Recipe) => number = (recipe) => {
     return recipe.ingredients.reduce(
       (total, ingredient) => total + ingredient.ingredient.buy_cost,
@@ -207,24 +204,6 @@ const RecipesIndex: NextPage = () => {
         <meta name="description" content="一覧画面" />
       </Head>
       <SelectBox />
-      <div>
-        <h2>ログイン状態</h2>
-        {isAuthenticated ? (
-          <>
-            <p>ログイン中</p>
-            <button
-              className="bg-red-600 hover:bg-red-900 text-white mt-3 font-bold py-2 px-4 rounded ease-in transition-all"
-              onClick={() =>
-                logout({ logoutParams: { returnTo: window.location.origin } })
-              }
-            >
-              ログアウト
-            </button>
-          </>
-        ) : (
-          <p>ログアウトしています</p>
-        )}
-      </div>
       <div className="grid grid-cols-1 lg:gap-10 xl:gap-64 sm:grid-cols-1 lg:grid-cols-2 mt-7">
         <ul className="grid-cols-1">
           {recipes.map((recipe: Recipe, index) => (
