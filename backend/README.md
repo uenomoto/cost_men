@@ -1,3 +1,3 @@
 ## cost_men
 
-api 担当
+api 担当です
