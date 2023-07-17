@@ -9,6 +9,6 @@ class SecuredController < ApplicationController
     authorize_request = AuthorizationService.new(request.headers)
     @current_user = authorize_request.current_user
   rescue JWT::VerificationError, JWT::DecodeError => e
-    render json: { errors: ['認証されていません', 'エラーメッセージ: ' + e.message] }, status: :unauthorized
+    render json: { errors: ['認証されていません', "エラーメッセージ: #{e.message}"] }, status: :unauthorized
   end
 end
