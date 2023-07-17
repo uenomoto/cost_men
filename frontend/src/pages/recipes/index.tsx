@@ -219,7 +219,7 @@ const RecipesIndex: NextPage = () => {
       }
     };
     getToken();
-  }, []);
+  }, [getAccessTokenSilently, setToken]);
 
   return (
     <>
