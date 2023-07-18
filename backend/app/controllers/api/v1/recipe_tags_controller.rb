@@ -1,10 +1,13 @@
-class Api::V1::RecipeTagsController < ApplicationController
-  def index
-  end
-  
-  def create
-  end
+# frozen_string_literal: true
 
-  def destroy
+module Api
+  module V1
+    class RecipeTagsController < ApplicationController
+      def index; end
+
+      def create; end
+
+      def destroy; end
+    end
   end
 end

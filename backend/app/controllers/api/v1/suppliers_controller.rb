@@ -1,13 +1,15 @@
-class Api::V1::SuppliersController < ApplicationController
-  def index
-  end
+# frozen_string_literal: true
 
-  def show
-  end
+module Api
+  module V1
+    class SuppliersController < ApplicationController
+      def index; end
 
-  def create
-  end
+      def show; end
 
-  def update
+      def create; end
+
+      def update; end
+    end
   end
 end

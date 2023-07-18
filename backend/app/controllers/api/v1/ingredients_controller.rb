@@ -1,16 +1,17 @@
-class Api::V1::IngredientsController < ApplicationController
-  def index
-  end
+# frozen_string_literal: true
 
-  def show
-  end
+module Api
+  module V1
+    class IngredientsController < ApplicationController
+      def index; end
 
-  def create
-  end
+      def show; end
 
-  def update
-  end
+      def create; end
 
-  def destroy
+      def update; end
+
+      def destroy; end
+    end
   end
 end

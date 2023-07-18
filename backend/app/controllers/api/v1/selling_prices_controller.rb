@@ -1,7 +1,11 @@
-class Api::V1::SellingPricesController < ApplicationController
-  def create
-  end
+# frozen_string_literal: true
 
-  def update
+module Api
+  module V1
+    class SellingPricesController < ApplicationController
+      def create; end
+
+      def update; end
+    end
   end
 end

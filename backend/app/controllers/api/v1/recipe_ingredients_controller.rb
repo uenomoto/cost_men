@@ -1,7 +1,11 @@
-class Api::V1::RecipeIngredientsController < ApplicationController
-  def create
-  end
+# frozen_string_literal: true
 
-  def update
+module Api
+  module V1
+    class RecipeIngredientsController < ApplicationController
+      def create; end
+
+      def update; end
+    end
   end
 end
