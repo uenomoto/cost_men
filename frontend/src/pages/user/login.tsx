@@ -1,5 +1,4 @@
 import React from "react";
-import { FormEvent } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,7 +9,7 @@ import { Input } from "../../../components/atoms/form/Input";
 
 const Login = () => {
   // 保留でここに置いておく↓
-  const { loginWithRedirect } = useAuth0();
+  // const { loginWithRedirect } = useAuth0();
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -64,9 +63,9 @@ const Login = () => {
                   </div>
                 </div>
                 {/* <Link href="/recipes"> */}
-                <LoginButton loginWithRedirect={loginWithRedirect}>
+                {/* <LoginButton loginWithRedirect={loginWithRedirect}>
                   ログインする
-                </LoginButton>
+                </LoginButton> */}
                 {/* </Link> */}
               </div>
               <div className="mt-5 hover:text-blue-500 transition-all ease-in animate-pulse">
