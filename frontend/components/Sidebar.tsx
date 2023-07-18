@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { useRouter } from "next/router";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
+import { useAuth0 } from "@auth0/auth0-react";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -17,6 +18,7 @@ const classNames = (...classes: (string | false)[]): string => {
 };
 
 export const Sidebar = () => {
+  const { isAuthenticated, user, logout } = useAuth0();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const router = useRouter();
@@ -36,7 +38,12 @@ export const Sidebar = () => {
     },
     {
       name: "ログアウト",
-      href: "/",
+      action: () =>
+        logout({
+          logoutParams: {
+            returnTo: window.location.origin,
+          },
+        }),
       icon: ArrowLeftOnRectangleIcon,
     },
   ];
@@ -101,7 +108,15 @@ export const Sidebar = () => {
                     </div>
                   </Transition.Child>
                   {/* ↓ハンバーガーサイドバー */}
-                  <div className="flex grow flex-col overflow-y-auto pt-5 bg-sky-600 px-6 pb-2 ring-1 ring-white/10">
+                  <div className="flex grow flex-col overflow-y-auto pt-5 bg-sky-400 px-6 pb-2 ring-1 ring-white/10">
+                    <div className="my-3 text-gray-700 font-bold">
+                      {isAuthenticated && (
+                        <>
+                          <p>ログイン中</p>
+                          <p>{user?.name || "userロード中です"}</p>
+                        </>
+                      )}
+                    </div>
                     <nav className="flex flex-1 flex-col">
                       <div className="text-white mb-4">LOGO</div>
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -109,21 +124,37 @@ export const Sidebar = () => {
                           <ul role="list" className="-mx-2 space-y-1">
                             {navigation.map((item) => (
                               <li key={item.name}>
-                                <Link
-                                  href={item.href}
-                                  className={classNames(
-                                    isActive(item.href)
-                                      ? "bg-sky-800 text-white"
-                                      : "text-gray-400 hover:text-white hover:bg-sky-800",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                  )}
-                                >
-                                  <item.icon
-                                    className="h-6 w-6 shrink-0"
-                                    aria-hidden="true"
-                                  />
-                                  {item.name}
-                                </Link>
+                                {item.href ? (
+                                  <Link
+                                    href={item.href}
+                                    className={classNames(
+                                      isActive(item.href)
+                                        ? "bg-sky-800 text-white"
+                                        : "text-gray-700 hover:text-white hover:bg-sky-800",
+                                      "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                    )}
+                                  >
+                                    <item.icon
+                                      className="h-6 w-6 shrink-0"
+                                      aria-hidden="true"
+                                    />
+                                    {item.name}
+                                  </Link>
+                                ) : (
+                                  <button
+                                    onClick={item.action}
+                                    className={classNames(
+                                      "text-gray-700 hover:text-white hover:bg-sky-800 inline-block w-full",
+                                      "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                    )}
+                                  >
+                                    <item.icon
+                                      className="h-6 w-6 shrink-0"
+                                      aria-hidden="true"
+                                    />
+                                    {item.name}
+                                  </button>
+                                )}
                               </li>
                             ))}
                           </ul>
@@ -139,29 +170,52 @@ export const Sidebar = () => {
 
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-52 lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-sky-400 px-6">
-            <div className="flex h-16 shrink-0 items-center"></div>
-            <nav className="flex flex-1 flex-col">
+            <div className="mt-5 text-gray-700 font-bold">
+              {isAuthenticated && (
+                <>
+                  <p>ログイン中</p>
+                  <p>{user?.name || "userロード中です"}</p>
+                </>
+              )}
+            </div>
+            <nav className="flex flex-1 flex-col mt-10">
               <div className="text-white mb-4">CostMenLogo</div>
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-3 space-y-5">
                     {navigation.map((item) => (
                       <li key={item.name}>
-                        <Link
-                          href={item.href}
-                          className={classNames(
-                            isActive(item.href)
-                              ? "bg-sky-800 text-white"
-                              : "text-gray-700 hover:text-white hover:bg-sky-800",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                          )}
-                        >
-                          <item.icon
-                            className="h-6 w-6 shrink-0"
-                            aria-hidden="true"
-                          />
-                          {item.name}
-                        </Link>
+                        {item.href ? (
+                          <Link
+                            href={item.href}
+                            className={classNames(
+                              isActive(item.href)
+                                ? "bg-sky-800 text-white"
+                                : "text-gray-700 hover:text-white hover:bg-sky-800",
+                              "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            )}
+                          >
+                            <item.icon
+                              className="h-6 w-6 shrink-0"
+                              aria-hidden="true"
+                            />
+                            {item.name}
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={item.action}
+                            className={classNames(
+                              "text-gray-700 hover:text-white hover:bg-sky-800 inline-block w-full",
+                              "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            )}
+                          >
+                            <item.icon
+                              className="h-6 w-6 shrink-0"
+                              aria-hidden="true"
+                            />
+                            {item.name}
+                          </button>
+                        )}
                       </li>
                     ))}
                   </ul>
