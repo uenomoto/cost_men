@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSuppliers < ActiveRecord::Migration[7.0]
   def change
     create_table :suppliers do |t|
@@ -7,6 +9,6 @@ class CreateSuppliers < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
-    add_index :suppliers, [:user_id, :name], unique: true
+    add_index :suppliers, %i[user_id name], unique: true
   end
 end
