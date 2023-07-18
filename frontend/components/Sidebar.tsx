@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 import { useAuth0 } from "@auth0/auth0-react";
+import Image from "next/image";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -112,8 +113,25 @@ export const Sidebar = () => {
                     <div className="my-3 text-gray-700 font-bold">
                       {isAuthenticated && (
                         <>
-                          <p>ログイン中</p>
-                          <p>{user?.name || "userロード中です"}</p>
+                          <div className="flex items-center">
+                            <div>
+                              <Image
+                                className="inline-block h-10 w-10 rounded-full"
+                                src={user?.picture || "/no_image.png"}
+                                alt="User avatar"
+                                width={50}
+                                height={50}
+                              />
+                            </div>
+                            <div className="ml-3">
+                              <p className="text-sm font-bold text-gray-700">
+                                {user?.name}
+                              </p>
+                              <p className="text-xs font-medium text-green-800">
+                                ログイン中です
+                              </p>
+                            </div>
+                          </div>
                         </>
                       )}
                     </div>
@@ -173,12 +191,29 @@ export const Sidebar = () => {
             <div className="mt-5 text-gray-700 font-bold">
               {isAuthenticated && (
                 <>
-                  <p>ログイン中</p>
-                  <p>{user?.name || "userロード中です"}</p>
+                  <div className="flex items-center">
+                    <div>
+                      <Image
+                        className="inline-block h-14 w-14 rounded-full"
+                        src={user?.picture || "/no_image.png"}
+                        alt="User avatar"
+                        width={50}
+                        height={50}
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-bold text-gray-700">
+                        {user?.name}
+                      </p>
+                      <p className="text-xs font-medium text-green-800">
+                        ログイン中です
+                      </p>
+                    </div>
+                  </div>
                 </>
               )}
             </div>
-            <nav className="flex flex-1 flex-col mt-10">
+            <nav className="flex flex-1 flex-col mt-5">
               <div className="text-white mb-4">CostMenLogo</div>
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
