@@ -30,7 +30,7 @@ export default function Home() {
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
                   <LoginButton loginWithRedirect={loginWithRedirect}>
-                    ログインする
+                    早速始めてみよう！
                   </LoginButton>
                 </div>
               </div>
