@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Api::V1::Suppliers', type: :request do
-  let(:user) { FactoryBot.create(:user) }
+RSpec.describe 'Api::V1::Suppliers' do
+  let(:user) { create(:user) }
   let(:supplier) { create(:supplier) }
 
   before do
@@ -11,22 +11,21 @@ RSpec.describe 'Api::V1::Suppliers', type: :request do
     allow(AuthorizationService).to receive(:new).and_return(double(current_user: user))
   end
 
-  describe 'GET /index', type: :request do
+  describe 'GET /index' do
     it 'returns http success' do
       get '/api/v1/suppliers'
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /show', type: :request do
-
+  describe 'GET /show' do
     it 'returns http success' do
       get "/api/v1/suppliers/#{supplier.id}"
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'POST /create', type: :request do
+  describe 'POST /create' do
     let(:supplier_params) { { supplier: { name: 'テスト仕入れ先名', contact_info: '01234567910' } } }
 
     it 'returns http success' do
@@ -51,7 +50,7 @@ RSpec.describe 'Api::V1::Suppliers', type: :request do
     end
   end
 
-  describe 'PATCH /update', type: :request do
+  describe 'PATCH /update' do
     let(:update_params) { { supplier: { name: 'テスト仕入れ先編集', contact_info: '012345678910' } } }
 
     it 'returns http success' do

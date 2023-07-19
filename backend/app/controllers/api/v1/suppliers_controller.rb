@@ -37,7 +37,7 @@ module Api
           render_supplier_errors
         end
       end
-      
+
       private
 
       def set_supplier
@@ -55,7 +55,7 @@ module Api
       def render_supplier_errors
         render json: { errors: @supplier.errors.full_messages }, status: :unprocessable_entity
       end
-      
+
       def supplier_params
         params.require(:supplier).permit(:name, :contact_info)
       end
