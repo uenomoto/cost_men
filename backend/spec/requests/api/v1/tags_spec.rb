@@ -3,30 +3,32 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Tags' do
+  let(:tag) { create(:tag) }
+  
   describe 'GET /index' do
     it 'returns http success' do
-      get '/api/v1/tags/index'
+      get '/api/v1/tags'
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /create' do
+  describe 'POST /create' do
     it 'returns http success' do
-      get '/api/v1/tags/create'
+      post '/api/v1/tags'
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /update' do
+  describe 'PATCH /update' do
     it 'returns http success' do
-      get '/api/v1/tags/update'
+      patch "/api/v1/tags/#{tag.id}"
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /destroy' do
+  describe 'DELETE /destroy' do
     it 'returns http success' do
-      get '/api/v1/tags/destroy'
+      delete "/api/v1/tags/#{tag.id}"
       expect(response).to have_http_status(:success)
     end
   end
