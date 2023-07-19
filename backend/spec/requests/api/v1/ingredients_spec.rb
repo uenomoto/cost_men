@@ -3,37 +3,40 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Ingredients' do
+  let(:supplier) { create(:supplier) }
+  let(:ingredient) { create(:ingredient, supplier: supplier) }
+
   describe 'GET /index' do
     it 'returns http success' do
-      get '/api/v1/ingredients/index'
+      get '/api/v1/ingredients'
       expect(response).to have_http_status(:success)
     end
   end
 
   describe 'GET /show' do
     it 'returns http success' do
-      get '/api/v1/ingredients/show'
+      get "/api/v1/ingredients/#{ingredient.id}"
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /create' do
+  describe 'POST /create' do
     it 'returns http success' do
-      get '/api/v1/ingredients/create'
+      post '/api/v1/ingredients'
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /update' do
+  describe 'PATCH /update' do
     it 'returns http success' do
-      get '/api/v1/ingredients/update'
+      patch "/api/v1/ingredients/#{ingredient.id}"
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /destroy' do
+  describe 'DELETE /destroy' do
     it 'returns http success' do
-      get '/api/v1/ingredients/destroy'
+      delete "/api/v1/ingredients/#{ingredient.id}"
       expect(response).to have_http_status(:success)
     end
   end
