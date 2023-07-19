@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::SellingPrices' do
   let(:recipe) { create(:recipe) }
-  let(:selling_price) { create(:selling_price, recipe: recipe) }
+  let(:selling_price) { create(:selling_price, recipe:) }
 
   describe 'POST /create' do
     it 'returns http success' do

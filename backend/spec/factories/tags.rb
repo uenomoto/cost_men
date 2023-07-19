@@ -2,6 +2,6 @@
 
 FactoryBot.define do
   factory :tag do
-    name { "ラーメン" }
+    name { 'ラーメン' }
   end
 end

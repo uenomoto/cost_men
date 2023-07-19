@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Ingredients' do
   let(:supplier) { create(:supplier) }
-  let(:ingredient) { create(:ingredient, supplier: supplier) }
+  let(:ingredient) { create(:ingredient, supplier:) }
 
   describe 'GET /index' do
     it 'returns http success' do

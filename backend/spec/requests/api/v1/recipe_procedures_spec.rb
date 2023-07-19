@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::RecipeProcedures' do
   let(:recipe) { create(:recipe) }
-  let(:recipe_procedure) { create(:recipe_procedure, recipe: recipe) }
+  let(:recipe_procedure) { create(:recipe_procedure, recipe:) }
 
   describe 'GET /index' do
     it 'returns http success' do

@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Api::V1::RecipeIngredients' do
   let(:recipe) { create(:recipe) }
   let(:ingredient) { create(:ingredient) }
-  let(:recipe_ingredient) { create(:recipe_ingredient, recipe: recipe, ingredient: ingredient) }
+  let(:recipe_ingredient) { create(:recipe_ingredient, recipe:, ingredient:) }
 
   describe 'POST /create' do
     it 'returns http success' do

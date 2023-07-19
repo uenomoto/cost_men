@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Tags' do
   let(:tag) { create(:tag) }
-  
+
   describe 'GET /index' do
     it 'returns http success' do
       get '/api/v1/tags'

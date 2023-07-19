@@ -5,7 +5,7 @@ FactoryBot.define do
     supplier
     buy_cost { 1000.00 }
     buy_quantity { 100.12 }
-    unit { "g" }
-    name { "玉ねぎ" }
+    unit { 'g' }
+    name { '玉ねぎ' }
   end
 end
