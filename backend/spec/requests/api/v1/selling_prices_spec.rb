@@ -3,16 +3,19 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::SellingPrices' do
-  describe 'GET /create' do
+  let(:recipe) { create(:recipe) }
+  let(:selling_price) { create(:selling_price, recipe: recipe) }
+
+  describe 'POST /create' do
     it 'returns http success' do
-      get '/api/v1/:recipe_id/selling_prices/create'
+      post "/api/v1/recipes/#{recipe.id}/selling_prices"
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET /update' do
+  describe 'PATCH /update' do
     it 'returns http success' do
-      get '/api/v1/:recipe_id/selling_prices/update'
+      patch "/api/v1/recipes/#{recipe.id}/selling_prices/#{selling_price.id}"
       expect(response).to have_http_status(:success)
     end
   end
