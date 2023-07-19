@@ -97,8 +97,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
   end
 
   create_table "users", primary_key: "sub", id: :string, force: :cascade do |t|
-    t.string "name", null: false
-    t.text "picture"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["sub"], name: "index_users_on_sub", unique: true
