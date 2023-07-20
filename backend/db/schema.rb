@@ -41,6 +41,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_recipe_ingredients_on_ingredient_id"
+    t.index ["recipe_id", "ingredient_id"], name: "index_recipe_ingredients_on_recipe_id_and_ingredient_id", unique: true
     t.index ["recipe_id"], name: "index_recipe_ingredients_on_recipe_id"
   end
 
@@ -57,6 +58,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
     t.bigint "tag_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["recipe_id", "tag_id"], name: "index_recipe_tags_on_recipe_id_and_tag_id", unique: true
     t.index ["recipe_id"], name: "index_recipe_tags_on_recipe_id"
     t.index ["tag_id"], name: "index_recipe_tags_on_tag_id"
   end
@@ -67,6 +69,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
     t.decimal "total_cost", precision: 8, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id", "name"], name: "index_recipes_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_recipes_on_user_id"
   end
 
@@ -93,7 +96,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
   create_table "users", primary_key: "sub", id: :string, force: :cascade do |t|

@@ -6,6 +6,8 @@ class User < ApplicationRecord
   has_many :suppliers, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
 
+  validates :sub, presence: true, uniqueness: true
+
   # これでuser_idがsubになる
   def self.from_token_payload(payload)
     find_by(sub: payload['sub']) || create!(sub: payload['sub'])
