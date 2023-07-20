@@ -7,7 +7,7 @@ module Api
       before_action :authorize_request
 
       def index
-        @suppliers = Supplier.leatest
+        @suppliers = current_user.suppliers.leatest
         render json: { suppliers: @suppliers.map(&:as_json) }, status: :ok
       end
 
