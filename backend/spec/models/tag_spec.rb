@@ -9,7 +9,7 @@ RSpec.describe Tag do
   end
 
   describe 'validations' do
-    context 'タグ名は空欄禁止かつ50文字以下である' do
+    context 'when タグ名は空欄禁止かつ50文字以下である' do
       it { is_expected.to validate_presence_of(:name) }
       it { is_expected.to validate_length_of(:name).is_at_most(50) }
     end

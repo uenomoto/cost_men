@@ -8,8 +8,9 @@ RSpec.describe AuthToken do
   end
 
   describe 'validations' do
-    context 'tokenが空欄禁止であり一意であること' do
+    context 'when tokenが空欄禁止であり一意であること' do
       subject { build(:auth_token, token: '一意なtoken') }
+
       it { is_expected.to validate_presence_of(:token) }
       it { is_expected.to validate_uniqueness_of(:token) }
     end

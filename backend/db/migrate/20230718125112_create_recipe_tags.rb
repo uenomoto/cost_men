@@ -8,5 +8,6 @@ class CreateRecipeTags < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
+    add_index :recipe_tags, %i[recipe_id tag_id], unique: true
   end
 end

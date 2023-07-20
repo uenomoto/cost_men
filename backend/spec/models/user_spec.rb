@@ -10,9 +10,10 @@ RSpec.describe User do
   end
 
   describe 'validations' do
-    context 'subが空欄禁止であり一意であること' do
+    context 'when subが空欄禁止であり一意であること' do
       # FactoryBotにUserのsubを一意にするためのsequenceを定義すること
       subject { build(:user, sub: '一意なsub') } # 保存するテストではないためbuild使用
+
       it { is_expected.to validate_presence_of(:sub) }
       it { is_expected.to validate_uniqueness_of(:sub) }
     end
