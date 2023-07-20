@@ -3,5 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Tag do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'associations' do
+    it { is_expected.to have_many(:recipe_tags).dependent(:destroy) }
+    it { is_expected.to have_many(:recipes).through(:recipe_tags) }
+  end
 end

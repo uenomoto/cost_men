@@ -3,5 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Supplier do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'associations' do
+    it { is_expected.to belong_to(:user) }
+    it { is_expected.to have_many(:ingredients).dependent(:destroy) }
+  end
 end
