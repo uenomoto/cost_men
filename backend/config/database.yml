@@ -12,8 +12,9 @@ development:
 
 test:
   <<: *default
+  database: cost_men_test
   # urlに全ての情報が含まれるため、他の情報は不要
-  url: <%= ENV['DATABASE_URL'] %>
+  # url: <%= ENV['DATABASE_URL'] %>
 
 production:
   <<: *default

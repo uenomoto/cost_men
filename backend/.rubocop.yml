@@ -1,6 +1,11 @@
 require:
   - rubocop-rails
   - rubocop-rspec
+  - rubocop-factory_bot
+RSpec/AnyInstance:
+  Enabled: false
+RSpec/VerifiedDoubles:
+  Enabled: false
 Style/Documentation:
   Enabled: false
 AllCops:

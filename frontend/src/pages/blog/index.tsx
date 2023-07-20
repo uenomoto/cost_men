@@ -13,18 +13,20 @@ const BlogPage: NextPage = () => {
 
   // console.log(token);
 
-  const [title, setTitle] = useState<string>("");
-  const [caption, setCaption] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [contactInfo, setContactInfo] = useState<string>("");
 
   const onClick = () => {
     const parems = {
-      title: title,
-      caption: caption,
+      supplier: {
+        name: name,
+        contact_info: contactInfo,
+      },
     };
     console.log(token);
 
     axios
-      .post(`${process.env.NEXT_PUBLIC_IP_ENDPOINT}/posts`, parems, {
+      .post(`${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`, parems, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -49,7 +51,8 @@ const BlogPage: NextPage = () => {
     const getPosts = async () => {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/posts`
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log(res.data);
       } catch (error) {
@@ -57,25 +60,29 @@ const BlogPage: NextPage = () => {
       }
     };
     getPosts();
-  }, []);
+  }, [token]);
 
   return (
     <div>
-      <label htmlFor="">タイトル</label>
+      <label htmlFor="name">名前</label>
       <input
         type="text"
-        value={title}
+        name="name"
+        id="name"
+        value={name}
         onChange={(e) => {
-          onChange(e, setTitle);
+          onChange(e, setName);
         }}
       />
       <br />
-      <label htmlFor="">本文</label>
+      <label htmlFor="contactInfo">本文</label>
       <input
         type="text"
-        value={caption}
+        name="contactInfo"
+        id="contactInfo"
+        value={contactInfo}
         onChange={(e) => {
-          onChange(e, setCaption);
+          onChange(e, setContactInfo);
         }}
       />
       <br />
