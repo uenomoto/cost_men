@@ -18,9 +18,5 @@ RSpec.describe Tag do
       subject { create(:tag) }
       it { is_expected.to validate_uniqueness_of(:name).scoped_to(:user_id).case_insensitive }
     end
-    context 'when タグ名は一意である' do
-      subject { create(:tag) }
-      it { is_expected.to validate_uniqueness_of(:name)}
-    end
   end
 end
