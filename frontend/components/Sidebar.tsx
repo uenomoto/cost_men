@@ -125,7 +125,7 @@ export const Sidebar = () => {
                             </div>
                             <div className="ml-3">
                               <p className="text-sm font-bold text-gray-700">
-                                {user?.name}
+                                {user?.nickname}
                               </p>
                               <p className="text-xs font-medium text-green-800">
                                 ログイン中です
@@ -203,7 +203,7 @@ export const Sidebar = () => {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm font-bold text-gray-700">
-                        {user?.name}
+                        {user?.nickname}
                       </p>
                       <p className="text-xs font-medium text-green-800">
                         ログイン中です
