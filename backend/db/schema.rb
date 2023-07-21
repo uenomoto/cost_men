@@ -93,9 +93,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
   end
 
   create_table "tags", force: :cascade do |t|
+    t.string "user_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id", "name"], name: "index_tags_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_tags_on_user_id"
   end
 
   create_table "users", primary_key: "sub", id: :string, force: :cascade do |t|
@@ -114,4 +117,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
   add_foreign_key "recipes", "users", primary_key: "sub"
   add_foreign_key "selling_prices", "recipes"
   add_foreign_key "suppliers", "users", primary_key: "sub"
+  add_foreign_key "tags", "users", primary_key: "sub"
 end

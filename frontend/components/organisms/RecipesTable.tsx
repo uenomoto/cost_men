@@ -42,12 +42,12 @@ export const RecipesTable: React.FC<RecipesTableProps> = ({
       ingredients: [
         ...recipe.ingredients,
         {
-          id: 3,
-          name: "にんじん",
+          id: 1,
+          name: "",
           quantity: 0,
-          supplier_id: 1,
-          buy_cost: 400,
-          buy_quantity: 500,
+          supplier_id: suppliers[0].id,
+          buy_cost: 10,
+          buy_quantity: 10,
           unit: "g",
         },
       ],

@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :recipes, dependent: :destroy
   has_many :suppliers, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
+  has_many :tags, dependent: :destroy
 
   validates :sub, presence: true, uniqueness: true
 

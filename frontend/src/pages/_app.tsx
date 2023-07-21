@@ -26,13 +26,13 @@ export default function App({ Component, pageProps }: AppProps) {
           audience: process.env["NEXT_PUBLIC_AUTH0_AUDIENCE"],
         }}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2">
+        <div className="grid grid-cols-1 lg:grid-cols-12">
           {!hideSidebar && (
             <div className="lg:col-span-1">
               <Sidebar />
             </div>
           )}
-          <div className="lg:col-span-2 md:col-span-1 max-w-7xl mx-auto">
+          <div className="lg:col-span-11 md:col-span-1 max-w-7xl mx-auto">
             <Layout>
               <RecoilRoot>
                 <Component {...pageProps} />
