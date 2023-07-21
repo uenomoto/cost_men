@@ -15,17 +15,17 @@ module Api
         @tag = current_user.tags.build(tag_params)
 
         if @tag.save
-          render json: { tag: @tag.as_json }, status: :created
+          render_tag(status: :created)
         else
-          render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
+          render_tag_errors
         end
       end
 
       def update
         if @tag.update(tag_params)
-          render json: { tag: @tag.as_json }, status: :ok
+          render_tag
         else
-          render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
+          render_tag_errors
         end
       end
 
@@ -42,6 +42,14 @@ module Api
 
       def tag_params
         params.require(:tag).permit(:name)
+      end
+
+      def render_tag_errors
+        render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
+      end
+
+      def render_tag(status: :ok)
+        render json: { tag: @tag.as_json }, status:
       end
     end
   end
