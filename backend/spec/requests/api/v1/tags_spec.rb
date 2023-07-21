@@ -39,7 +39,7 @@ RSpec.describe 'Api::V1::Tags' do
 
   describe 'PATCH /update' do
     let(:tag_params) { { tag: { name: 'testedit' } } }
-    
+
     it 'returns http success' do
       patch "/api/v1/tags/#{tag.id}", params: tag_params
       expect(response).to have_http_status(:success)
