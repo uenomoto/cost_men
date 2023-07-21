@@ -8,8 +8,8 @@ import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { Submit } from "../../atoms/form/Submit";
 
 export const SuppliersForm = () => {
-  const [name, setValueName] = useState<string>("");
-  const [contactInfo, setValueContactInfo] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [contactInfo, setContactInfo] = useState<string>("");
 
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
 
@@ -37,6 +37,9 @@ export const SuppliersForm = () => {
           },
         }
       );
+      // console.log("success");
+      setName("");
+      setContactInfo("");
     } catch (error) {
       console.log(error);
     }
@@ -78,7 +81,7 @@ export const SuppliersForm = () => {
             id="name"
             name="name"
             value={name}
-            onChange={setValueName}
+            onChange={setName}
           />
           <div className="text-left">
             <span className="inline-flex items-start rounded-full mb-3 bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
@@ -93,7 +96,7 @@ export const SuppliersForm = () => {
             id="contactInfo"
             name="contactInfo"
             value={contactInfo}
-            onChange={setValueContactInfo}
+            onChange={setContactInfo}
           />
         </div>
         <Submit text="登録する" onClick={handleSubmit} />
