@@ -24,7 +24,7 @@ export const SuppliersForm = () => {
       },
     };
     console.log(params);
-    console.log(token);
+    // console.log(token);
 
     console.log(localStorage.getItem("token"));
     try {
@@ -32,9 +32,7 @@ export const SuppliersForm = () => {
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
         params,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       // console.log("success");
@@ -48,18 +46,20 @@ export const SuppliersForm = () => {
   // 仕入れ先情報一覧を取得する
   useEffect(() => {
     if (!token) return;
-    const getPosts = async () => {
+    const getSuppliers = async () => {
       try {
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
         console.log(res.data);
       } catch (error) {
         console.log(error);
       }
     };
-    getPosts();
+    getSuppliers();
   }, [token]);
 
   return (
