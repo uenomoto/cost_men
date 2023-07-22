@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   factory :tag do
-    name { 'ラーメン' }
+    user
+    sequence(:name) { |n| "tag#{n}" }
   end
 end

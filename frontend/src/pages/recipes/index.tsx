@@ -3,7 +3,6 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSetRecoilState } from "recoil";
 import { tokenState } from "../../recoil/atoms/tokenState";
@@ -202,7 +201,6 @@ const RecipesIndex: NextPage = () => {
   };
 
   // トークンを取得して、RecoilのtokenStateにセットする
-  const router = useRouter();
   const { getAccessTokenSilently } = useAuth0();
   const setToken = useSetRecoilState(tokenState);
 
@@ -228,16 +226,6 @@ const RecipesIndex: NextPage = () => {
         <meta name="description" content="一覧画面" />
       </Head>
       <SelectBox />
-      {/* テストで置いておく後で消去 */}
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white mt-5 font-bold py-2 px-4 rounded"
-        onClick={() => {
-          router.push("/blog");
-        }}
-      >
-        記事投稿ページへ
-      </button>
-      {/* ここまで消去 */}
       <div className="grid grid-cols-1 lg:gap-10 xl:gap-64 sm:grid-cols-1 lg:grid-cols-2 mt-7">
         <ul className="grid-cols-1">
           {recipes.map((recipe: Recipe, index) => (
