@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Suppliers' do
   let(:user) { create(:user) }
-  let(:supplier) { create(:supplier) }
+  let(:supplier) { create(:supplier, user:) }
 
   before do
     allow_any_instance_of(SecuredController).to receive(:current_user).and_return(user)

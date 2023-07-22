@@ -9,4 +9,6 @@ class Ingredient < ApplicationRecord
   validates :unit, presence: true
   validates :buy_cost, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :buy_quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
+
+  scope :leatest, -> { order(created_at: :desc) }
 end
