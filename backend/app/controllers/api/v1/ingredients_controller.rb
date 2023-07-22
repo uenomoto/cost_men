@@ -8,7 +8,7 @@ module Api
 
       def index
         # ingredientsは仕入れ先と紐づいているので、仕入れ先のuser_idと現在のuserのsubが一致するもののみ取得する。
-        @ingredients = Ingredient.joins(:supplier).where(suppliers: { user_id: current_user.sub } ).leatest
+        @ingredients = Ingredient.joins(:supplier).where(suppliers: { user_id: current_user.sub }).leatest
         render json: { ingredients: @ingredients.map(&:as_json) }, status: :ok
       end
 
@@ -17,11 +17,12 @@ module Api
 
       def create
         # /api/v1/ingredientsなのでリクエストボディからsupplier_idを取得する必要がある。
-        @ingredient = current_user.suppliers.find(params[:ingredient][:supplier_id]).ingredients.build(ingredient_params)
+        supplier_id = params[:ingredient][:supplier_id]
+        @ingredient = current_user.suppliers.find(supplier_id).ingredients.build(ingredient_params)
         if @ingredient.save
-          render json: { ingredient: @ingredient.as_json }, status: :created
+          render_ingredeint(status: :created)
         else
-          render json: { errors: @ingredient.errors.full_messages }, status: :unprocessable_entity
+          render_ingredeint_errors
         end
       end
 
@@ -29,9 +30,9 @@ module Api
         set_ingredient
         authorize_supplier(@ingredient.supplier)
         if @ingredient.update(ingredient_params)
-          render json: { ingredient: @ingredient.as_json }, status: :ok
+          render_ingredeint
         else
-          render json: { errors: @ingredient.errors.full_messages }, status: :unprocessable_entity
+          render_ingredeint_errors
         end
       end
 
@@ -50,11 +51,19 @@ module Api
         @ingredient = Ingredient.find(params[:id])
       end
 
+      def render_ingredeint(status: :ok)
+        render json: { ingredient: @ingredient.as_json }, status:
+      end
+
+      def render_ingredeint_errors
+        render json: { errors: @ingredient.errors.full_messages }, status: :unprocessable_entity
+      end
+
       def authorize_supplier(supplier)
-        unless current_user.suppliers.include?(supplier)
-          render json: { errors: 'あなたが作成した仕入れ先ではありません' }, status: :not_found
-          return
-        end
+        return if current_user.suppliers.include?(supplier)
+
+        render json: { errors: 'あなたが作成した仕入れ先ではありません' }, status: :not_found
+        nil
       end
 
       def ingredient_params

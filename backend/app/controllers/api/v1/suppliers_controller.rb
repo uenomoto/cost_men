@@ -11,7 +11,7 @@ module Api
       end
 
       def show
-        if @supplier = current_user.suppliers.find(params[:id])
+        if (@supplier = current_user.suppliers.find(params[:id]))
           render_supplier
         else
           render_not_found_response

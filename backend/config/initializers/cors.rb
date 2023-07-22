@@ -14,7 +14,6 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     else
       origins 'cost-men.vercel.app'
     end
-    
 
     resource '*',
              headers: :any,
