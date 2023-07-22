@@ -11,7 +11,7 @@ module Api
       end
 
       def show
-        if (@supplier = current_user.suppliers.find(params[:id]))
+        if set_supplier
           render_supplier
         else
           render_not_found_response
@@ -30,7 +30,7 @@ module Api
       end
 
       def update
-        @supplier = current_user.suppliers.find(params[:id])
+        set_supplier
         if @supplier.update(supplier_params)
           render_supplier
         else
@@ -39,6 +39,10 @@ module Api
       end
 
       private
+
+      def set_supplier
+        @supplier = current_user.suppliers.find(params[:id])
+      end
 
       def render_supplier(status: :ok)
         render json: { supplier: @supplier.as_json }, status:
