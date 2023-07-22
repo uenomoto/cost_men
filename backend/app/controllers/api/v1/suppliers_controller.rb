@@ -3,16 +3,15 @@
 module Api
   module V1
     class SuppliersController < SecuredController
-      before_action :set_supplier, only: %i[show update]
       before_action :authorize_request
 
       def index
-        @suppliers = current_user.suppliers.leatest
+        @suppliers = current_user.suppliers.leatest.includes(:ingredients)
         render json: { suppliers: @suppliers.map(&:as_json) }, status: :ok
       end
 
       def show
-        if @supplier
+        if @supplier = current_user.suppliers.find(params[:id])
           render_supplier
         else
           render_not_found_response
@@ -31,6 +30,7 @@ module Api
       end
 
       def update
+        @supplier = current_user.suppliers.find(params[:id])
         if @supplier.update(supplier_params)
           render_supplier
         else
@@ -39,10 +39,6 @@ module Api
       end
 
       private
-
-      def set_supplier
-        @supplier = Supplier.find(params[:id])
-      end
 
       def render_supplier(status: :ok)
         render json: { supplier: @supplier.as_json }, status:
