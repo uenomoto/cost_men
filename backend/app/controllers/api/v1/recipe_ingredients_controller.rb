@@ -3,7 +3,6 @@
 module Api
   module V1
     class RecipeIngredientsController < ApplicationController
-
       # recipe_ingredientsのindexはレシピ詳細ページで使用する
       def index
         recipe_ingredients = RecipeIngredient.where(recipe_id: params[:recipe_id])

@@ -17,14 +17,14 @@ class RecipeTagIngredientForm
 
   def save
     return false unless valid?
-  
+
     ActiveRecord::Base.transaction do
       create_recipe
       create_recipe_tags
       create_recipe_ingredients
       update_total_cost
     end
-  
+
     true
   rescue ActiveRecord::RecordInvalid => e
     errors.add(:base, e.message)

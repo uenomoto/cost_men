@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
@@ -6,7 +7,6 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
-
 
 json_data = '
 {
@@ -24,8 +24,8 @@ json_data = '
 
 parsed_data = JSON.parse(json_data)
 
-parsed_data["tags"].each do |tag_data|
-  tag_data.delete("id")
+parsed_data['tags'].each do |tag_data|
+  tag_data.delete('id')
   Tag.create!(tag_data)
 end
 
@@ -46,8 +46,8 @@ json_data = '
 
 parsed_data = JSON.parse(json_data)
 
-parsed_data["suppliers"].each do |supplier_data|
-  supplier_data.delete("id")
+parsed_data['suppliers'].each do |supplier_data|
+  supplier_data.delete('id')
   Supplier.create!(supplier_data)
 end
 
@@ -70,7 +70,7 @@ json_data = '
 
 parsed_data = JSON.parse(json_data)
 
-parsed_data["ingredients"].each do |ingredient_data|
-  ingredient_data.delete("id")
+parsed_data['ingredients'].each do |ingredient_data|
+  ingredient_data.delete('id')
   Ingredient.create!(ingredient_data)
 end
