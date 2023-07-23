@@ -11,10 +11,10 @@ module Api
 
       # レシピ登録でtagとingredientも一緒に登録する、Form Objectで作成したクラスを使用する
       def create
-        form = RecipeTagIngredientForm.new(recipe_params)
+        form = RecipeTagIngredientForm.new(recipe_params.merge(user: current_user))
 
         if form.save
-          render json: { status: 'SUCCESS', data: form.recipe }, status: :created
+          render json: { status: 'SUCCESS!', data: form.recipe }, status: :created
         else
           render json: { status: 'ERROR', data: form.errors }, status: :unprocessable_entity
         end
