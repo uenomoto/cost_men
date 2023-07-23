@@ -55,6 +55,8 @@ class RecipeTagIngredientForm
 
   # method分割 recipeで使用する原材料の合計金額を計算する
   def update_total_cost
+    # total_costを計算する前にrecipe_ingredientsをリロードして最新のデータを取得する(quantityの部分)
+    recipe.recipe_ingredients.reload
     recipe.update!(total_cost: recipe.total_cost)
   end
 
