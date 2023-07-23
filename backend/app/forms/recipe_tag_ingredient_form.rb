@@ -16,7 +16,6 @@ class RecipeTagIngredientForm
   validate :ingredients_must_exist, :tags_must_exist
 
   def save
-    # valid?メソッドは ActiveRecord::Base.transaction の外で呼び出すべきです
     return false unless valid?
   
     ActiveRecord::Base.transaction do
@@ -26,10 +25,8 @@ class RecipeTagIngredientForm
       update_total_cost
     end
   
-    # すべての操作が成功すれば、saveメソッドは真（true）を返すべきです
     true
   rescue ActiveRecord::RecordInvalid => e
-    # トランザクション内で例外が発生した場合、ここで補足します
     errors.add(:base, e.message)
     false
   end
