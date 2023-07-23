@@ -28,7 +28,7 @@ module Api
 
       # RecipeTagIngredientFormで定義したパラメータを受け取る
       def recipe_params
-        params.require(:recipe).permit(:recipe_name, :recipe_image, checked_tags: [], recipes: %i[id quantity])
+        params.require(:recipe).permit(:recipe_name, :recipe_image_url, checked_tags: [], recipes: %i[id quantity])
       end
     end
   end

@@ -5,7 +5,7 @@ class RecipeTagIngredientForm
   include ActiveModel::Model
 
   # Next.js側のフォームから送られてくるデータを受け取る
-  attr_accessor :recipe_name, :recipe_image, :checked_tags, :recipes
+  attr_accessor :recipe_name, :recipe_image_url, :checked_tags, :recipes
 
   # 読み取り専用でrecipeをcreateアクションに返す
   attr_reader :recipe
@@ -35,7 +35,7 @@ class RecipeTagIngredientForm
 
   # method分割　レシピを登録する
   def create_recipe
-    @recipe = Recipe.create!(name: recipe_name, image: recipe_image)
+    @recipe = Recipe.create!(name: recipe_name, image_aws_url: recipe_image_url)
   end
 
   # method分割　recipeに紐づくtagを登録する(配列)
