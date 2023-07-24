@@ -2,10 +2,8 @@
 class RecipeTagIngredientEditForm
   include ActiveModel::Model
 
-  attr_accessor :recipe_name, :recipe_image_url, :checked_tags, :recipe_ingredients, :user
-
-  # 編集なためrecipeは読み取りも書き込みも可能にする
-  attr_writer :recipe
+  # 編集のためrecipeも書き込み読み込み可能にする
+  attr_accessor :recipe_name, :recipe_image_url, :checked_tags, :recipe_ingredients, :user, :recipe
 
   validates :recipe_name, presence: true
   validates :checked_tags, presence: true
@@ -53,7 +51,9 @@ class RecipeTagIngredientEditForm
   def update_total_cost
     # total_costを計算する前にrecipe_ingredientsをリロードして最新のデータを取得する(quantityの部分)
     @recipe.recipe_ingredients.reload
-    @recipe.update!(total_cost: @recipe.update_total_cost)
+    @recipe.recipe_ingredients.each do |recipe_ingredient|
+      recipe_ingredient.update_total_cost
+    end
   end
 
   # 材料のバリデーションをチェックする
