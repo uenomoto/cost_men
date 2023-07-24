@@ -2,7 +2,9 @@
 
 module Api
   module V1
-    class RecipeIngredientsController < ApplicationController
+    class RecipeIngredientsController < SecuredController
+      before_action :authorize_request
+
       # recipe_ingredientsのindexはレシピ詳細ページで使用する
       def index
         recipe_ingredients = RecipeIngredient.where(recipe_id: params[:recipe_id])

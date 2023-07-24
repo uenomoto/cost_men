@@ -14,3 +14,5 @@ AllCops:
   NewCops: enable
 RSpec/MultipleExpectations:
   Max: 2
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
