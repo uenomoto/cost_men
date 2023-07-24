@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # レシピ編集フォーム
 class RecipeTagIngredientEditForm
   include ActiveModel::Model
@@ -10,7 +12,7 @@ class RecipeTagIngredientEditForm
   validates :recipe_ingredients, presence: true
   validate :ingredients_must_exist, :tags_must_exist
 
-  def update(params)
+  def update(_params)
     return false unless valid?
 
     ActiveRecord::Base.transaction do
@@ -51,9 +53,7 @@ class RecipeTagIngredientEditForm
   def update_total_cost
     # total_costを計算する前にrecipe_ingredientsをリロードして最新のデータを取得する(quantityの部分)
     @recipe.recipe_ingredients.reload
-    @recipe.recipe_ingredients.each do |recipe_ingredient|
-      recipe_ingredient.update_total_cost
-    end
+    @recipe.recipe_ingredients.each(&:update_total_cost)
   end
 
   # 材料のバリデーションをチェックする

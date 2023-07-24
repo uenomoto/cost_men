@@ -11,12 +11,12 @@ class RecipeIngredient < ApplicationRecord
   # レシピの編集(レシピ原材料の追加や削除が行われた場合)でレシピの合計金額を更新する
   after_destroy :update_total_cost
   after_save :update_total_cost
-  
+
   def update_total_cost
     total_cost = recipe.recipe_ingredients.sum do |recipe_ingredient|
       (recipe_ingredient.ingredient.buy_cost / recipe_ingredient.ingredient.buy_quantity) * recipe_ingredient.quantity
     end
 
-    recipe.update(total_cost: total_cost)
+    recipe.update(total_cost:)
   end
 end
