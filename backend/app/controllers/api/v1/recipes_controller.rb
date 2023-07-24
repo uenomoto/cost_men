@@ -5,9 +5,29 @@ module Api
     class RecipesController < SecuredController
       before_action :authorize_request
 
-      def index; end
+      # レシピの一覧とそのレシピの原材料とレシピについているタグを取得
+      def index
+        recipes = current_user.recipes.includes(:recipe_ingredients, :tags)
+        render json: { recipes: recipes.map { |recipe|
+          recipe.as_json(include: {
+            recipe_ingredients: {
+              include: :ingredient
+            },
+            tags: {}
+          })
+        }}
+      end
 
-      def show; end
+      # 取得するものはindexと同じで1つの(/:id)レシピのみを取得
+      def show
+        recipe = Recipe.find(params[:id])
+        render json: { recipe: recipe.as_json(include: {
+          recipe_ingredients: {
+            include: :ingredient
+          },
+          tags: {}
+        })}
+      end
 
       # レシピ登録でtagとingredientも一緒に登録する、Form Objectで作成したクラスを使用する
       def create
@@ -20,9 +40,14 @@ module Api
         end
       end
 
-      def update; end
+      def update
+      end
 
-      def destroy; end
+      def destroy
+        recipe = Recipe.find(params[:id])
+        recipe.destroy
+        head :no_content
+      end
 
       private
 
