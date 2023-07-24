@@ -8,7 +8,7 @@ const s3 = new S3({
 });
 
 // S3に画像をアップロードし、そのURLを取得する関数
-const uploadImageToS3 = async (file: File) => {
+export const uploadImageToS3 = async (file: File) => {
   // アップロード時のファイル名を作成
   const fileName = `${Date.now()}-${file.name}`;
   // S3へのアップロードに必要な情報をまとめるオブジェクト

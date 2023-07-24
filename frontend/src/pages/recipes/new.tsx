@@ -11,6 +11,7 @@ import { RecipesTable } from "../../../components/organisms/RecipesTable";
 import { RecipeImage } from "../../../components/molecules/recipe-image/RecipeImage";
 import { Ingredient } from "@/types";
 import { useRouter } from "next/router";
+import { uploadImageToS3 } from "../../../utils/s3Upload";
 
 const tags: Tag[] = [
   {
@@ -100,8 +101,14 @@ const RecipesNew = () => {
   const [recipeName, setRecipeName] = useState("");
   const [tagName, setTagName] = useState("");
 
+  // 画像アップロード状況を追跡する
+  const [uploadStatus, setUploadStates] = useState<{
+    status: "idle" | "uploading" | "error";
+    error?: Error | null;
+  }>({ status: "idle", error: null });
+
   // 子コンポーネント達の状態を管理する
-  const [recipeImage, setRecipeImage] = useState<File | null>(null);
+  const [recipeImage, setRecipeImage] = useState<string | null>(null);
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
   const [recipes, setRecipes] = useState<Ingredient[]>([]);
 
@@ -110,6 +117,29 @@ const RecipesNew = () => {
     e.preventDefault();
     console.log(tagName);
     setTagName("");
+  };
+
+  // S3に画像をアップロードしurlを取得する
+  const handleFileChange = async (file: File | null) => {
+    if (!file) return;
+    setUploadStates({ status: "uploading" });
+
+    try {
+      const url = await uploadImageToS3(file);
+      // s3のurlをrecipeImageにセット
+      setRecipeImage(url);
+      console.log(url);
+    } catch (error) {
+      // しっかりとエラーをキャッチする(unknownではなくerrorとして)
+      if (error instanceof Error) {
+        setUploadStates({ status: "error", error });
+      } else {
+        setUploadStates({
+          status: "error",
+          error: new Error("アップロードに失敗しました"),
+        });
+      }
+    }
   };
 
   // 子コンポーネント(recipeTableForm)から渡されたレシピで状態を更新
@@ -122,7 +152,7 @@ const RecipesNew = () => {
     e.preventDefault();
     const data = {
       recipeName,
-      recipeImage,
+      recipeImage, // ここでs3のurlをrailsに送る
       checkedTags,
       recipes,
     };
@@ -154,7 +184,10 @@ const RecipesNew = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 place-items-center md:grid-cols-2 lg:grid-cols-5">
-        <RecipeImage onImageChange={setRecipeImage} />
+        <RecipeImage onImageChange={handleFileChange} />
+        {uploadStatus.status === "error" && (
+          <p>エラーが発生しました: {uploadStatus.error?.message}</p>
+        )}
         <PrimaryButton>
           <div onClick={() => setOpen(true)}>タグを追加</div>
         </PrimaryButton>
