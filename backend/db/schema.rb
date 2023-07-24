@@ -67,6 +67,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
     t.string "user_id", null: false
     t.string "name", null: false
     t.decimal "total_cost", precision: 8, scale: 2, null: false
+    t.text "image_aws_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "name"], name: "index_recipes_on_user_id_and_name", unique: true

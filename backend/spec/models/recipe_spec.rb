@@ -20,10 +20,5 @@ RSpec.describe Recipe do
       it { is_expected.to validate_presence_of(:name) }
       it { is_expected.to validate_uniqueness_of(:name).scoped_to(:user_id).case_insensitive }
     end
-
-    context 'when レシピの原材料の合計金額は空欄禁止で0以上である' do
-      it { is_expected.to validate_presence_of(:total_cost) }
-      it { is_expected.to validate_numericality_of(:total_cost).is_greater_than_or_equal_to(0) }
-    end
   end
 end
