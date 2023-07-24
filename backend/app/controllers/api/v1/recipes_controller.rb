@@ -20,7 +20,7 @@ module Api
 
       # 取得するものはindexと同じで1つの(/:id)レシピのみを取得
       def show
-        recipe = Recipe.find(params[:id])
+        recipe = current_user.recipes.find(params[:id])
         render json: { recipe: recipe.as_json(include: {
           recipe_ingredients: {
             include: :ingredient
