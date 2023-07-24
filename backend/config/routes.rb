@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'health_check', to: 'health_check#index'
       resources :recipes, only: %i[index show create update destroy] do
-        resources :recipe_ingredients, only: %i[create update], path: 'ingredients'
+        resources :recipe_ingredients, only: %i[index create update], path: 'ingredients'
         resources :recipe_tags, only: %i[index create destroy], path: 'tags'
         resources :recipe_procedures, only: %i[index create update destroy], path: 'procedures'
         resources :selling_prices, only: %i[create update]
