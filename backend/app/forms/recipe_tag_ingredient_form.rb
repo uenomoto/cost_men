@@ -5,14 +5,14 @@ class RecipeTagIngredientForm
   include ActiveModel::Model
 
   # Next.js側のフォームから送られてくるデータを受け取る
-  attr_accessor :recipe_name, :recipe_image_url, :checked_tags, :recipes, :user
+  attr_accessor :recipe_name, :recipe_image_url, :checked_tags, :recipe_ingredients, :user
 
   # 読み取り専用でrecipeをcreateアクションに返す
   attr_reader :recipe
 
   validates :recipe_name, presence: true
   validates :checked_tags, presence: true
-  validates :recipes, presence: true
+  validates :recipe_ingredients, presence: true
   validate :ingredients_must_exist, :tags_must_exist
 
   def save
@@ -47,7 +47,7 @@ class RecipeTagIngredientForm
 
   # method分割　recipeに紐づくingredientと数量を登録する(配列)
   def create_recipe_ingredients
-    recipes.each do |ingredient|
+    recipe_ingredients.each do |ingredient|
       # ingredient[:id]は材料のid、ingredient[:quantity]は材料の量
       RecipeIngredient.create!(recipe: @recipe, ingredient_id: ingredient[:id], quantity: ingredient[:quantity])
     end
@@ -62,13 +62,13 @@ class RecipeTagIngredientForm
 
   # 材料のバリデーションをチェックする
   def ingredients_must_exist
-    @ingredients = recipes.map do |ingredient|
+    @ingredients = recipe_ingredients.map do |ingredient|
       Ingredient.find_by(id: ingredient[:id])
     end.compact
 
-    return unless @ingredients.size != recipes.size
+    return unless @ingredients.size != recipe_ingredients.size
 
-    errors.add(:recipes, '一部の材料が存在しません')
+    errors.add(:recipe_ingredients, '一部の材料が存在しません')
   end
 
   def tags_must_exist

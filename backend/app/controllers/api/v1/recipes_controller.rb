@@ -32,7 +32,7 @@ module Api
         checked_tags_keys = params[:recipe][:checked_tags].try(:keys)
         params.require(:recipe).permit(:recipe_name, :recipe_image_url,
                                        { checked_tags: checked_tags_keys },
-                                       recipes: %i[id quantity])
+                                       recipe_ingredients: %i[id quantity])
       end
     end
   end
