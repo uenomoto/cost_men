@@ -8,13 +8,15 @@ class RecipeIngredient < ApplicationRecord
   validates :recipe_id, uniqueness: { scope: :ingredient_id }
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  after_destroy :update_recipe_total_cost
-  # 数量変更時自動でrecipeのtotal_costを更新する
-  after_save :update_recipe_total_cost
+  # レシピの編集(レシピ原材料の追加や削除が行われた場合)でレシピの合計金額を更新する
+  after_destroy :update_total_cost
+  after_save :update_total_cost
+  
+  def update_total_cost
+    total_cost = recipe.recipe_ingredients.sum do |recipe_ingredient|
+      (recipe_ingredient.ingredient.buy_cost / recipe_ingredient.ingredient.buy_quantity) * recipe_ingredient.quantity
+    end
 
-  private
-
-  def update_recipe_total_cost
-    recipe.update(total_cost: recipe.total_cost)
+    recipe.update(total_cost: total_cost)
   end
 end

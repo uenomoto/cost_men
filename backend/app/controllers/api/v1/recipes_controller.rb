@@ -41,6 +41,14 @@ module Api
       end
 
       def update
+        edit_form = RecipeTagIngredientEditForm.new(recipe_params.merge(user: current_user))
+        edit_form.recipe = current_user.recipes.find(params[:id])
+
+        if edit_form.update(recipe_params)
+          render json: { status: 'SUCCESS!', data: edit_form.recipe }, status: :ok
+        else
+          render json: { status: 'ERROR', data: edit_form.errors }, status: :unprocessable_entity
+        end
       end
 
       def destroy
