@@ -108,9 +108,9 @@ const RecipesNew = () => {
   }>({ status: "idle", error: null });
 
   // 子コンポーネント達の状態を管理する
-  const [recipeImage, setRecipeImage] = useState<string | null>(null);
+  const [recipeImageUrl, setRecipeImageUrl] = useState<string | null>(null);
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
-  const [recipes, setRecipes] = useState<Ingredient[]>([]);
+  const [recipeIngredients, setRecipeIngredients] = useState<Ingredient[]>([]);
 
   // タグ名送信
   const tagHendleSubmit = (e: FormEvent) => {
@@ -127,8 +127,7 @@ const RecipesNew = () => {
     try {
       const url = await uploadImageToS3(file);
       // s3のurlをrecipeImageにセット
-      setRecipeImage(url);
-      console.log(url);
+      setRecipeImageUrl(url);
     } catch (error) {
       // しっかりとエラーをキャッチする(unknownではなくerrorとして)
       if (error instanceof Error) {
@@ -144,7 +143,7 @@ const RecipesNew = () => {
 
   // 子コンポーネント(recipeTableForm)から渡されたレシピで状態を更新
   const handleRecipeChange = (recipe: Ingredient[]) => {
-    setRecipes(recipe);
+    setRecipeIngredients(recipe);
   };
 
   // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
@@ -152,18 +151,18 @@ const RecipesNew = () => {
     e.preventDefault();
     const data = {
       recipeName,
-      recipeImage, // ここでs3のurlをrailsに送る
+      recipeImageUrl, // ここでs3のurlをrailsに送る
       checkedTags,
-      recipes,
+      recipeIngredients,
     };
     // 送信処理本来はここでAPIを叩く
     console.log(data);
 
-    // router.push("/recipes");
+    router.push("/recipes");
     setRecipeName("");
-    setRecipeImage(null);
+    setRecipeImageUrl(null);
     setCheckedTags({});
-    setRecipes([]);
+    setRecipeIngredients([]);
   };
 
   return (
