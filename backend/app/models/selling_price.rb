@@ -10,6 +10,6 @@ class SellingPrice < ApplicationRecord
 
   # SellingPriceオブジェクト保存または編集更新(販売価格保存と更新)があるたびにこのメソッドが呼ばれる
   def set_changed_date
-    self.changed_date = Date.today
+    self.changed_date = Time.zone.today
   end
 end
