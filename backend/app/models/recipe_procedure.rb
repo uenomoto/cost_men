@@ -7,7 +7,6 @@ class RecipeProcedure < ApplicationRecord
 
   scope :oldest, -> { order(created_at: :asc) }
 
-  # コントローラに渡す
   def self.build_and_save_all(recipe, procedure_params)
     recipe_procedures = procedure_params.map do |procedure|
       recipe.recipe_procedures.build(procedure:)

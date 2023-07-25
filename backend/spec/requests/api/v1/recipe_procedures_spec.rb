@@ -5,7 +5,6 @@ require 'rails_helper'
 RSpec.describe 'Api::V1::RecipeProcedures' do
   let(:user) { create(:user) }
   let(:recipe) { create(:recipe, user:) }
-  # 配列で作成する
   let(:recipe_procedure) { create(:recipe_procedure, recipe:) }
 
   before do
