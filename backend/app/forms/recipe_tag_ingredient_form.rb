@@ -38,14 +38,14 @@ class RecipeTagIngredientForm
     @recipe = user.recipes.create!(name: recipe_name, image_aws_url: recipe_image_url, total_cost: 0)
   end
 
-  # method分割　recipeに紐づくtagを登録する(配列)
+  # method分割　recipeに紐づくtagを登録する(ハッシュ)
   def create_recipe_tags
     checked_tags.each do |tag_id, checked|
       RecipeTag.create!(recipe: @recipe, tag_id:) if checked # checkedがtrueの場合のみ登録する
     end
   end
 
-  # method分割　recipeに紐づくingredientと数量を登録する(配列)
+  # method分割　recipeに紐づくingredientと数量を登録する(ハッシュ)
   def create_recipe_ingredients
     recipe_ingredients.each do |ingredient|
       # ingredient[:id]は材料のid、ingredient[:quantity]は材料の量
