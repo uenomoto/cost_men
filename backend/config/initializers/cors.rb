@@ -12,7 +12,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     if Rails.env.development?
       origins 'localhost:8000'
     else
-      origins 'cost-men.vercel.app'
+      origins 'cost-men.com'
     end
 
     resource '*',
