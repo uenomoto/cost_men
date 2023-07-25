@@ -17,9 +17,9 @@ module Api
         recipe_procedures, errors = RecipeProcedure.build_and_save_all(@recipe, recipe_procedure_params[:procedure])
 
         if recipe_procedures
-          render json: { recipe_procedures: recipe_procedures }, status: :created
+          render json: { recipe_procedures: }, status: :created
         else
-          render json: { errors: errors }, status: :unprocessable_entity
+          render json: { errors: }, status: :unprocessable_entity
         end
       end
 
