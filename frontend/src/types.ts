@@ -6,8 +6,8 @@ export interface SupplierSelect {
 }
 
 export type SupplierSelectProps = {
-  selected: SupplierSelect;
-  setSelected: (supplier: SupplierSelect) => void;
+  selected: SupplierSelect | null;
+  setSelected: (supplier: SupplierSelect | null) => void;
   suppliers: SupplierSelect[];
 };
 

@@ -15,7 +15,6 @@ export const SuppliersForm = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // console.log(valueName, valueContactInfo);
 
     const params = {
       supplier: {

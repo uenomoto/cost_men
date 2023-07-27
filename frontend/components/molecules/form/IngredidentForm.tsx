@@ -1,35 +1,69 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
+import { SupplierSelect } from "@/types";
+import axios from "axios";
+import { useRecoilValue } from "recoil";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { loadedState } from "@/recoil/atoms/loadedState";
 import { Input } from "../../atoms/form/Input";
 import { SaveButton } from "../../atoms/form/SaveSubmit";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
-import { SupplierSelect } from "@/types";
-
-const suppliers: SupplierSelect[] = [
-  { id: 1, name: "上野商店(直接)" },
-  { id: 2, name: "あいうえお商店" },
-  { id: 3, name: "ダミー仕入れ先3" },
-  { id: 4, name: "ダミー仕入れ先4" },
-  { id: 5, name: "ダミー仕入れ先5" },
-  { id: 6, name: "ダミー仕入れ先6" },
-  { id: 7, name: "ダミー仕入れ先7" },
-  { id: 8, name: "ダミー仕入れ先8" },
-  { id: 9, name: "ダミー仕入れ先9" },
-  { id: 10, name: "ダミー仕入れ先10" },
-];
 
 export const IngredidentForm = () => {
-  const [valueName, setValueName] = useState("");
-  const [valueBuyCost, setValueBuyCost] = useState("");
-  const [valueBuyQuantity, setValueBuyQuantity] = useState("");
-  const [valueUnit, setValueUnit] = useState("");
-  const [selectedSupplier, setSelectedSupplier] = useState(suppliers[0]);
+  const [ingredientName, setName] = useState<string>("");
+  const [buyCost, setBuyCost] = useState<string>("");
+  const [buyQuantity, setBuyQuantity] = useState<string>("");
+  const [unit, setUnit] = useState<string>("");
+  const [selectedSupplier, setSelectedSupplier] =
+    useState<SupplierSelect | null>(null);
+  const [suppliersList, setSuppliersList] = useState<SupplierSelect[]>([]);
+
+  const token = useRecoilValue(tokenState);
+  const loaded = useRecoilValue(loadedState);
+
+  // 仕入れ先のセレクトボックスのためのデータを取得する
+  useEffect(() => {
+    if (!token || !loaded) return;
+    const getSuppiersSelect = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/select_index`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setSuppliersList(res.data.suppliers); // suppliersのリストをステートに設定
+        setSelectedSupplier(res.data.suppliers[0]); // 最初の仕入れ先を選択状態に設定
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (loaded) {
+      getSuppiersSelect();
+    }
+  }, [token, loaded]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(
-      `原材料名:${valueName}, 購入時の値段:${valueBuyCost}, 購入時の数量:${valueBuyQuantity}, 単位:${valueUnit}, 仕入れ先: ${selectedSupplier.name}`
-    );
+
+    const params = {
+      ingredient: {
+        name: ingredientName,
+        buy_cost: Number(buyCost),
+        buy_quantity: Number(buyQuantity),
+        unit: unit,
+        // supplier_id: setSelectedSupplier.id,
+      },
+    };
+    console.log(params);
+
+    // try {
+    //   const res = await axios.post(
+    //     `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients`,
+    //     params,
+    //     { headers: { Authorization: `Bearer ${token}` } }
+    //   );
+    // }
   };
 
   return (
@@ -45,7 +79,7 @@ export const IngredidentForm = () => {
           <SuppliersSelectBox
             selected={selectedSupplier}
             setSelected={setSelectedSupplier}
-            suppliers={suppliers}
+            suppliers={suppliersList}
           />
         </div>
         <form onSubmit={handleSubmit} className="mt-5">
@@ -59,8 +93,8 @@ export const IngredidentForm = () => {
                 placeholder="原材料名を入力してください"
                 id="name"
                 name="name"
-                value={valueName}
-                onChange={setValueName}
+                value={ingredientName}
+                onChange={setName}
               />
               <AlertBadge />
               <Input
@@ -70,8 +104,8 @@ export const IngredidentForm = () => {
                 placeholder="購入時の数量を入力"
                 id="buy_quantity"
                 name="buy_quantity"
-                value={valueBuyQuantity}
-                onChange={setValueBuyQuantity}
+                value={buyQuantity}
+                onChange={setBuyQuantity}
               />
             </div>
             <div className="col-span-1">
@@ -83,8 +117,8 @@ export const IngredidentForm = () => {
                 placeholder="購入時の値段を入力"
                 id="buy_cost"
                 name="buy_cost"
-                value={valueBuyCost}
-                onChange={setValueBuyCost}
+                value={buyCost}
+                onChange={setBuyCost}
               />
               <AlertBadge />
               <Input
@@ -94,8 +128,8 @@ export const IngredidentForm = () => {
                 placeholder="単位を入力してください"
                 id="unit"
                 name="unit"
-                value={valueUnit}
-                onChange={setValueUnit}
+                value={unit}
+                onChange={setUnit}
               />
             </div>
           </div>

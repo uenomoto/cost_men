@@ -10,6 +10,12 @@ module Api
         render json: { suppliers: }, status: :ok
       end
 
+      # セレクトボックスで使うためのindexのapi
+      def select_index
+        suppliers = current_user.suppliers.select(:id, :name)
+        render json: { suppliers: }, status: :ok
+      end
+
       def show
         if set_supplier
           render_supplier
