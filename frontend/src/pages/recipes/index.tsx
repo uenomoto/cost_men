@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,6 +6,7 @@ import Head from "next/head";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSetRecoilState } from "recoil";
 import { tokenState } from "../../recoil/atoms/tokenState";
+import { loadedState } from "@/recoil/atoms/loadedState";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { Recipe, RecipeIngredient } from "@/types";
 import { SelectBox } from "../../../components/molecules/selectbox/SelectBox";
@@ -105,6 +106,7 @@ const RecipesIndex: NextPage = () => {
   // トークンを取得して、RecoilのtokenStateにセットする
   const { getAccessTokenSilently } = useAuth0();
   const setToken = useSetRecoilState(tokenState);
+  const setLoaded = useSetRecoilState(loadedState);
 
   // ログイン後にトークンを取得して、RecoilのtokenStateにセットする
   useEffect(() => {
@@ -112,6 +114,7 @@ const RecipesIndex: NextPage = () => {
       try {
         const accessToken = await getAccessTokenSilently({});
         setToken(accessToken);
+        setLoaded(true); // ロード完了
       } catch (e) {
         if (e instanceof Error) {
           console.log(e.message);
@@ -119,7 +122,7 @@ const RecipesIndex: NextPage = () => {
       }
     };
     getToken();
-  }, [getAccessTokenSilently, setToken]);
+  }, [getAccessTokenSilently, setToken, setLoaded]);
 
   return (
     <>

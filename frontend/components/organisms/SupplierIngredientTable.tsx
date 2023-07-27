@@ -1,6 +1,10 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { Ingredient } from "@/types";
 import { SupplierSelect } from "@/types";
+import axios from "axios";
+import { useRecoilValue } from "recoil";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { loadedState } from "@/recoil/atoms/loadedState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
@@ -37,178 +41,6 @@ type Supplier = {
   ingredients: Ingredient[];
 };
 
-// 架空の仕入れ先とその原材料データ
-const suppliers: Suppliers = [
-  {
-    id: 1,
-    user_id: 1,
-    name: "上野商店",
-    contact_info: "(555) 555-6789",
-    ingredients: [
-      {
-        id: 1,
-        supplier_id: 1,
-        buy_cost: 120.0,
-        buy_quantity: 100.0,
-        unit: "g",
-        name: "トマト",
-      },
-      {
-        id: 2,
-        supplier_id: 1,
-        buy_cost: 1000.0,
-        buy_quantity: 2000.0,
-        unit: "g",
-        name: "りんご",
-      },
-      {
-        id: 3,
-        supplier_id: 1,
-        buy_cost: 500.0,
-        buy_quantity: 500.0,
-        unit: "g",
-        name: "オレンジ",
-      },
-      {
-        id: 4,
-        supplier_id: 1,
-        buy_cost: 180.0,
-        buy_quantity: 120.0,
-        unit: "g",
-        name: "ブルーベリ",
-      },
-      {
-        id: 5,
-        supplier_id: 1,
-        buy_cost: 300.0,
-        buy_quantity: 300.0,
-        unit: "g",
-        name: "バナナ",
-      },
-    ],
-  },
-  {
-    id: 2,
-    user_id: 2,
-    name: "あいうえお商店",
-    contact_info: "(555) 666-1234",
-    ingredients: [
-      {
-        id: 6,
-        supplier_id: 2,
-        buy_cost: 210.0,
-        buy_quantity: 150.0,
-        unit: "g",
-        name: "にんじん",
-      },
-      {
-        id: 7,
-        supplier_id: 2,
-        buy_cost: 200.0,
-        buy_quantity: 250.0,
-        unit: "g",
-        name: "ポテト",
-      },
-      {
-        id: 8,
-        supplier_id: 2,
-        buy_cost: 340.0,
-        buy_quantity: 300.0,
-        unit: "g",
-        name: "たまねぎ",
-      },
-      {
-        id: 9,
-        supplier_id: 2,
-        buy_cost: 1200.0,
-        buy_quantity: 1000.0,
-        unit: "ml",
-        name: "鶏白湯スープ",
-      },
-      {
-        id: 10,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 11,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 12,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 13,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 15,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 16,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 17,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 18,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 19,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 20,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-    ],
-  },
-];
-
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
 };
@@ -218,6 +50,7 @@ export const SupplierIngredientTable = () => {
     number | null
   >(null);
 
+  // 編集フォームのステート
   const [editName, setEditName] = useState("");
   const [editBuyCost, setEditBuyCost] = useState("");
   const [editBuyQuantity, setEditBuyQuantity] = useState("");
@@ -226,6 +59,14 @@ export const SupplierIngredientTable = () => {
     suppliersSelect[0]
   );
 
+  // 一覧表示のステート, 仕入れ先一覧
+  const [suppliers, setSuppliers] = useState<Suppliers>([]);
+
+  // RecoilのTokenを取得する
+  const token = useRecoilValue(tokenState);
+  const loaded = useRecoilValue(loadedState); // tokenのロード状態を取得
+
+  // 検索フォームのスライドオーバー
   const [slideOpen, setSlideOpen] = useState(false);
 
   const editHandleSubmit = (e: FormEvent) => {
@@ -240,6 +81,28 @@ export const SupplierIngredientTable = () => {
       Math.round((ingredient.buy_cost / ingredient.buy_quantity) * 10) / 10
     );
   };
+
+  // 仕入れ先情報一覧を取得する
+  useEffect(() => {
+    if (!token || !loaded) return;
+    const getSuppliers = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(res.data.suppliers);
+        setSuppliers(res.data.suppliers); // APIから取得した仕入れ先情報をステートに格納
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (loaded) {
+      getSuppliers();
+    }
+  }, [token, loaded]);
 
   return (
     <div className="mt-20">
@@ -421,13 +284,6 @@ export const SupplierIngredientTable = () => {
                                 <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
                                   原材料編集
                                 </h3>
-                                <div className="mt-3">
-                                  <SuppliersSelectBox
-                                    selected={suppliersSelected}
-                                    setSelected={setSuppliersSelected}
-                                    suppliers={suppliersSelect}
-                                  />
-                                </div>
                                 <div className="mt-5">
                                   <div className="grid gap-1 grid-cols-2">
                                     <div className="col-span-1">

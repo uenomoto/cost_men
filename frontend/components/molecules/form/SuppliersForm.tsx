@@ -26,7 +26,6 @@ export const SuppliersForm = () => {
     console.log(params);
     // console.log(token);
 
-    console.log(localStorage.getItem("token"));
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
@@ -35,32 +34,13 @@ export const SuppliersForm = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // console.log("success");
+      console.log("success");
       setName("");
       setContactInfo("");
     } catch (error) {
       console.log(error);
     }
   };
-
-  // 仕入れ先情報一覧を取得する
-  useEffect(() => {
-    if (!token) return;
-    const getSuppliers = async () => {
-      try {
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getSuppliers();
-  }, [token]);
 
   return (
     <div className="mt-5 bg-gray-200 shadow-lg rounded-2xl">
