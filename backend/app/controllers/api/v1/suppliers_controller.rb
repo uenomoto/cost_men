@@ -6,12 +6,8 @@ module Api
       before_action :authorize_request
 
       def index
-        suppliers = current_user.suppliers.oldest.select(:id, :user_id, :name, :contact_info).includes(:ingredients).map do |supplier|
-          supplier.attributes.merge(
-            ingredients: supplier.ingredients.select(:id, :supplier_id, :buy_cost, :buy_quantity, :unit, :name)
-          )
-        end
-        render json: { suppliers:}, status: :ok
+        suppliers = Supplier.with_ingredients_for_user(current_user)
+        render json: { suppliers: }, status: :ok
       end
 
       def show
