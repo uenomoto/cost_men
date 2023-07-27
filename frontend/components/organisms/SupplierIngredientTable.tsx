@@ -13,6 +13,7 @@ import { SlideOver } from "../molecules/slide-overs/SlideOver";
 import { AlertBadge } from "../atoms/badge/AlertBadge";
 import { Input } from "../atoms/form/Input";
 import { EditSubmit } from "../atoms/form/EditSubmit";
+import { EnptyStates } from "../molecules/enptyStates/EnptyStates";
 
 // 仕入れ先が配列であることを明示
 type Suppliers = Supplier[];
@@ -121,6 +122,19 @@ export const SupplierIngredientTable = () => {
 
   return (
     <div className="mt-20">
+      {loading ? (
+        <div className="flex items-center text-center" aria-label="読み込み中">
+          <span className="font-bold mr-3">ロード中です........</span>
+          <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+        </div>
+      ) : suppliers.reduce(
+          (total, supplier) => total + supplier.ingredients.length,
+          0
+        ) === 0 ? (
+        <EnptyStates />
+      ) : (
+        ""
+      )}
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
@@ -192,201 +206,189 @@ export const SupplierIngredientTable = () => {
                     </th>
                   </tr>
                 </thead>
-                {loading ? (
-                  <div
-                    className="flex items-center text-center"
-                    aria-label="読み込み中"
-                  >
-                    <span className="font-bold mr-3">ロード中です........</span>
-                    <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
-                  </div>
-                ) : (
-                  <tbody>
-                    {suppliers.flatMap((supplier, index) =>
-                      supplier.ingredients.map(
-                        (ingredient, ingredientIndex) => (
-                          <tr key={`${supplier.id}-${ingredient.id}`}>
-                            {ingredientIndex === 0 && (
-                              <>
-                                <td
-                                  rowSpan={supplier.ingredients.length}
-                                  className={classNames(
-                                    index !== suppliers.length - 1
-                                      ? "border-b border-gray-200"
-                                      : "",
-                                    "whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-6 lg:pl-8"
-                                  )}
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <div className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-sky-600" />
-                                    <span className="text-md lg:text-2xl">
-                                      {supplier.name}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td
-                                  rowSpan={supplier.ingredients.length}
-                                  className={classNames(
-                                    index !== suppliers.length - 1
-                                      ? "border-b border-gray-200"
-                                      : "",
-                                    "whitespace-nowrap hidden px-3 py-4 text-md lg:text-2xl text-gray-900 sm:table-cell"
-                                  )}
-                                >
-                                  <span>{supplier.contact_info}</span>
-                                </td>
-                              </>
-                            )}
+                <tbody>
+                  {suppliers.flatMap((supplier, index) =>
+                    supplier.ingredients.map((ingredient, ingredientIndex) => (
+                      <tr key={`${supplier.id}-${ingredient.id}`}>
+                        {ingredientIndex === 0 && (
+                          <>
                             <td
+                              rowSpan={supplier.ingredients.length}
                               className={classNames(
                                 index !== suppliers.length - 1
                                   ? "border-b border-gray-200"
                                   : "",
-                                "whitespace-nowrap hidden px-3 py-4 text-md lg:text-2xl text-gray-900 lg:table-cell"
+                                "whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-6 lg:pl-8"
                               )}
                             >
-                              <span>{ingredient.buy_cost}円</span>
+                              <div className="flex items-center space-x-2">
+                                <div className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-sky-600" />
+                                <span className="text-md lg:text-2xl">
+                                  {supplier.name}
+                                </span>
+                              </div>
                             </td>
                             <td
+                              rowSpan={supplier.ingredients.length}
                               className={classNames(
                                 index !== suppliers.length - 1
                                   ? "border-b border-gray-200"
                                   : "",
-                                "whitespace-nowrap hidden px-3 py-4 text-md lg:text-2xl text-gray-900 lg:table-cell"
+                                "whitespace-nowrap hidden px-3 py-4 text-md lg:text-2xl text-gray-900 sm:table-cell"
                               )}
                             >
-                              <span>
-                                {ingredient.buy_quantity} {ingredient.unit}
-                              </span>
+                              <span>{supplier.contact_info}</span>
                             </td>
-                            <td
-                              className={classNames(
-                                index !== suppliers.length - 1
-                                  ? "border-b border-gray-200"
-                                  : "",
-                                "whitespace-nowrap px-3 py-4 text-md lg:text-2xl text-gray-900"
-                              )}
+                          </>
+                        )}
+                        <td
+                          className={classNames(
+                            index !== suppliers.length - 1
+                              ? "border-b border-gray-200"
+                              : "",
+                            "whitespace-nowrap hidden px-3 py-4 text-md lg:text-2xl text-gray-900 lg:table-cell"
+                          )}
+                        >
+                          <span>{ingredient.buy_cost}円</span>
+                        </td>
+                        <td
+                          className={classNames(
+                            index !== suppliers.length - 1
+                              ? "border-b border-gray-200"
+                              : "",
+                            "whitespace-nowrap hidden px-3 py-4 text-md lg:text-2xl text-gray-900 lg:table-cell"
+                          )}
+                        >
+                          <span>
+                            {ingredient.buy_quantity} {ingredient.unit}
+                          </span>
+                        </td>
+                        <td
+                          className={classNames(
+                            index !== suppliers.length - 1
+                              ? "border-b border-gray-200"
+                              : "",
+                            "whitespace-nowrap px-3 py-4 text-md lg:text-2xl text-gray-900"
+                          )}
+                        >
+                          <span>{ingredient.name}</span>
+                        </td>
+                        <td
+                          className={classNames(
+                            index !== suppliers.length - 1
+                              ? "border-b border-gray-200"
+                              : "",
+                            "whitespace-nowrap px-3 py-4 text-md lg:text-2xl text-gray-900"
+                          )}
+                        >
+                          <span>{costCalculation(ingredient)}円</span>
+                        </td>
+                        <td
+                          className={classNames(
+                            index !== suppliers.length - 1
+                              ? "border-b border-gray-200"
+                              : "",
+                            "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-xs font-medium sm:pr-8 lg:pr-1"
+                          )}
+                        >
+                          <EditButton>
+                            <div
+                              onClick={() =>
+                                setSupplierIngredientEditOpen(ingredient.id)
+                              }
                             >
-                              <span>{ingredient.name}</span>
-                            </td>
-                            <td
-                              className={classNames(
-                                index !== suppliers.length - 1
-                                  ? "border-b border-gray-200"
-                                  : "",
-                                "whitespace-nowrap px-3 py-4 text-md lg:text-2xl text-gray-900"
-                              )}
+                              編集
+                            </div>
+                          </EditButton>
+                          {supplierIngredienteditOpen === ingredient.id && (
+                            <Modal
+                              open={
+                                supplierIngredienteditOpen === ingredient.id
+                              }
+                              setModalOpen={() =>
+                                setSupplierIngredientEditOpen(null)
+                              }
                             >
-                              <span>{costCalculation(ingredient)}円</span>
-                            </td>
-                            <td
-                              className={classNames(
-                                index !== suppliers.length - 1
-                                  ? "border-b border-gray-200"
-                                  : "",
-                                "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-xs font-medium sm:pr-8 lg:pr-1"
-                              )}
-                            >
-                              <EditButton>
-                                <div
-                                  onClick={() =>
-                                    setSupplierIngredientEditOpen(ingredient.id)
-                                  }
-                                >
-                                  編集
-                                </div>
-                              </EditButton>
-                              {supplierIngredienteditOpen === ingredient.id && (
-                                <Modal
-                                  open={
-                                    supplierIngredienteditOpen === ingredient.id
-                                  }
-                                  setModalOpen={() =>
-                                    setSupplierIngredientEditOpen(null)
-                                  }
-                                >
-                                  <div className="md:p-5">
-                                    <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
-                                      原材料編集
-                                    </h3>
-                                    <div className="mt-5">
-                                      <div className="grid gap-1 grid-cols-2">
-                                        <div className="col-span-1">
-                                          <AlertBadge />
-                                          <Input
-                                            htmlfor="name"
-                                            text="原材料名"
-                                            type="text"
-                                            placeholder="原材料名を入力してください"
-                                            id="name"
-                                            name="name"
-                                            value={editName}
-                                            onChange={setEditName}
-                                          />
-                                          <AlertBadge />
-                                          <Input
-                                            htmlfor="buy_quantity"
-                                            text="購入時の数量"
-                                            type="number"
-                                            placeholder="購入時の数量を入力"
-                                            id="buy_quantity"
-                                            name="buy_quantity"
-                                            value={editBuyQuantity}
-                                            onChange={setEditBuyQuantity}
-                                          />
-                                        </div>
-                                        <div className="col-span-1">
-                                          <AlertBadge />
-                                          <Input
-                                            htmlfor="buy_cost"
-                                            text="購入時の値段"
-                                            type="number"
-                                            placeholder="購入時の値段を入力"
-                                            id="buy_cost"
-                                            name="buy_cost"
-                                            value={editBuyCost}
-                                            onChange={setEditBuyCost}
-                                          />
-                                          <AlertBadge />
-                                          <Input
-                                            htmlfor="unit"
-                                            text="単位"
-                                            type="text"
-                                            placeholder="単位を入力してください"
-                                            id="unit"
-                                            name="unit"
-                                            value={editUnit}
-                                            onChange={setEditUnit}
-                                          />
-                                        </div>
-                                      </div>
-                                      <EditSubmit
-                                        text="編集する"
-                                        onClick={editHandleSubmit}
+                              <div className="md:p-5">
+                                <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
+                                  原材料編集
+                                </h3>
+                                <div className="mt-5">
+                                  <div className="grid gap-1 grid-cols-2">
+                                    <div className="col-span-1">
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="name"
+                                        text="原材料名"
+                                        type="text"
+                                        placeholder="原材料名を入力してください"
+                                        id="name"
+                                        name="name"
+                                        value={editName}
+                                        onChange={setEditName}
+                                      />
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="buy_quantity"
+                                        text="購入時の数量"
+                                        type="number"
+                                        placeholder="購入時の数量を入力"
+                                        id="buy_quantity"
+                                        name="buy_quantity"
+                                        value={editBuyQuantity}
+                                        onChange={setEditBuyQuantity}
+                                      />
+                                    </div>
+                                    <div className="col-span-1">
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="buy_cost"
+                                        text="購入時の値段"
+                                        type="number"
+                                        placeholder="購入時の値段を入力"
+                                        id="buy_cost"
+                                        name="buy_cost"
+                                        value={editBuyCost}
+                                        onChange={setEditBuyCost}
+                                      />
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="unit"
+                                        text="単位"
+                                        type="text"
+                                        placeholder="単位を入力してください"
+                                        id="unit"
+                                        name="unit"
+                                        value={editUnit}
+                                        onChange={setEditUnit}
                                       />
                                     </div>
                                   </div>
-                                </Modal>
-                              )}
-                            </td>
-                            <td
-                              className={classNames(
-                                index !== suppliers.length - 1
-                                  ? "border-b border-gray-200"
-                                  : "",
-                                "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-xs font-medium sm:pr-8 lg:pr-1"
-                              )}
-                            >
-                              <DeleteButton
-                                onClick={() => handleDelete(ingredient.id)}
-                              />
-                            </td>
-                          </tr>
-                        )
-                      )
-                    )}
-                  </tbody>
-                )}
+                                  <EditSubmit
+                                    text="編集する"
+                                    onClick={editHandleSubmit}
+                                  />
+                                </div>
+                              </div>
+                            </Modal>
+                          )}
+                        </td>
+                        <td
+                          className={classNames(
+                            index !== suppliers.length - 1
+                              ? "border-b border-gray-200"
+                              : "",
+                            "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-xs font-medium sm:pr-8 lg:pr-1"
+                          )}
+                        >
+                          <DeleteButton
+                            onClick={() => handleDelete(ingredient.id)}
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
               </table>
             </div>
           </div>
