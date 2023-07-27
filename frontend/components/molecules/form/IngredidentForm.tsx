@@ -5,7 +5,6 @@ import { useRecoilValue } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { loadedState } from "@/recoil/atoms/loadedState";
 import { Input } from "../../atoms/form/Input";
-import { SaveButton } from "../../atoms/form/SaveSubmit";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
 import { Submit } from "../../atoms/form/Submit";
@@ -62,15 +61,17 @@ export const IngredidentForm = () => {
     console.log(params);
 
     try {
-      await axios.post(
+      const res = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients`,
         params,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setName("");
-      setBuyCost("");
-      setBuyQuantity("");
-      setUnit("");
+      if (res.status === 201) {
+        setName("");
+        setBuyCost("");
+        setBuyQuantity("");
+        setUnit("");
+      }
     } catch (error) {
       console.log(error);
     }
