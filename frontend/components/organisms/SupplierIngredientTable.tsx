@@ -1,9 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Ingredient } from "@/types";
-import axios from "axios";
-import { useRecoilValue } from "recoil";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { loadedState } from "@/recoil/atoms/loadedState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
@@ -35,6 +36,9 @@ export const SupplierIngredientTable = () => {
     number | null
   >(null);
 
+  // 検索フォームのスライドオーバー
+  const [slideOpen, setSlideOpen] = useState(false);
+
   // 編集フォームのステート
   const [editName, setEditName] = useState("");
   const [editBuyCost, setEditBuyCost] = useState("");
@@ -47,9 +51,7 @@ export const SupplierIngredientTable = () => {
   // RecoilのTokenを取得する
   const token = useRecoilValue(tokenState);
   const loaded = useRecoilValue(loadedState); // tokenのロード状態を取得
-
-  // 検索フォームのスライドオーバー
-  const [slideOpen, setSlideOpen] = useState(false);
+  const setErrorMessage = useSetRecoilState(errorMessageState);
 
   const editHandleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -58,6 +60,33 @@ export const SupplierIngredientTable = () => {
     );
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setSuppliers(
+        suppliers.map((supplier) => ({
+          ...supplier, // 仕入れ先情報をコピーして新しい配列(ボタンを押したidを削除)を作成
+          ingredients: supplier.ingredients.filter(
+            (ingredient) => ingredient.id !== id
+          ),
+        }))
+      );
+      setErrorMessage(null);
+    } catch (error: AxiosError | any) {
+      console.log(error);
+      if (error.response) {
+        setErrorMessage(error.response.data); // railsから返されたエラーメッセージをステートに格納
+      }
+    }
+  };
+
+  // 原材料の単価を計算する
   const costCalculation = (ingredient: Ingredient) => {
     return (
       Math.round((ingredient.buy_cost / ingredient.buy_quantity) * 10) / 10
@@ -76,19 +105,19 @@ export const SupplierIngredientTable = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log(res.data.suppliers);
         setSuppliers(res.data.suppliers); // APIから取得した仕入れ先情報をステートに格納
         setLoading(false);
-      } catch (error) {
+        setErrorMessage(null);
+      } catch (error: AxiosError | any) {
         console.log(error);
-        alert("仕入れ先情報の取得に失敗しました");
         setLoading(false);
+        setErrorMessage("仕入れ先情報の取得に失敗しました");
       }
     };
     if (loaded) {
       getSuppliers();
     }
-  }, [token, loaded]);
+  }, [token, loaded, setErrorMessage]);
 
   return (
     <div className="mt-20">
@@ -163,7 +192,6 @@ export const SupplierIngredientTable = () => {
                     </th>
                   </tr>
                 </thead>
-                {/* 仕入れ先一覧がない場合の表示 */}
                 {loading ? (
                   <div
                     className="flex items-center text-center"
@@ -349,7 +377,9 @@ export const SupplierIngredientTable = () => {
                                 "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-xs font-medium sm:pr-8 lg:pr-1"
                               )}
                             >
-                              <DeleteButton />
+                              <DeleteButton
+                                onClick={() => handleDelete(ingredient.id)}
+                              />
                             </td>
                           </tr>
                         )

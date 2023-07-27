@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FormEvent } from "react";
-import axios from "axios";
-import { useRecoilValue } from "recoil";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { Supplier } from "@/types";
 import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { Submit } from "../../atoms/form/Submit";
@@ -12,10 +14,10 @@ export const SuppliersForm = () => {
   const [contactInfo, setContactInfo] = useState<string>("");
 
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
+  const setErrorMessage = useSetRecoilState(errorMessageState);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const params = {
       supplier: {
         name: name,
@@ -24,20 +26,23 @@ export const SuppliersForm = () => {
     };
     console.log(params);
     // console.log(token);
-
     try {
-      await axios.post(
+      const res: AxiosResponse<Supplier> = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
         params,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("success");
-      setName("");
-      setContactInfo("");
-    } catch (error) {
+      if (res.status === 201) {
+        console.log("success");
+        setName("");
+        setContactInfo("");
+      }
+      setErrorMessage(null);
+    } catch (error: AxiosError | any) {
       console.log(error);
+      if (error.response) {
+        setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
+      }
     }
   };
 

@@ -1,9 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { SupplierSelect } from "@/types";
-import axios from "axios";
-import { useRecoilValue } from "recoil";
+import { Ingredient, SupplierSelect } from "@/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { loadedState } from "@/recoil/atoms/loadedState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
@@ -23,6 +24,7 @@ export const IngredidentForm = () => {
 
   const token = useRecoilValue(tokenState);
   const loaded = useRecoilValue(loadedState);
+  const setErrorMessage = useSetRecoilState(errorMessageState);
 
   // 仕入れ先のセレクトボックスのためのデータを取得する
   useEffect(() => {
@@ -48,7 +50,6 @@ export const IngredidentForm = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const params = {
       ingredient: {
         name: ingredientName,
@@ -58,10 +59,8 @@ export const IngredidentForm = () => {
         supplier_id: selectedSupplier ? selectedSupplier.id : null,
       },
     };
-    console.log(params);
-
     try {
-      const res = await axios.post(
+      const res: AxiosResponse<Ingredient> = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients`,
         params,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -72,8 +71,11 @@ export const IngredidentForm = () => {
         setBuyQuantity("");
         setUnit("");
       }
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       console.log(error);
+      if (error.response) {
+        setErrorMessage(error.response.data.errors);
+      }
     }
   };
 
