@@ -8,14 +8,18 @@ import { Input } from "../../atoms/form/Input";
 import { SaveButton } from "../../atoms/form/SaveSubmit";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
+import { Submit } from "../../atoms/form/Submit";
 
 export const IngredidentForm = () => {
   const [ingredientName, setName] = useState<string>("");
   const [buyCost, setBuyCost] = useState<string>("");
   const [buyQuantity, setBuyQuantity] = useState<string>("");
   const [unit, setUnit] = useState<string>("");
+
+  // ユーザーが選択した仕入れ先の情報を保持する
   const [selectedSupplier, setSelectedSupplier] =
     useState<SupplierSelect | null>(null);
+  // apiから取得した仕入れ先のリストを保持する
   const [suppliersList, setSuppliersList] = useState<SupplierSelect[]>([]);
 
   const token = useRecoilValue(tokenState);
@@ -43,7 +47,7 @@ export const IngredidentForm = () => {
     }
   }, [token, loaded]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const params = {
@@ -52,18 +56,24 @@ export const IngredidentForm = () => {
         buy_cost: Number(buyCost),
         buy_quantity: Number(buyQuantity),
         unit: unit,
-        // supplier_id: setSelectedSupplier.id,
+        supplier_id: selectedSupplier ? selectedSupplier.id : null,
       },
     };
     console.log(params);
 
-    // try {
-    //   const res = await axios.post(
-    //     `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients`,
-    //     params,
-    //     { headers: { Authorization: `Bearer ${token}` } }
-    //   );
-    // }
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setName("");
+      setBuyCost("");
+      setBuyQuantity("");
+      setUnit("");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -82,59 +92,57 @@ export const IngredidentForm = () => {
             suppliers={suppliersList}
           />
         </div>
-        <form onSubmit={handleSubmit} className="mt-5">
-          <div className="grid gap-1 grid-cols-2">
-            <div className="col-span-1">
-              <AlertBadge />
-              <Input
-                htmlfor="name"
-                text="原材料名"
-                type="text"
-                placeholder="原材料名を入力してください"
-                id="name"
-                name="name"
-                value={ingredientName}
-                onChange={setName}
-              />
-              <AlertBadge />
-              <Input
-                htmlfor="buy_quantity"
-                text="購入時の数量"
-                type="number"
-                placeholder="購入時の数量を入力"
-                id="buy_quantity"
-                name="buy_quantity"
-                value={buyQuantity}
-                onChange={setBuyQuantity}
-              />
-            </div>
-            <div className="col-span-1">
-              <AlertBadge />
-              <Input
-                htmlfor="buy_cost"
-                text="購入時の値段"
-                type="number"
-                placeholder="購入時の値段を入力"
-                id="buy_cost"
-                name="buy_cost"
-                value={buyCost}
-                onChange={setBuyCost}
-              />
-              <AlertBadge />
-              <Input
-                htmlfor="unit"
-                text="単位"
-                type="text"
-                placeholder="単位を入力してください"
-                id="unit"
-                name="unit"
-                value={unit}
-                onChange={setUnit}
-              />
-            </div>
+        <div className="mt-5 grid gap-1 grid-cols-2">
+          <div className="col-span-1">
+            <AlertBadge />
+            <Input
+              htmlfor="name"
+              text="原材料名"
+              type="text"
+              placeholder="原材料名を入力してください"
+              id="name"
+              name="name"
+              value={ingredientName}
+              onChange={setName}
+            />
+            <AlertBadge />
+            <Input
+              htmlfor="buy_quantity"
+              text="購入時の数量"
+              type="number"
+              placeholder="購入時の数量を入力"
+              id="buy_quantity"
+              name="buy_quantity"
+              value={buyQuantity}
+              onChange={setBuyQuantity}
+            />
           </div>
-          <SaveButton>登録する</SaveButton>
-        </form>
+          <div className="col-span-1">
+            <AlertBadge />
+            <Input
+              htmlfor="buy_cost"
+              text="購入時の値段"
+              type="number"
+              placeholder="購入時の値段を入力"
+              id="buy_cost"
+              name="buy_cost"
+              value={buyCost}
+              onChange={setBuyCost}
+            />
+            <AlertBadge />
+            <Input
+              htmlfor="unit"
+              text="単位"
+              type="text"
+              placeholder="単位を入力してください"
+              id="unit"
+              name="unit"
+              value={unit}
+              onChange={setUnit}
+            />
+          </div>
+        </div>
+        <Submit text="登録する" onClick={handleSubmit} />
       </div>
     </div>
   );
