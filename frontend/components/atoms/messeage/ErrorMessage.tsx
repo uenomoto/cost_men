@@ -20,10 +20,14 @@ export const ErrorMessage = () => {
               条件に満たさないため登録できませんでした
             </h3>
             <div className="mt-2 text-xl text-red-700">
-              <ul role="list" className="list-disc space-y-1 pl-5">
-                {errorMessage.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
+              <ul role="list" className="text-left list-disc space-y-1 pl-5">
+                {Array.isArray(errorMessage) ? (
+                  errorMessage.map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))
+                ) : (
+                  <li>{errorMessage}</li>
+                )}
               </ul>
             </div>
           </div>

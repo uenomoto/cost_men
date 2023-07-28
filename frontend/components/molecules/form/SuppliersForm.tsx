@@ -40,9 +40,7 @@ export const SuppliersForm = () => {
       setErrorMessage(null);
     } catch (error: AxiosError | any) {
       console.log(error);
-      if (error.response) {
-        setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
-      }
+      setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
     }
   };
 

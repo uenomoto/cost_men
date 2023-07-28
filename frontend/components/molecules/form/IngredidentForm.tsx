@@ -31,7 +31,7 @@ export const IngredidentForm = () => {
     if (!token || !loaded) return;
     const getSuppiersSelect = async () => {
       try {
-        const res = await axios.get(
+        const res: AxiosResponse = await axios.get(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/select_index`,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -39,14 +39,15 @@ export const IngredidentForm = () => {
         );
         setSuppliersList(res.data.suppliers); // suppliersのリストをステートに設定
         setSelectedSupplier(res.data.suppliers[0]); // 最初の仕入れ先を選択状態に設定
-      } catch (error) {
+      } catch (error: AxiosError | any) {
         console.log(error);
+        setErrorMessage("仕入れ先の取得に失敗しました");
       }
     };
     if (loaded) {
       getSuppiersSelect();
     }
-  }, [token, loaded]);
+  }, [token, loaded, setErrorMessage]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -71,11 +72,10 @@ export const IngredidentForm = () => {
         setBuyQuantity("");
         setUnit("");
       }
+      setErrorMessage(null);
     } catch (error: AxiosError | any) {
       console.log(error);
-      if (error.response) {
-        setErrorMessage(error.response.data.errors);
-      }
+      setErrorMessage(error.response.data.errors);
     }
   };
 
