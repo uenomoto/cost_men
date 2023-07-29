@@ -4,6 +4,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { Supplier } from "@/types";
 import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
@@ -15,6 +16,7 @@ export const SuppliersForm = () => {
 
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
   const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setSuccessMessage = useSetRecoilState(successMessageState);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -33,13 +35,13 @@ export const SuppliersForm = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 201) {
-        console.log("success");
         setName("");
         setContactInfo("");
+        setSuccessMessage("仕入れ先を登録しました");
+        setErrorMessage(null);
       }
-      setErrorMessage(null);
     } catch (error: AxiosError | any) {
-      console.log(error);
+      setSuccessMessage(null);
       setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
     }
   };

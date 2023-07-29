@@ -9,6 +9,7 @@ import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
 import { Submit } from "../../atoms/form/Submit";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
 
 export const IngredidentForm = () => {
   const [ingredientName, setName] = useState<string>("");
@@ -25,6 +26,7 @@ export const IngredidentForm = () => {
   const token = useRecoilValue(tokenState);
   const loaded = useRecoilValue(loadedState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setSuccessMessage = useSetRecoilState(successMessageState);
 
   // 仕入れ先のセレクトボックスのためのデータを取得する
   useEffect(() => {
@@ -71,11 +73,13 @@ export const IngredidentForm = () => {
         setBuyCost("");
         setBuyQuantity("");
         setUnit("");
+        setSuccessMessage("原材料を登録しました");
+        setErrorMessage(null);
       }
-      setErrorMessage(null);
     } catch (error: AxiosError | any) {
       console.log(error);
       setErrorMessage(error.response.data.errors);
+      setSuccessMessage(null);
     }
   };
 
