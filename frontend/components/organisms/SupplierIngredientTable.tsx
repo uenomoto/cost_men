@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { loadedState } from "@/recoil/atoms/loadedState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
@@ -33,36 +34,95 @@ const classNames = (...classes: (string | false)[]): string => {
 export const SupplierIngredientTable = () => {
   const [loading, setLoading] = useState(true);
 
+  // 一覧表示のステート, 仕入れ先一覧
+  const [suppliers, setSuppliers] = useState<Suppliers>([]);
+
+  // 仕入れ先の原材料の編集フォームmodal
   const [supplierIngredienteditOpen, setSupplierIngredientEditOpen] = useState<
     number | null
   >(null);
 
+  // 仕入れ先の編集フォームmodal
+  const [supplierEditOpen, setSupplierEditOpen] = useState<number | null>(null);
+
   // 検索フォームのスライドオーバー
   const [slideOpen, setSlideOpen] = useState(false);
 
-  // 編集フォームのステート
+  // 仕入れ先の編集フォームイベントハンドラ
+  const [editSupplierName, setEditSupplierName] = useState("");
+  const [editSupplierContactInfo, setEditSupplierContactInfo] = useState("");
+
+  // 原材料の編集フォームイベントハンドラ
   const [editName, setEditName] = useState("");
   const [editBuyCost, setEditBuyCost] = useState("");
   const [editBuyQuantity, setEditBuyQuantity] = useState("");
   const [editUnit, setEditUnit] = useState("");
 
-  // 一覧表示のステート, 仕入れ先一覧
-  const [suppliers, setSuppliers] = useState<Suppliers>([]);
-
   // RecoilのTokenを取得する
   const token = useRecoilValue(tokenState);
   const loaded = useRecoilValue(loadedState); // tokenのロード状態を取得
   const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setSuccessMessage = useSetRecoilState(successMessageState);
 
-  const editHandleSubmit = (e: FormEvent) => {
+  const editHandleSubmitIngredient = (e: FormEvent) => {
     e.preventDefault();
     console.log(
       `原材料名:${editName}, 購入時の値段:${editBuyCost}, 購入時の数量:${editBuyQuantity}, 単位:${editUnit}`
     );
   };
 
-  const handleDelete = async (id: number) => {
+  // 仕入れ先の編集
+  const editHandleSubmitSupplier = async (e: FormEvent) => {
+    e.preventDefault();
+
     try {
+      const params = {
+        supplier: {
+          name: editSupplierName,
+          contact_info: editSupplierContactInfo,
+        },
+      };
+      const res: AxiosResponse<Supplier> = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/${supplierEditOpen}`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200) {
+        setSuccessMessage("仕入れ先の編集に成功しました");
+        setErrorMessage(null);
+        setSupplierEditOpen(null);
+      }
+    } catch (error: AxiosError | any) {
+      console.log(error);
+      setErrorMessage(error.response.data);
+      setSuccessMessage(null);
+    }
+  };
+
+  // 仕入れ先の編集フォームに仕入れ先情報の値をセットする
+  useEffect(() => {
+    if (supplierEditOpen !== null) {
+      const supplierToEdit = suppliers.find(
+        (supplier) => supplier.id === supplierEditOpen
+      );
+      if (supplierToEdit) {
+        setEditSupplierName(supplierToEdit.name);
+        setEditSupplierContactInfo(supplierToEdit.contact_info);
+      }
+    } else {
+      setEditSupplierName("");
+      setEditSupplierContactInfo("");
+    }
+  }, [supplierEditOpen, suppliers]);
+
+  const handleDelete = async (id: number) => {
+    if (confirm("本当に削除しますか？") === false) return;
+    try {
+      // 仕入れ先の原材料のid取得
+      const ingredientToDelete = suppliers
+        .flatMap((supplier) => supplier.ingredients)
+        .find((ingredient) => ingredient.id === id);
+
       await axios.delete(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${id}`,
         {
@@ -78,12 +138,18 @@ export const SupplierIngredientTable = () => {
           ),
         }))
       );
+
+      if (ingredientToDelete) {
+        setSuccessMessage(`${ingredientToDelete.name}の削除に成功しました`);
+      } else {
+        setSuccessMessage("原材料の削除に成功しました");
+      }
+
       setErrorMessage(null);
     } catch (error: AxiosError | any) {
       console.log(error);
-      if (error.response) {
-        setErrorMessage(error.response.data); // railsから返されたエラーメッセージをステートに格納
-      }
+      setErrorMessage(error.response.data); // railsから返されたエラーメッセージをステートに格納
+      setSuccessMessage(null);
     }
   };
 
@@ -190,7 +256,7 @@ export const SupplierIngredientTable = () => {
                       scope="col"
                       className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter"
                     >
-                      1/g円
+                      1/円
                     </th>
                     <th
                       scope="col"
@@ -223,10 +289,59 @@ export const SupplierIngredientTable = () => {
                             >
                               <div className="flex items-center space-x-2">
                                 <div className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-sky-600" />
-                                <span className="text-md lg:text-2xl">
+                                <span
+                                  className="text-md font-bold cursor-pointer lg:text-2xl"
+                                  onClick={() =>
+                                    setSupplierEditOpen(supplier.id)
+                                  }
+                                >
                                   {supplier.name}
                                 </span>
                               </div>
+                              {supplierEditOpen === supplier.id && (
+                                <Modal
+                                  open={supplierEditOpen === supplier.id}
+                                  setModalOpen={() => setSupplierEditOpen(null)}
+                                >
+                                  <div className="md:p-5">
+                                    <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
+                                      仕入れ先編集
+                                    </h3>
+                                    <div className="mt-5">
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="name"
+                                        text="仕入れ先名"
+                                        type="text"
+                                        placeholder="仕入れ先名を入力してください"
+                                        id="name"
+                                        name="name"
+                                        value={editSupplierName}
+                                        onChange={setEditSupplierName}
+                                      />
+                                      <div className="text-left">
+                                        <span className="inline-flex items-start rounded-full mb-3 bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                          連絡先は後から登録できます
+                                        </span>
+                                      </div>
+                                      <Input
+                                        htmlfor="contact_info"
+                                        text="連絡先"
+                                        type="text"
+                                        placeholder="連絡先を入力してください"
+                                        id="contact_info"
+                                        name="contact_info"
+                                        value={editSupplierContactInfo}
+                                        onChange={setEditSupplierContactInfo}
+                                      />
+                                    </div>
+                                    <EditSubmit
+                                      text="仕入れ先を編集する"
+                                      onClick={editHandleSubmitSupplier}
+                                    />
+                                  </div>
+                                </Modal>
+                              )}
                             </td>
                             <td
                               rowSpan={supplier.ingredients.length}
@@ -365,8 +480,8 @@ export const SupplierIngredientTable = () => {
                                     </div>
                                   </div>
                                   <EditSubmit
-                                    text="編集する"
-                                    onClick={editHandleSubmit}
+                                    text="原材料を編集する"
+                                    onClick={editHandleSubmitIngredient}
                                   />
                                 </div>
                               </div>
