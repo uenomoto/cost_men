@@ -64,11 +64,33 @@ export const SupplierIngredientTable = () => {
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
 
-  const editHandleSubmitIngredient = (e: FormEvent) => {
+  const editHandleSubmitIngredient = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(
-      `原材料名:${editName}, 購入時の値段:${editBuyCost}, 購入時の数量:${editBuyQuantity}, 単位:${editUnit}`
-    );
+
+    try {
+      const params = {
+        ingredient: {
+          name: editName,
+          buy_cost: Number(editBuyCost),
+          buy_quantity: Number(editBuyQuantity),
+          unit: editUnit,
+        },
+      };
+      const res: AxiosResponse<Ingredient> = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${supplierIngredienteditOpen}`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200) {
+        setSuccessMessage("原材料の編集に成功しました");
+        setErrorMessage(null);
+        setSupplierIngredientEditOpen(null);
+      }
+    } catch (error: AxiosError | any) {
+      console.log(error);
+      setErrorMessage(error.response.data);
+      setSuccessMessage(null);
+    }
   };
 
   // 仕入れ先の編集
@@ -114,6 +136,26 @@ export const SupplierIngredientTable = () => {
       setEditSupplierContactInfo("");
     }
   }, [supplierEditOpen, suppliers]);
+
+  // 原材料の編集フォームに原材料情報の値をセットする
+  useEffect(() => {
+    if (supplierIngredienteditOpen !== null) {
+      const ingredientToEdit = suppliers
+        .flatMap((supplier) => supplier.ingredients)
+        .find((ingredient) => ingredient.id === supplierIngredienteditOpen);
+      if (ingredientToEdit) {
+        setEditName(ingredientToEdit.name);
+        setEditBuyCost(String(ingredientToEdit.buy_cost));
+        setEditBuyQuantity(String(ingredientToEdit.buy_quantity));
+        setEditUnit(ingredientToEdit.unit);
+      }
+    } else {
+      setEditName("");
+      setEditBuyCost("");
+      setEditBuyQuantity("");
+      setEditUnit("");
+    }
+  }, [supplierIngredienteditOpen, suppliers]);
 
   const handleDelete = async (id: number) => {
     if (confirm("本当に削除しますか？") === false) return;
