@@ -1,17 +1,21 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { Ingredient, SupplierSelect } from "@/types";
+import { Ingredient, IngredientResponse, SupplierSelect } from "@/types";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { loadedState } from "@/recoil/atoms/loadedState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
 import { Submit } from "../../atoms/form/Submit";
-import { successMessageState } from "@/recoil/atoms/successMessageState";
 
 export const IngredidentForm = () => {
+  // Recoilでグローバルに管理している仕入れ先のリストを取得
+  const [suppliers, setSuppliers] = useRecoilState(suppliersState);
+
   const [ingredientName, setName] = useState<string>("");
   const [buyCost, setBuyCost] = useState<string>("");
   const [buyQuantity, setBuyQuantity] = useState<string>("");
@@ -63,18 +67,29 @@ export const IngredidentForm = () => {
       },
     };
     try {
-      const res: AxiosResponse<Ingredient> = await axios.post(
+      const res: AxiosResponse<IngredientResponse> = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients`,
         params,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 201) {
+        setSuccessMessage("原材料を登録しました");
+        setErrorMessage(null);
         setName("");
         setBuyCost("");
         setBuyQuantity("");
         setUnit("");
-        setSuccessMessage("原材料を登録しました");
-        setErrorMessage(null);
+
+        // 仕入れ先と原材料の一覧をグローバルステートに反映させる
+        const updatedSuppliers = suppliers.map((supplier) =>
+          supplier.id === res.data.ingredient.supplier_id
+            ? {
+                ...supplier,
+                ingredients: [...supplier.ingredients, res.data.ingredient],
+              }
+            : supplier
+        );
+        setSuppliers(updatedSuppliers);
       }
     } catch (error: AxiosError | any) {
       console.log(error);

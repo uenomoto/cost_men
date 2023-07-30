@@ -39,6 +39,7 @@ export interface Ingredient {
   buy_quantity: number;
   unit: string;
   name: string;
+  supplier: Supplier;
 }
 
 // レシピの原材料の型定義

@@ -9,6 +9,7 @@ import { tokenState } from "@/recoil/atoms/tokenState";
 import { loadedState } from "@/recoil/atoms/loadedState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
@@ -19,9 +20,6 @@ import { Input } from "../atoms/form/Input";
 import { EditSubmit } from "../atoms/form/EditSubmit";
 import { EnptyStates } from "../molecules/enptyStates/EnptyStates";
 
-// 仕入れ先が配列であることを明示
-type Suppliers = Supplier[];
-
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
 };
@@ -29,8 +27,8 @@ const classNames = (...classes: (string | false)[]): string => {
 export const SupplierIngredientTable = () => {
   const [loading, setLoading] = useState(true);
 
-  // 一覧表示のステート, 仕入れ先一覧
-  const [suppliers, setSuppliers] = useState<Suppliers>([]);
+  // Recoilで仕入れ先と原材料の一覧を管理
+  const [suppliers, setSuppliers] = useRecoilState(suppliersState);
 
   // 仕入れ先の原材料の編集フォームmodal
   const [supplierIngredienteditOpen, setSupplierIngredientEditOpen] = useState<
@@ -59,6 +57,7 @@ export const SupplierIngredientTable = () => {
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
 
+  // 原材料の編集
   const editHandleSubmitIngredient = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -242,7 +241,7 @@ export const SupplierIngredientTable = () => {
     if (loaded) {
       getSuppliers();
     }
-  }, [token, loaded, setErrorMessage]);
+  }, [token, loaded, setErrorMessage, setSuppliers]);
 
   return (
     <div className="mt-20">
