@@ -15,7 +15,8 @@ class Ingredient < ApplicationRecord
   # 編集したと同時に更新後の詳細の情報を返す
   def self.ingredient_with_supplier(ingredient)
     ingredient.attributes.merge(
-      supplier: { id: ingredient.supplier.id, name: ingredient.supplier.name, contact_info: ingredient.supplier.contact_info }
+      supplier: { id: ingredient.supplier.id, name: ingredient.supplier.name,
+                  contact_info: ingredient.supplier.contact_info }
     )
   end
 end
