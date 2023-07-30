@@ -88,8 +88,9 @@ export const SupplierIngredientTable = () => {
       }
     } catch (error: AxiosError | any) {
       console.log(error);
-      setErrorMessage(error.response.data);
+      setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
+      setSupplierIngredientEditOpen(null);
     }
   };
 
@@ -110,14 +111,27 @@ export const SupplierIngredientTable = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 200) {
+        // 仕入れ先情報を更新
+        const detailRes: AxiosResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/${supplierEditOpen}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const newSuppliers = suppliers.map((supplier) =>
+          supplier.id === detailRes.data.supplier.id
+            ? detailRes.data.supplier
+            : supplier
+        );
+        setSuppliers(newSuppliers);
+
         setSuccessMessage("仕入れ先の編集に成功しました");
         setErrorMessage(null);
         setSupplierEditOpen(null);
       }
     } catch (error: AxiosError | any) {
-      console.log(error);
-      setErrorMessage(error.response.data);
+      setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
+      setSupplierEditOpen(null);
     }
   };
 

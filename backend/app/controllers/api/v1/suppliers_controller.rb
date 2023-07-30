@@ -17,8 +17,10 @@ module Api
       end
 
       def show
-        if set_supplier
-          render_supplier
+        supplier = current_user.suppliers.find(params[:id])
+        supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
+        if supplier_with_ingredient
+          render json: { supplier: supplier_with_ingredient }, status: :ok
         else
           render_not_found_response
         end

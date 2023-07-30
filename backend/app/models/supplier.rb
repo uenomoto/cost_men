@@ -17,4 +17,11 @@ class Supplier < ApplicationRecord
       )
     end
   end
+
+  # 詳細取得し編集後のデータを返す
+  def self.with_ingredient_for_user(supplier)
+    supplier.attributes.merge(
+      ingredients: supplier.ingredients.select(:id, :supplier_id, :buy_cost, :buy_quantity, :unit, :name)
+    )
+  end
 end
