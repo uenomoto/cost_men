@@ -1,6 +1,8 @@
 import { FormEvent, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useRecoilState } from "recoil";
+import { searchResultState } from "@/recoil/atoms/searchResultState";
 import { Input } from "../../atoms/form/Input";
 import { Submit } from "../../atoms/form/Submit";
 
@@ -10,6 +12,9 @@ type Props = {
 };
 
 export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
+  // グローバルで検索結果を管理する
+  const [searchResult, setSearchResult] = useRecoilState(searchResultState);
+
   // 仕入れ先検索フォーム
   const [searchSupplier, setSearchSupplier] = useState("");
 
