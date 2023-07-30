@@ -1,248 +1,263 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
+import { SupplierResponse } from "@/types";
+import { IngredientResponse } from "@/types";
 import { Ingredient } from "@/types";
-import { SupplierSelect } from "@/types";
+import { Supplier } from "@/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { loadedState } from "@/recoil/atoms/loadedState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { SlideOver } from "../molecules/slide-overs/SlideOver";
-import { SuppliersSelectBox } from "../molecules/selectbox/SuppliersSelectBox";
 import { AlertBadge } from "../atoms/badge/AlertBadge";
 import { Input } from "../atoms/form/Input";
-import { Submit } from "../atoms/form/Submit";
 import { EditSubmit } from "../atoms/form/EditSubmit";
-
-// 架空の仕入れ先セレクトkボックスデータ
-const suppliersSelect: SupplierSelect[] = [
-  { id: 1, name: "上野商店(直接)" },
-  { id: 2, name: "あいうえお商店" },
-  { id: 3, name: "ダミー仕入れ先3" },
-  { id: 4, name: "ダミー仕入れ先4" },
-  { id: 5, name: "ダミー仕入れ先5" },
-  { id: 6, name: "ダミー仕入れ先6" },
-  { id: 7, name: "ダミー仕入れ先7" },
-  { id: 8, name: "ダミー仕入れ先8" },
-  { id: 9, name: "ダミー仕入れ先9" },
-  { id: 10, name: "ダミー仕入れ先10" },
-];
-
-// 仕入れ先が配列であることを明示
-type Suppliers = Supplier[];
-
-type Supplier = {
-  id: number;
-  user_id: number;
-  name: string;
-  contact_info: string;
-  ingredients: Ingredient[];
-};
-
-// 架空の仕入れ先とその原材料データ
-const suppliers: Suppliers = [
-  {
-    id: 1,
-    user_id: 1,
-    name: "上野商店",
-    contact_info: "(555) 555-6789",
-    ingredients: [
-      {
-        id: 1,
-        supplier_id: 1,
-        buy_cost: 120.0,
-        buy_quantity: 100.0,
-        unit: "g",
-        name: "トマト",
-      },
-      {
-        id: 2,
-        supplier_id: 1,
-        buy_cost: 1000.0,
-        buy_quantity: 2000.0,
-        unit: "g",
-        name: "りんご",
-      },
-      {
-        id: 3,
-        supplier_id: 1,
-        buy_cost: 500.0,
-        buy_quantity: 500.0,
-        unit: "g",
-        name: "オレンジ",
-      },
-      {
-        id: 4,
-        supplier_id: 1,
-        buy_cost: 180.0,
-        buy_quantity: 120.0,
-        unit: "g",
-        name: "ブルーベリ",
-      },
-      {
-        id: 5,
-        supplier_id: 1,
-        buy_cost: 300.0,
-        buy_quantity: 300.0,
-        unit: "g",
-        name: "バナナ",
-      },
-    ],
-  },
-  {
-    id: 2,
-    user_id: 2,
-    name: "あいうえお商店",
-    contact_info: "(555) 666-1234",
-    ingredients: [
-      {
-        id: 6,
-        supplier_id: 2,
-        buy_cost: 210.0,
-        buy_quantity: 150.0,
-        unit: "g",
-        name: "にんじん",
-      },
-      {
-        id: 7,
-        supplier_id: 2,
-        buy_cost: 200.0,
-        buy_quantity: 250.0,
-        unit: "g",
-        name: "ポテト",
-      },
-      {
-        id: 8,
-        supplier_id: 2,
-        buy_cost: 340.0,
-        buy_quantity: 300.0,
-        unit: "g",
-        name: "たまねぎ",
-      },
-      {
-        id: 9,
-        supplier_id: 2,
-        buy_cost: 1200.0,
-        buy_quantity: 1000.0,
-        unit: "ml",
-        name: "鶏白湯スープ",
-      },
-      {
-        id: 10,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 11,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 12,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 13,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 15,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 16,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 17,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 18,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 19,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-      {
-        id: 20,
-        supplier_id: 2,
-        buy_cost: 700.0,
-        buy_quantity: 1000.0,
-        unit: "g",
-        name: "鶏肉",
-      },
-    ],
-  },
-];
+import { EnptyStates } from "../molecules/enptyStates/EnptyStates";
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
 };
 
 export const SupplierIngredientTable = () => {
+  const [loading, setLoading] = useState(true);
+
+  // Recoilで仕入れ先と原材料の一覧を管理
+  const [suppliers, setSuppliers] = useRecoilState(suppliersState);
+
+  // 仕入れ先の原材料の編集フォームmodal
   const [supplierIngredienteditOpen, setSupplierIngredientEditOpen] = useState<
     number | null
   >(null);
 
+  // 仕入れ先の編集フォームmodal
+  const [supplierEditOpen, setSupplierEditOpen] = useState<number | null>(null);
+
+  // 検索フォームのスライドオーバー
+  const [slideOpen, setSlideOpen] = useState(false);
+
+  // 仕入れ先の編集フォームイベントハンドラ
+  const [editSupplierName, setEditSupplierName] = useState("");
+  const [editSupplierContactInfo, setEditSupplierContactInfo] = useState("");
+
+  // 原材料の編集フォームイベントハンドラ
   const [editName, setEditName] = useState("");
   const [editBuyCost, setEditBuyCost] = useState("");
   const [editBuyQuantity, setEditBuyQuantity] = useState("");
   const [editUnit, setEditUnit] = useState("");
-  const [suppliersSelected, setSuppliersSelected] = useState<SupplierSelect>(
-    suppliersSelect[0]
-  );
 
-  const [slideOpen, setSlideOpen] = useState(false);
+  // RecoilのTokenを取得する
+  const token = useRecoilValue(tokenState);
+  const loaded = useRecoilValue(loadedState); // tokenのロード状態を取得
+  const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setSuccessMessage = useSetRecoilState(successMessageState);
 
-  const editHandleSubmit = (e: FormEvent) => {
+  // 原材料の編集
+  const editHandleSubmitIngredient = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(
-      `原材料名:${editName}, 購入時の値段:${editBuyCost}, 購入時の数量:${editBuyQuantity}, 単位:${editUnit}, 仕入れ先: ${suppliersSelected.name}`
-    );
+
+    try {
+      const params = {
+        ingredient: {
+          name: editName,
+          buy_cost: Number(editBuyCost),
+          buy_quantity: Number(editBuyQuantity),
+          unit: editUnit,
+        },
+      };
+      const res: AxiosResponse<IngredientResponse> = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${supplierIngredienteditOpen}`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200) {
+        setSuccessMessage("原材料の編集に成功しました");
+        setErrorMessage(null);
+        setSupplierIngredientEditOpen(null);
+
+        // 原材料の編集に成功したら、仕入れ先情報を更新する
+        const updatedSuppliers: Supplier[] = suppliers.map((suppliers) =>
+          suppliers.id === res.data.ingredient.supplier_id
+            ? {
+                ...suppliers,
+                ingredients: suppliers.ingredients.map((ingredient) =>
+                  ingredient.id === res.data.ingredient.id
+                    ? res.data.ingredient
+                    : ingredient
+                ),
+              }
+            : suppliers
+        );
+        setSuppliers(updatedSuppliers);
+      }
+    } catch (error: AxiosError | any) {
+      console.log(error);
+      setErrorMessage(error.response.data.errors);
+      setSuccessMessage(null);
+      setSupplierIngredientEditOpen(null);
+    }
   };
 
+  // 仕入れ先の編集
+  const editHandleSubmitSupplier = async (e: FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const params = {
+        supplier: {
+          name: editSupplierName,
+          contact_info: editSupplierContactInfo,
+        },
+      };
+      const res: AxiosResponse<SupplierResponse> = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/${supplierEditOpen}`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200) {
+        setSuccessMessage("仕入れ先の編集に成功しました");
+        setErrorMessage(null);
+        setSupplierEditOpen(null);
+
+        const updatedSuppliers: Supplier[] = suppliers.map((supplier) =>
+          supplier.id === res.data.supplier.id ? res.data.supplier : supplier
+        );
+        setSuppliers(updatedSuppliers);
+      }
+    } catch (error: AxiosError | any) {
+      setErrorMessage(error.response.data.errors);
+      setSuccessMessage(null);
+      setSupplierEditOpen(null);
+    }
+  };
+
+  // 仕入れ先の編集フォームに仕入れ先情報の値をセットする
+  useEffect(() => {
+    if (supplierEditOpen !== null) {
+      const supplierToEdit = suppliers.find(
+        (supplier) => supplier.id === supplierEditOpen
+      );
+      if (supplierToEdit) {
+        setEditSupplierName(supplierToEdit.name);
+        setEditSupplierContactInfo(supplierToEdit.contact_info);
+      }
+    } else {
+      setEditSupplierName("");
+      setEditSupplierContactInfo("");
+    }
+  }, [supplierEditOpen, suppliers]);
+
+  // 原材料の編集フォームに原材料情報の値をセットする
+  useEffect(() => {
+    if (supplierIngredienteditOpen !== null) {
+      const ingredientToEdit = suppliers
+        .flatMap((supplier) => supplier.ingredients)
+        .find((ingredient) => ingredient.id === supplierIngredienteditOpen);
+      if (ingredientToEdit) {
+        setEditName(ingredientToEdit.name);
+        setEditBuyCost(String(ingredientToEdit.buy_cost));
+        setEditBuyQuantity(String(ingredientToEdit.buy_quantity));
+        setEditUnit(ingredientToEdit.unit);
+      }
+    } else {
+      setEditName("");
+      setEditBuyCost("");
+      setEditBuyQuantity("");
+      setEditUnit("");
+    }
+  }, [supplierIngredienteditOpen, suppliers]);
+
+  const handleDelete = async (id: number) => {
+    if (confirm("本当に削除しますか？") === false) return;
+    try {
+      // 仕入れ先の原材料のid取得
+      const ingredientToDelete = suppliers
+        .flatMap((supplier) => supplier.ingredients)
+        .find((ingredient) => ingredient.id === id);
+
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setSuppliers(
+        suppliers.map((supplier) => ({
+          ...supplier, // 仕入れ先情報をコピーして新しい配列(ボタンを押したidを削除)を作成
+          ingredients: supplier.ingredients.filter(
+            (ingredient) => ingredient.id !== id
+          ),
+        }))
+      );
+
+      if (ingredientToDelete) {
+        setSuccessMessage(`${ingredientToDelete.name}の削除に成功しました`);
+      } else {
+        setSuccessMessage("原材料の削除に成功しました");
+      }
+
+      setErrorMessage(null);
+    } catch (error: AxiosError | any) {
+      console.log(error);
+      setErrorMessage(error.response.data); // railsから返されたエラーメッセージをステートに格納
+      setSuccessMessage(null);
+    }
+  };
+
+  // 原材料の単価を計算する
   const costCalculation = (ingredient: Ingredient) => {
     return (
       Math.round((ingredient.buy_cost / ingredient.buy_quantity) * 10) / 10
     );
   };
 
+  // 仕入れ先情報一覧を取得する
+  useEffect(() => {
+    if (!token || !loaded) return;
+    setLoading(true);
+    const getSuppliers = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setSuppliers(res.data.suppliers); // APIから取得した仕入れ先情報をステートに格納
+        setLoading(false);
+        setErrorMessage(null);
+      } catch (error: AxiosError | any) {
+        console.log(error);
+        setLoading(false);
+        setErrorMessage("仕入れ先情報の取得に失敗しました");
+      }
+    };
+    if (loaded) {
+      getSuppliers();
+    }
+  }, [token, loaded, setErrorMessage, setSuppliers]);
+
   return (
     <div className="mt-20">
+      {loading ? (
+        <div className="flex items-center text-center" aria-label="読み込み中">
+          <span className="font-bold mr-3">ロード中です........</span>
+          <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+        </div>
+      ) : suppliers.reduce(
+          (total, supplier) => total + supplier.ingredients.length,
+          0
+        ) === 0 ? (
+        <EnptyStates />
+      ) : (
+        ""
+      )}
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
@@ -290,7 +305,7 @@ export const SupplierIngredientTable = () => {
                     </th>
                     <th
                       scope="col"
-                      className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                      className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter"
                     >
                       原材料名
                     </th>
@@ -298,7 +313,7 @@ export const SupplierIngredientTable = () => {
                       scope="col"
                       className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter"
                     >
-                      1/g円
+                      1/円
                     </th>
                     <th
                       scope="col"
@@ -331,10 +346,59 @@ export const SupplierIngredientTable = () => {
                             >
                               <div className="flex items-center space-x-2">
                                 <div className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-sky-600" />
-                                <span className="text-md lg:text-2xl">
+                                <span
+                                  className="text-md font-bold cursor-pointer lg:text-2xl"
+                                  onClick={() =>
+                                    setSupplierEditOpen(supplier.id)
+                                  }
+                                >
                                   {supplier.name}
                                 </span>
                               </div>
+                              {supplierEditOpen === supplier.id && (
+                                <Modal
+                                  open={supplierEditOpen === supplier.id}
+                                  setModalOpen={() => setSupplierEditOpen(null)}
+                                >
+                                  <div className="md:p-5">
+                                    <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
+                                      仕入れ先編集
+                                    </h3>
+                                    <div className="mt-5">
+                                      <AlertBadge />
+                                      <Input
+                                        htmlfor="name"
+                                        text="仕入れ先名"
+                                        type="text"
+                                        placeholder="仕入れ先名を入力してください"
+                                        id="name"
+                                        name="name"
+                                        value={editSupplierName}
+                                        onChange={setEditSupplierName}
+                                      />
+                                      <div className="text-left">
+                                        <span className="inline-flex items-start rounded-full mb-3 bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                          連絡先は後から登録できます
+                                        </span>
+                                      </div>
+                                      <Input
+                                        htmlfor="contact_info"
+                                        text="連絡先"
+                                        type="text"
+                                        placeholder="連絡先を入力してください"
+                                        id="contact_info"
+                                        name="contact_info"
+                                        value={editSupplierContactInfo}
+                                        onChange={setEditSupplierContactInfo}
+                                      />
+                                    </div>
+                                    <EditSubmit
+                                      text="仕入れ先を編集する"
+                                      onClick={editHandleSubmitSupplier}
+                                    />
+                                  </div>
+                                </Modal>
+                              )}
                             </td>
                             <td
                               rowSpan={supplier.ingredients.length}
@@ -421,13 +485,6 @@ export const SupplierIngredientTable = () => {
                                 <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
                                   原材料編集
                                 </h3>
-                                <div className="mt-3">
-                                  <SuppliersSelectBox
-                                    selected={suppliersSelected}
-                                    setSelected={setSuppliersSelected}
-                                    suppliers={suppliersSelect}
-                                  />
-                                </div>
                                 <div className="mt-5">
                                   <div className="grid gap-1 grid-cols-2">
                                     <div className="col-span-1">
@@ -480,8 +537,8 @@ export const SupplierIngredientTable = () => {
                                     </div>
                                   </div>
                                   <EditSubmit
-                                    text="編集する"
-                                    onClick={editHandleSubmit}
+                                    text="原材料を編集する"
+                                    onClick={editHandleSubmitIngredient}
                                   />
                                 </div>
                               </div>
@@ -496,7 +553,9 @@ export const SupplierIngredientTable = () => {
                             "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-xs font-medium sm:pr-8 lg:pr-1"
                           )}
                         >
-                          <DeleteButton />
+                          <DeleteButton
+                            onClick={() => handleDelete(ingredient.id)}
+                          />
                         </td>
                       </tr>
                     ))

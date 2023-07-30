@@ -5,7 +5,7 @@ type InputProps = {
   text: string;
   type: string;
   placeholder: string;
-  value: string;
+  value: string | number;
   name: string;
   id: string;
   onChange: (value: string) => void;

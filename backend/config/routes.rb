@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         resources :selling_prices, only: %i[show create update]
       end
       resources :ingredients, only: %i[index show create update destroy]
+      get 'suppliers/select_index', to: 'suppliers#select_index'
       resources :suppliers, only: %i[index show create update]
       resources :tags, only: %i[index create update destroy]
     end

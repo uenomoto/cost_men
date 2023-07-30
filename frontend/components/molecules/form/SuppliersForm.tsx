@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FormEvent } from "react";
-import axios from "axios";
-import { useRecoilValue } from "recoil";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { Supplier } from "@/types";
 import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { Submit } from "../../atoms/form/Submit";
@@ -12,11 +15,11 @@ export const SuppliersForm = () => {
   const [contactInfo, setContactInfo] = useState<string>("");
 
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
+  const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setSuccessMessage = useSetRecoilState(successMessageState);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // console.log(valueName, valueContactInfo);
-
     const params = {
       supplier: {
         name: name,
@@ -25,42 +28,23 @@ export const SuppliersForm = () => {
     };
     console.log(params);
     // console.log(token);
-
-    console.log(localStorage.getItem("token"));
     try {
-      await axios.post(
+      const res: AxiosResponse<Supplier> = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
         params,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      // console.log("success");
-      setName("");
-      setContactInfo("");
-    } catch (error) {
-      console.log(error);
+      if (res.status === 201) {
+        setName("");
+        setContactInfo("");
+        setSuccessMessage("仕入れ先を登録しました");
+        setErrorMessage(null);
+      }
+    } catch (error: AxiosError | any) {
+      setSuccessMessage(null);
+      setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
     }
   };
-
-  // 仕入れ先情報一覧を取得する
-  useEffect(() => {
-    if (!token) return;
-    const getSuppliers = async () => {
-      try {
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getSuppliers();
-  }, [token]);
 
   return (
     <div className="mt-5 bg-gray-200 shadow-lg rounded-2xl">
