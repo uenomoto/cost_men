@@ -11,4 +11,11 @@ class Ingredient < ApplicationRecord
   validates :buy_quantity, presence: true, numericality: { greater_than_or_equal_to: 1 }
 
   scope :leatest, -> { order(created_at: :desc) }
+
+  # 編集したと同時に更新後の詳細の情報を返す
+  def self.ingredient_with_supplier(ingredient)
+    ingredient.attributes.merge(
+      supplier: { id: ingredient.supplier.id, name: ingredient.supplier.name, contact_info: ingredient.supplier.contact_info }
+    )
+  end
 end

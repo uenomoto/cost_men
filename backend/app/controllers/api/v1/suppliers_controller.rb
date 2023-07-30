@@ -29,7 +29,7 @@ module Api
       def create
         # 仕入れ先とuserが紐付いていれば↓この記述でuser_idが自動的に現在のuserのsubになる。
         supplier = current_user.suppliers.build(supplier_params)
-        if @supplier.save
+        if supplier.save
           render_supplier(status: :created)
         else
           render json: { errors: supplier.errors.full_messages }, status: :unprocessable_entity

@@ -63,6 +63,10 @@ export interface SupplierResponse {
   supplier: Supplier;
 }
 
+export interface IngredientResponse {
+  ingredient: Ingredient;
+}
+
 // タグの型定義
 export interface Tag {
   id: number;

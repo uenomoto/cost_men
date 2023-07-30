@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { SupplierResponse } from "@/types";
+import { IngredientResponse } from "@/types";
 import { Ingredient } from "@/types";
 import { Supplier } from "@/types";
 import axios, { AxiosError, AxiosResponse } from "axios";
@@ -70,7 +71,7 @@ export const SupplierIngredientTable = () => {
           unit: editUnit,
         },
       };
-      const res: AxiosResponse<Ingredient> = await axios.patch(
+      const res: AxiosResponse<IngredientResponse> = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${supplierIngredienteditOpen}`,
         params,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -79,6 +80,21 @@ export const SupplierIngredientTable = () => {
         setSuccessMessage("原材料の編集に成功しました");
         setErrorMessage(null);
         setSupplierIngredientEditOpen(null);
+
+        // 原材料の編集に成功したら、仕入れ先情報を更新する
+        const updatedSuppliers: Supplier[] = suppliers.map((suppliers) =>
+          suppliers.id === res.data.ingredient.supplier_id
+            ? {
+                ...suppliers,
+                ingredients: suppliers.ingredients.map((ingredient) =>
+                  ingredient.id === res.data.ingredient.id
+                    ? res.data.ingredient
+                    : ingredient
+                ),
+              }
+            : suppliers
+        );
+        setSuppliers(updatedSuppliers);
       }
     } catch (error: AxiosError | any) {
       console.log(error);

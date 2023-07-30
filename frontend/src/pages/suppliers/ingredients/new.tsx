@@ -12,8 +12,8 @@ const SupplierIngredientNew: NextPage = () => {
         こちらのタブをクリックし仕入れ先か原材料の登録を初めてください
       </h1>
       <ErrorMessage />
-      <SuccessMessage />
       <SupplierRegistrationTab />
+      <SuccessMessage />
       <SupplierIngredientTable />
     </>
   );

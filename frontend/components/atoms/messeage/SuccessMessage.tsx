@@ -9,7 +9,7 @@ export const SuccessMessage = () => {
 
   return (
     successMessage && (
-      <div className="rounded-md bg-green-50 p-4">
+      <div className="rounded-md bg-green-50 p-4 mt-3">
         <div className="flex items-center">
           <div className="flex-shrink-0">
             <CheckCircleIcon
