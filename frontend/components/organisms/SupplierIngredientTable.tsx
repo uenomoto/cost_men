@@ -10,6 +10,7 @@ import { loadedState } from "@/recoil/atoms/loadedState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
+import { searchResultState } from "@/recoil/atoms/searchResultState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
@@ -40,6 +41,8 @@ export const SupplierIngredientTable = () => {
 
   // 検索フォームのスライドオーバー
   const [slideOpen, setSlideOpen] = useState(false);
+  // グローバルに検索結果を読み取り専用で取得
+  const searchResult = useRecoilValue(searchResultState);
 
   // 仕入れ先の編集フォームイベントハンドラ
   const [editSupplierName, setEditSupplierName] = useState("");
@@ -225,9 +228,7 @@ export const SupplierIngredientTable = () => {
       try {
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         setSuppliers(res.data.suppliers); // APIから取得した仕入れ先情報をステートに格納
         setLoading(false);

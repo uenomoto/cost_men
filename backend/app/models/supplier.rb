@@ -24,4 +24,9 @@ class Supplier < ApplicationRecord
       ingredients: supplier.ingredients.select(:id, :supplier_id, :buy_cost, :buy_quantity, :unit, :name)
     )
   end
+
+  # 検索できるカラムの設定
+  def self.ransackable_attributes(auth_object = nil)
+    ["name"]
+  end
 end
