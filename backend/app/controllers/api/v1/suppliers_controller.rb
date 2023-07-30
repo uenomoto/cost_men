@@ -28,29 +28,25 @@ module Api
 
       def create
         # 仕入れ先とuserが紐付いていれば↓この記述でuser_idが自動的に現在のuserのsubになる。
-        @supplier = current_user.suppliers.build(supplier_params)
-
+        supplier = current_user.suppliers.build(supplier_params)
         if @supplier.save
           render_supplier(status: :created)
         else
-          render_supplier_errors
+          render json: { errors: supplier.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
       def update
-        set_supplier
-        if @supplier.update(supplier_params)
-          render_supplier
+        supplier = current_user.suppliers.find(params[:id])
+        if supplier.update(supplier_params)
+          supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
+          render json: { supplier: supplier_with_ingredient }, status: :ok
         else
-          render_supplier_errors
+          render json: { errors: supplier.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
       private
-
-      def set_supplier
-        @supplier = current_user.suppliers.find(params[:id])
-      end
 
       def render_supplier(status: :ok)
         render json: { supplier: @supplier.as_json }, status:
@@ -58,10 +54,6 @@ module Api
 
       def render_not_found_response
         render json: { error: '特定の仕入れ先のデータはありません' }, status: :not_found
-      end
-
-      def render_supplier_errors
-        render json: { errors: @supplier.errors.full_messages }, status: :unprocessable_entity
       end
 
       def supplier_params

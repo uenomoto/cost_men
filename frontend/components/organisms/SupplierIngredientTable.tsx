@@ -1,5 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
+import { SupplierResponse } from "@/types";
 import { Ingredient } from "@/types";
+import { Supplier } from "@/types";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
@@ -18,14 +20,6 @@ import { EnptyStates } from "../molecules/enptyStates/EnptyStates";
 
 // 仕入れ先が配列であることを明示
 type Suppliers = Supplier[];
-
-type Supplier = {
-  id: number;
-  user_id: number;
-  name: string;
-  contact_info: string;
-  ingredients: Ingredient[];
-};
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
@@ -105,28 +99,20 @@ export const SupplierIngredientTable = () => {
           contact_info: editSupplierContactInfo,
         },
       };
-      const res: AxiosResponse<Supplier> = await axios.patch(
+      const res: AxiosResponse<SupplierResponse> = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/${supplierEditOpen}`,
         params,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 200) {
-        // 仕入れ先情報を更新
-        const detailRes: AxiosResponse = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/${supplierEditOpen}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        const newSuppliers = suppliers.map((supplier) =>
-          supplier.id === detailRes.data.supplier.id
-            ? detailRes.data.supplier
-            : supplier
-        );
-        setSuppliers(newSuppliers);
-
         setSuccessMessage("仕入れ先の編集に成功しました");
         setErrorMessage(null);
         setSupplierEditOpen(null);
+
+        const updatedSuppliers: Supplier[] = suppliers.map((supplier) =>
+          supplier.id === res.data.supplier.id ? res.data.supplier : supplier
+        );
+        setSuppliers(updatedSuppliers);
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
