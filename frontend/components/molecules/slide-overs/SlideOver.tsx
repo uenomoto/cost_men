@@ -1,8 +1,13 @@
 import { FormEvent, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { searchResultState } from "@/recoil/atoms/searchResultState";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { isSearchingState } from "@/recoil/atoms/isSearchingState";
 import { Input } from "../../atoms/form/Input";
 import { Submit } from "../../atoms/form/Submit";
+import axios, { AxiosError } from "axios";
 
 type Props = {
   slideOpen: boolean;
@@ -10,17 +15,40 @@ type Props = {
 };
 
 export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
-  // 仕入れ先検索フォーム
+  // グローバルで検索結果を管理する
+  const setSearchResult = useSetRecoilState(searchResultState);
+
+  // グローバルで検索中かどうかを管理する
+  const setIsSearching = useSetRecoilState(isSearchingState);
+
+  // 仕入れ先検索フォーム(textfield)
   const [searchSupplier, setSearchSupplier] = useState("");
 
-  const [searchIngredient, setSearchIngredient] = useState("");
+  const token = useRecoilValue(tokenState);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(searchSupplier, searchIngredient);
-    setSearchSupplier("");
-    setSearchIngredient("");
-    setSlideOpen(false);
+
+    const params = {
+      supplier_q: searchSupplier,
+    };
+
+    // getリクエストは第二引数までなので検索クエリと認証ヘッダー同時に渡す必要がある
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/search`,
+        {
+          params: params,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setSearchResult(res.data);
+      setSearchSupplier("");
+      setIsSearching(true);
+      setSlideOpen(false);
+    } catch (error: AxiosError | any) {
+      console.log(error.response.data);
+    }
   };
 
   return (
@@ -63,10 +91,13 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
                           <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                         </button>
                       </div>
-                      <div className="mt-5 text-center">
+                      <div className="mt-5 text-center space-y-1">
                         <Dialog.Title className="text-xl font-semibold leading-6 text-gray-900">
-                          こちらから検索ができます！
+                          仕入れ先と連絡先検索ができます！
                         </Dialog.Title>
+                        <p className="text-xs text-gray-500">
+                          空欄で検索すると全ての仕入れ先が検索できます
+                        </p>
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6 space-y-12">
@@ -79,16 +110,6 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
                         name="searchSupplier"
                         id="searchSupplier"
                         onChange={setSearchSupplier}
-                      />
-                      <Input
-                        htmlfor="searchIngredient"
-                        text="原材料の検索"
-                        type="text"
-                        placeholder="原材料を検索"
-                        value={searchIngredient}
-                        name="searchIngredient"
-                        id="searchIngredient"
-                        onChange={setSearchIngredient}
                       />
                       <Submit text="検索" onClick={handleSubmit} />
                     </div>

@@ -19,4 +19,9 @@ class Ingredient < ApplicationRecord
                   contact_info: ingredient.supplier.contact_info }
     )
   end
+
+  # 検索できるカラムの設定
+  def self.ransackable_attributes(_auth_object = nil)
+    ['name']
+  end
 end
