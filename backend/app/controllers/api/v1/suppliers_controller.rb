@@ -6,13 +6,21 @@ module Api
       before_action :authorize_request
 
       def index
-        @suppliers = current_user.suppliers.leatest.includes(:ingredients)
-        render json: { suppliers: @suppliers.map(&:as_json) }, status: :ok
+        suppliers = Supplier.with_ingredients_for_user(current_user)
+        render json: { suppliers: }, status: :ok
+      end
+
+      # セレクトボックスで使うためのindexのapi
+      def select_index
+        suppliers = current_user.suppliers.select(:id, :name)
+        render json: { suppliers: }, status: :ok
       end
 
       def show
-        if set_supplier
-          render_supplier
+        supplier = current_user.suppliers.find(params[:id])
+        supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
+        if supplier_with_ingredient
+          render json: { supplier: supplier_with_ingredient }, status: :ok
         else
           render_not_found_response
         end
@@ -20,29 +28,25 @@ module Api
 
       def create
         # 仕入れ先とuserが紐付いていれば↓この記述でuser_idが自動的に現在のuserのsubになる。
-        @supplier = current_user.suppliers.build(supplier_params)
-
-        if @supplier.save
+        supplier = current_user.suppliers.build(supplier_params)
+        if supplier.save
           render_supplier(status: :created)
         else
-          render_supplier_errors
+          render json: { errors: supplier.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
       def update
-        set_supplier
-        if @supplier.update(supplier_params)
-          render_supplier
+        supplier = current_user.suppliers.find(params[:id])
+        if supplier.update(supplier_params)
+          supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
+          render json: { supplier: supplier_with_ingredient }, status: :ok
         else
-          render_supplier_errors
+          render json: { errors: supplier.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
       private
-
-      def set_supplier
-        @supplier = current_user.suppliers.find(params[:id])
-      end
 
       def render_supplier(status: :ok)
         render json: { supplier: @supplier.as_json }, status:
@@ -50,10 +54,6 @@ module Api
 
       def render_not_found_response
         render json: { error: '特定の仕入れ先のデータはありません' }, status: :not_found
-      end
-
-      def render_supplier_errors
-        render json: { errors: @supplier.errors.full_messages }, status: :unprocessable_entity
       end
 
       def supplier_params

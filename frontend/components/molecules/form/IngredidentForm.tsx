@@ -1,35 +1,101 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
+import { Ingredient, IngredientResponse, SupplierSelect } from "@/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { loadedState } from "@/recoil/atoms/loadedState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { Input } from "../../atoms/form/Input";
-import { SaveButton } from "../../atoms/form/SaveSubmit";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
-import { SupplierSelect } from "@/types";
-
-const suppliers: SupplierSelect[] = [
-  { id: 1, name: "上野商店(直接)" },
-  { id: 2, name: "あいうえお商店" },
-  { id: 3, name: "ダミー仕入れ先3" },
-  { id: 4, name: "ダミー仕入れ先4" },
-  { id: 5, name: "ダミー仕入れ先5" },
-  { id: 6, name: "ダミー仕入れ先6" },
-  { id: 7, name: "ダミー仕入れ先7" },
-  { id: 8, name: "ダミー仕入れ先8" },
-  { id: 9, name: "ダミー仕入れ先9" },
-  { id: 10, name: "ダミー仕入れ先10" },
-];
+import { Submit } from "../../atoms/form/Submit";
 
 export const IngredidentForm = () => {
-  const [valueName, setValueName] = useState("");
-  const [valueBuyCost, setValueBuyCost] = useState("");
-  const [valueBuyQuantity, setValueBuyQuantity] = useState("");
-  const [valueUnit, setValueUnit] = useState("");
-  const [selectedSupplier, setSelectedSupplier] = useState(suppliers[0]);
+  // Recoilでグローバルに管理している仕入れ先のリストを取得
+  const [suppliers, setSuppliers] = useRecoilState(suppliersState);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const [ingredientName, setName] = useState<string>("");
+  const [buyCost, setBuyCost] = useState<string>("");
+  const [buyQuantity, setBuyQuantity] = useState<string>("");
+  const [unit, setUnit] = useState<string>("");
+
+  // ユーザーが選択した仕入れ先の情報を保持する
+  const [selectedSupplier, setSelectedSupplier] =
+    useState<SupplierSelect | null>(null);
+  // apiから取得した仕入れ先のリストを保持する
+  const [suppliersList, setSuppliersList] = useState<SupplierSelect[]>([]);
+
+  const token = useRecoilValue(tokenState);
+  const loaded = useRecoilValue(loadedState);
+  const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setSuccessMessage = useSetRecoilState(successMessageState);
+
+  // 仕入れ先のセレクトボックスのためのデータを取得する
+  useEffect(() => {
+    if (!token || !loaded) return;
+    const getSuppiersSelect = async () => {
+      try {
+        const res: AxiosResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/select_index`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setSuppliersList(res.data.suppliers); // suppliersのリストをステートに設定
+        setSelectedSupplier(res.data.suppliers[0]); // 最初の仕入れ先を選択状態に設定
+      } catch (error: AxiosError | any) {
+        console.log(error);
+        setErrorMessage("仕入れ先の取得に失敗しました");
+      }
+    };
+    if (loaded) {
+      getSuppiersSelect();
+    }
+  }, [token, loaded, setErrorMessage]);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(
-      `原材料名:${valueName}, 購入時の値段:${valueBuyCost}, 購入時の数量:${valueBuyQuantity}, 単位:${valueUnit}, 仕入れ先: ${selectedSupplier.name}`
-    );
+    const params = {
+      ingredient: {
+        name: ingredientName,
+        buy_cost: Number(buyCost),
+        buy_quantity: Number(buyQuantity),
+        unit: unit,
+        supplier_id: selectedSupplier ? selectedSupplier.id : null,
+      },
+    };
+    try {
+      const res: AxiosResponse<IngredientResponse> = await axios.post(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 201) {
+        setSuccessMessage("原材料を登録しました");
+        setErrorMessage(null);
+        setName("");
+        setBuyCost("");
+        setBuyQuantity("");
+        setUnit("");
+
+        // 仕入れ先と原材料の一覧をグローバルステートに反映させる
+        const updatedSuppliers = suppliers.map((supplier) =>
+          supplier.id === res.data.ingredient.supplier_id
+            ? {
+                ...supplier,
+                ingredients: [...supplier.ingredients, res.data.ingredient],
+              }
+            : supplier
+        );
+        setSuppliers(updatedSuppliers);
+      }
+    } catch (error: AxiosError | any) {
+      console.log(error);
+      setErrorMessage(error.response.data.errors);
+      setSuccessMessage(null);
+    }
   };
 
   return (
@@ -45,62 +111,60 @@ export const IngredidentForm = () => {
           <SuppliersSelectBox
             selected={selectedSupplier}
             setSelected={setSelectedSupplier}
-            suppliers={suppliers}
+            suppliers={suppliersList}
           />
         </div>
-        <form onSubmit={handleSubmit} className="mt-5">
-          <div className="grid gap-1 grid-cols-2">
-            <div className="col-span-1">
-              <AlertBadge />
-              <Input
-                htmlfor="name"
-                text="原材料名"
-                type="text"
-                placeholder="原材料名を入力してください"
-                id="name"
-                name="name"
-                value={valueName}
-                onChange={setValueName}
-              />
-              <AlertBadge />
-              <Input
-                htmlfor="buy_quantity"
-                text="購入時の数量"
-                type="number"
-                placeholder="購入時の数量を入力"
-                id="buy_quantity"
-                name="buy_quantity"
-                value={valueBuyQuantity}
-                onChange={setValueBuyQuantity}
-              />
-            </div>
-            <div className="col-span-1">
-              <AlertBadge />
-              <Input
-                htmlfor="buy_cost"
-                text="購入時の値段"
-                type="number"
-                placeholder="購入時の値段を入力"
-                id="buy_cost"
-                name="buy_cost"
-                value={valueBuyCost}
-                onChange={setValueBuyCost}
-              />
-              <AlertBadge />
-              <Input
-                htmlfor="unit"
-                text="単位"
-                type="text"
-                placeholder="単位を入力してください"
-                id="unit"
-                name="unit"
-                value={valueUnit}
-                onChange={setValueUnit}
-              />
-            </div>
+        <div className="mt-5 grid gap-1 grid-cols-2">
+          <div className="col-span-1">
+            <AlertBadge />
+            <Input
+              htmlfor="name"
+              text="原材料名"
+              type="text"
+              placeholder="原材料名を入力してください"
+              id="name"
+              name="name"
+              value={ingredientName}
+              onChange={setName}
+            />
+            <AlertBadge />
+            <Input
+              htmlfor="buy_quantity"
+              text="購入時の数量"
+              type="number"
+              placeholder="購入時の数量を入力"
+              id="buy_quantity"
+              name="buy_quantity"
+              value={buyQuantity}
+              onChange={setBuyQuantity}
+            />
           </div>
-          <SaveButton>登録する</SaveButton>
-        </form>
+          <div className="col-span-1">
+            <AlertBadge />
+            <Input
+              htmlfor="buy_cost"
+              text="購入時の値段"
+              type="number"
+              placeholder="購入時の値段を入力"
+              id="buy_cost"
+              name="buy_cost"
+              value={buyCost}
+              onChange={setBuyCost}
+            />
+            <AlertBadge />
+            <Input
+              htmlfor="unit"
+              text="単位"
+              type="text"
+              placeholder="単位を入力してください"
+              id="unit"
+              name="unit"
+              value={unit}
+              onChange={setUnit}
+            />
+          </div>
+        </div>
+        <Submit text="登録する" onClick={handleSubmit} />
       </div>
     </div>
   );

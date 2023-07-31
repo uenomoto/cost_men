@@ -1,13 +1,24 @@
 // 型定義ファイル
 
+import { AxiosRequestConfig } from "axios";
+
+export interface AxiosResponse<T = any> {
+  data: T;
+  status: number;
+  statusText: string;
+  headers: any;
+  config: AxiosRequestConfig;
+  request?: any;
+}
+
 export interface SupplierSelect {
   id: number;
   name: string;
 }
 
 export type SupplierSelectProps = {
-  selected: SupplierSelect;
-  setSelected: (supplier: SupplierSelect) => void;
+  selected: SupplierSelect | null;
+  setSelected: (supplier: SupplierSelect | null) => void;
   suppliers: SupplierSelect[];
 };
 
@@ -28,6 +39,7 @@ export interface Ingredient {
   buy_quantity: number;
   unit: string;
   name: string;
+  supplier: Supplier;
 }
 
 // レシピの原材料の型定義
@@ -45,10 +57,23 @@ export interface Supplier {
   user_id: number;
   name: string;
   contact_info: string;
+  ingredients: Ingredient[];
+}
+
+export interface SupplierResponse {
+  supplier: Supplier;
+}
+
+export interface IngredientResponse {
+  ingredient: Ingredient;
 }
 
 // タグの型定義
 export interface Tag {
   id: number;
   name: string;
+}
+
+export interface SearchResult {
+  suppliers: Supplier[];
 }

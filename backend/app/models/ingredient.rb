@@ -7,8 +7,21 @@ class Ingredient < ApplicationRecord
 
   validates :name, presence: true
   validates :unit, presence: true
-  validates :buy_cost, presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :buy_quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :buy_cost, presence: true, numericality: { greater_than_or_equal_to: 1 }
+  validates :buy_quantity, presence: true, numericality: { greater_than_or_equal_to: 1 }
 
   scope :leatest, -> { order(created_at: :desc) }
+
+  # 編集したと同時に更新後の詳細の情報を返す
+  def self.ingredient_with_supplier(ingredient)
+    ingredient.attributes.merge(
+      supplier: { id: ingredient.supplier.id, name: ingredient.supplier.name,
+                  contact_info: ingredient.supplier.contact_info }
+    )
+  end
+
+  # 検索できるカラムの設定
+  def self.ransackable_attributes(_auth_object = nil)
+    ['name']
+  end
 end
