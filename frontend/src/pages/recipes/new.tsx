@@ -1,5 +1,7 @@
 import React, { FormEvent, useState, useEffect } from "react";
-import { Tag } from "@/types";
+import { Supplier, Tag } from "@/types";
+import { Ingredient } from "@/types";
+import { useRouter } from "next/router";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../components/molecules/checkbox/TagCheckBox";
@@ -9,8 +11,6 @@ import { EditButton } from "../../../components/atoms/button/EditButton";
 import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
 import { RecipesTable } from "../../../components/organisms/RecipesTable";
 import { RecipeImage } from "../../../components/molecules/recipe-image/RecipeImage";
-import { Ingredient } from "@/types";
-import { useRouter } from "next/router";
 import { uploadImageToS3 } from "../../../utils/s3Upload";
 
 const tags: Tag[] = [
@@ -64,8 +64,22 @@ const tags: Tag[] = [
   },
 ];
 
-// 架空のデータ
-const ingredients = [
+// 仮のデータ
+let suppliers: Supplier[] = [
+  {
+    id: 1,
+    user_id: 1,
+    name: "上野商店",
+    contact_info: "03-1234-5678",
+    ingredients: [],
+  },
+];
+
+const findSupplierById = (id: number) =>
+  suppliers.find((supplier) => supplier.id === id);
+
+// 仮のデータ
+let ingredients: Ingredient[] = [
   {
     id: 1,
     name: "にんじん",
@@ -73,6 +87,7 @@ const ingredients = [
     buy_cost: 400,
     buy_quantity: 500,
     unit: "g",
+    supplier: findSupplierById(1) || suppliers[0],
   },
   {
     id: 2,
@@ -81,17 +96,16 @@ const ingredients = [
     buy_cost: 700,
     buy_quantity: 1000,
     unit: "g",
+    supplier: findSupplierById(1) || suppliers[0],
   },
 ];
-
-const suppliers = [
-  {
-    id: 1,
-    user_id: 1,
-    name: "上野商店",
-    contact_info: "03-1234-5678",
-  },
-];
+// 仮のデータ
+suppliers = suppliers.map((supplier) => ({
+  ...supplier, // スプレット構文で展開することで、元のオブジェクトのプロパティをそのまま引き継ぐ
+  ingredients: ingredients.filter(
+    (ingredient) => ingredient.supplier_id === supplier.id
+  ),
+}));
 
 const RecipesNew = () => {
   const [open, setOpen] = useState(false);
@@ -117,6 +131,11 @@ const RecipesNew = () => {
     e.preventDefault();
     console.log(tagName);
     setTagName("");
+  };
+
+  // タグ削除
+  const handleDelete = () => {
+    console.log("削除");
   };
 
   // S3に画像をアップロードしurlを取得する
@@ -232,7 +251,7 @@ const RecipesNew = () => {
                     <div className="col-span-1 text-xs">編集</div>
                   </EditButton>
                   <div className="text-xs">
-                    <DeleteButton />
+                    <DeleteButton onClick={handleDelete} />
                   </div>
                 </li>
               ))}
