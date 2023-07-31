@@ -49,6 +49,7 @@ export const RecipesTable: React.FC<RecipesTableProps> = ({
           buy_cost: 10,
           buy_quantity: 10,
           unit: "g",
+          supplier: suppliers[0],
         },
       ],
     });
