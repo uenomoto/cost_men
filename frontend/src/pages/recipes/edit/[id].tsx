@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
-import { Tag } from "@/types";
+import { Supplier, Tag } from "@/types";
 import { Ingredient } from "@/types";
 import { Input } from "../../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../../components/molecules/checkbox/TagCheckBox";
@@ -59,8 +59,22 @@ const tags: Tag[] = [
   },
 ];
 
-// 架空のデータ
-const ingredients = [
+// 仮のデータ
+let suppliers: Supplier[] = [
+  {
+    id: 1,
+    user_id: 1,
+    name: "上野商店",
+    contact_info: "03-1234-5678",
+    ingredients: [],
+  },
+];
+
+const findSupplierById = (id: number) =>
+  suppliers.find((supplier) => supplier.id === id);
+
+// 仮のデータ
+let ingredients: Ingredient[] = [
   {
     id: 1,
     name: "にんじん",
@@ -68,6 +82,7 @@ const ingredients = [
     buy_cost: 400,
     buy_quantity: 500,
     unit: "g",
+    supplier: findSupplierById(1) || suppliers[0],
   },
   {
     id: 2,
@@ -76,17 +91,16 @@ const ingredients = [
     buy_cost: 700,
     buy_quantity: 1000,
     unit: "g",
+    supplier: findSupplierById(1) || suppliers[0],
   },
 ];
-
-const suppliers = [
-  {
-    id: 1,
-    user_id: 1,
-    name: "上野商店",
-    contact_info: "03-1234-5678",
-  },
-];
+// 仮のデータ
+suppliers = suppliers.map((supplier) => ({
+  ...supplier, // スプレット構文で展開することで、元のオブジェクトのプロパティをそのまま引き継ぐ
+  ingredients: ingredients.filter(
+    (ingredient) => ingredient.supplier_id === supplier.id
+  ),
+}));
 
 const RecipesEdit = () => {
   const router = useRouter();
