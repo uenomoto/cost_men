@@ -21,6 +21,7 @@ import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 
 // 仮のデータ
 let suppliers: Supplier[] = [
@@ -72,6 +73,9 @@ const RecipesNew = () => {
   // タグの名前登録とレシピの名前登録
   const [recipeName, setRecipeName] = useState("");
   const [tagName, setTagName] = useState("");
+  // タグ編集
+  const [editTagId, setEditTagId] = useState<number | null>(null);
+  const [editTagName, setEditTagName] = useState("");
 
   // トークンを取得
   const token = useRecoilValue(tokenState);
@@ -159,6 +163,35 @@ const RecipesNew = () => {
       }
     };
     deleteTag();
+  };
+
+  // タグを編集
+  const editHandleSubmitTagName = async (e: FormEvent, id: number) => {
+    e.preventDefault();
+    if (!token || !loaded) return;
+
+    try {
+      const params = {
+        tag: {
+          name: editTagName,
+        },
+      };
+      const res: AxiosResponse<TagResponse> = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/tags/${id}`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200) {
+        const updatedTags = tags.map((tag) =>
+          tag.id === id ? res.data.tag : tag
+        );
+        setTags(updatedTags);
+        setSuccessMessage("タグを編集しました");
+        setEditTagId(null);
+      }
+    } catch (error: AxiosError | any) {
+      setErrorMessage(error.response.data.errors);
+    }
   };
 
   // S3に画像をアップロードしurlを取得する
@@ -273,13 +306,50 @@ const RecipesNew = () => {
                   key={tag.id}
                 >
                   <span className="text-xl text-left col-span-1 lg:w-56 md:w-40">
-                    {tag.name}
+                    {editTagId === tag.id ? (
+                      <>
+                        <div className="flex">
+                          <XCircleIcon
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => setEditTagId(null)}
+                          />
+                          <input
+                            type="text"
+                            placeholder="タグ名を編集"
+                            name="editTagName"
+                            id="editTagName"
+                            className="border-0 focus:ring-0 focus:border-transparent"
+                            value={editTagName}
+                            onChange={(e) => setEditTagName(e.target.value)}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      tag.name
+                    )}
                   </span>
                   <div className="grid grid-cols-2 col-span-2">
                     <div className="text-xs col-span-1">
-                      <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded ease-in transition-all">
-                        編集
-                      </button>
+                      {editTagId === tag.id ? (
+                        <>
+                          <button
+                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+                            onClick={(e) => editHandleSubmitTagName(e, tag.id)}
+                          >
+                            保存
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+                          onClick={() => {
+                            setEditTagId(tag.id);
+                            setEditTagName(tag.name);
+                          }}
+                        >
+                          編集
+                        </button>
+                      )}
                     </div>
                     <div className="text-xs text-left col-span-1">
                       <DeleteButton onClick={() => handleDelete(tag.id)} />
