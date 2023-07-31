@@ -74,6 +74,11 @@ export interface Tag {
   name: string;
 }
 
+export interface TagResponse {
+  tags: Tag[];
+  tag: Tag;
+}
+
 export interface SearchResult {
   suppliers: Supplier[];
 }

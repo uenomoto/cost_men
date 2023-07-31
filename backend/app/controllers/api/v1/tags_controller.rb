@@ -12,12 +12,11 @@ module Api
       end
 
       def create
-        @tag = current_user.tags.build(tag_params)
-
-        if @tag.save
-          render_tag(status: :created)
+        tag = current_user.tags.build(tag_params)
+        if tag.save
+          render json: { tag: }, status: :created
         else
-          render_tag_errors
+          render json: { errors: tag.errors.full_messages }, status: :unprocessable_entity
         end
       end
 

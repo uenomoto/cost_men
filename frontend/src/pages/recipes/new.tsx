@@ -1,5 +1,5 @@
 import React, { FormEvent, useState, useEffect } from "react";
-import { Supplier, Tag } from "@/types";
+import { Supplier, Tag, TagResponse } from "@/types";
 import { Ingredient } from "@/types";
 import { useRouter } from "next/router";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
@@ -12,57 +12,15 @@ import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
 import { RecipesTable } from "../../../components/organisms/RecipesTable";
 import { RecipeImage } from "../../../components/molecules/recipe-image/RecipeImage";
 import { uploadImageToS3 } from "../../../utils/s3Upload";
-
-const tags: Tag[] = [
-  {
-    id: 1,
-    name: "ラーメン",
-  },
-  {
-    id: 2,
-    name: "主食",
-  },
-  {
-    id: 3,
-    name: "上物",
-  },
-  {
-    id: 4,
-    name: "副菜",
-  },
-  {
-    id: 5,
-    name: "ごはんもの",
-  },
-  {
-    id: 6,
-    name: "なんか",
-  },
-  {
-    id: 7,
-    name: "なんか2",
-  },
-  {
-    id: 8,
-    name: "なんか3",
-  },
-  {
-    id: 9,
-    name: "なんか4",
-  },
-  {
-    id: 10,
-    name: "なんか5",
-  },
-  {
-    id: 11,
-    name: "なんか6",
-  },
-  {
-    id: 12,
-    name: "なんか7",
-  },
-];
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { tagState } from "@/recoil/atoms/tagState";
+import { loadedState } from "@/recoil/atoms/loadedState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 
 // 仮のデータ
 let suppliers: Supplier[] = [
@@ -115,6 +73,14 @@ const RecipesNew = () => {
   const [recipeName, setRecipeName] = useState("");
   const [tagName, setTagName] = useState("");
 
+  // トークンを取得
+  const token = useRecoilValue(tokenState);
+  const loaded = useRecoilValue(loadedState);
+  // タグの一覧を管理
+  const [tags, setTags] = useRecoilState(tagState);
+  const setSuccessMessage = useSetRecoilState(successMessageState);
+  const setErrorMessage = useSetRecoilState(errorMessageState);
+
   // 画像アップロード状況を追跡する
   const [uploadStatus, setUploadStates] = useState<{
     status: "idle" | "uploading" | "error";
@@ -126,16 +92,73 @@ const RecipesNew = () => {
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
   const [recipeIngredients, setRecipeIngredients] = useState<Ingredient[]>([]);
 
-  // タグ名送信
-  const tagHendleSubmit = (e: FormEvent) => {
+  // タグ登録
+  const tagHendleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(tagName);
-    setTagName("");
+
+    const params = {
+      tag: {
+        name: tagName,
+      },
+    };
+
+    try {
+      const res: AxiosResponse<TagResponse> = await axios.post(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/tags`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 201) {
+        const updatedTags = [...tags, res.data.tag];
+        setTags(updatedTags);
+        setTagName("");
+        setSuccessMessage("タグを登録しました");
+      }
+    } catch (error: AxiosError | any) {
+      setErrorMessage(error.response.data.errors);
+    }
   };
 
+  // タグ一覧取得
+  useEffect(() => {
+    if (!token || !loaded) return;
+    const getTags = async () => {
+      try {
+        const res: AxiosResponse<TagResponse> = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/tags`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setTags(res.data.tags);
+      } catch (error: AxiosError | any) {
+        console.log(error);
+      }
+    };
+    if (loaded) {
+      getTags();
+    }
+  }, [token, loaded, setTags]);
+
   // タグ削除
-  const handleDelete = () => {
-    console.log("削除");
+  const handleDelete = (id: number) => {
+    if (!token || !loaded) return;
+    const deleteTag = async () => {
+      if (confirm("本当に削除しますか?") === false) return;
+      const tagFind = tags.find((tag) => tag.id === id);
+
+      try {
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/tags/${id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setTags(tags.filter((tag) => tag.id !== id));
+        if (tagFind) {
+          setSuccessMessage(`${tagFind.name}を削除しました`);
+        }
+      } catch (error: AxiosError | any) {
+        setErrorMessage(error.response.data.errors);
+      }
+    };
+    deleteTag();
   };
 
   // S3に画像をアップロードしurlを取得する
@@ -186,6 +209,7 @@ const RecipesNew = () => {
 
   return (
     <>
+      <SuccessMessage />
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ新規登録</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
@@ -221,6 +245,8 @@ const RecipesNew = () => {
       <Submit text="登録" onClick={handleSubmissions} />
 
       <Modal open={open} setModalOpen={setOpen}>
+        <SuccessMessage />
+        <ErrorMessage />
         <div className="grid grid-cols-2 font-bold text-center w-full max-w-6xl m-auto p-3 lg:p-5">
           <div className="grid col-span-1 px-16">
             <h3 className="mb-16">タグ登録</h3>
@@ -238,20 +264,26 @@ const RecipesNew = () => {
               <Submit text="タグ登録" onClick={tagHendleSubmit} />
             </div>
           </div>
-          <div className="col-span-1 overflow-auto px-16 h-72">
+          <div className="col-span-1 overflow-auto px-1 h-72">
             <h3 className="mb-5">タグ一覧</h3>
             <ul className="space-y-3">
               {tags.map((tag) => (
                 <li
-                  className="grid grid-cols-3 items-center gap-4"
+                  className="grid grid-cols-3 items-center gap-1"
                   key={tag.id}
                 >
-                  <span className="col-span-1">{tag.name}</span>
-                  <EditButton>
-                    <div className="col-span-1 text-xs">編集</div>
-                  </EditButton>
-                  <div className="text-xs">
-                    <DeleteButton onClick={handleDelete} />
+                  <span className="text-xl text-left col-span-1 lg:w-56 md:w-40">
+                    {tag.name}
+                  </span>
+                  <div className="grid grid-cols-2 col-span-2">
+                    <div className="text-xs col-span-1">
+                      <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded ease-in transition-all">
+                        編集
+                      </button>
+                    </div>
+                    <div className="text-xs text-left col-span-1">
+                      <DeleteButton onClick={() => handleDelete(tag.id)} />
+                    </div>
                   </div>
                 </li>
               ))}

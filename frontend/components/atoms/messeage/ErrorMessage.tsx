@@ -9,13 +9,13 @@ export const ErrorMessage = () => {
   return (
     errorMessage && (
       <div className="rounded-md bg-red-50 p-4">
-        <div className="flex">
+        <div className="flex items-center">
           <XCircleIcon
             onClick={() => setErrorMessage(null)}
             className="h-10 w-10 cursor-pointer text-red-400"
             aria-hidden="true"
           />
-          <div className="ml-3">
+          <div className="ml-4">
             <h3 className="text-md font-bold text-red-800">
               条件に満たさないため登録できませんでした
             </h3>
