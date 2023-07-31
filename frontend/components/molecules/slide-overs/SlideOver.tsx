@@ -1,9 +1,10 @@
 import { FormEvent, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { searchResultState } from "@/recoil/atoms/searchResultState";
 import { tokenState } from "@/recoil/atoms/tokenState";
+import { isSearchingState } from "@/recoil/atoms/isSearchingState";
 import { Input } from "../../atoms/form/Input";
 import { Submit } from "../../atoms/form/Submit";
 import axios, { AxiosError } from "axios";
@@ -15,12 +16,13 @@ type Props = {
 
 export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
   // グローバルで検索結果を管理する
-  const [, setSearchResult] = useRecoilState(searchResultState);
+  const setSearchResult = useSetRecoilState(searchResultState);
 
-  // 仕入れ先検索フォーム
+  // グローバルで検索中かどうかを管理する
+  const setIsSearching = useSetRecoilState(isSearchingState);
+
+  // 仕入れ先検索フォーム(textfield)
   const [searchSupplier, setSearchSupplier] = useState("");
-
-  const [searchIngredient, setSearchIngredient] = useState("");
 
   const token = useRecoilValue(tokenState);
 
@@ -29,9 +31,7 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
 
     const params = {
       supplier_q: searchSupplier,
-      ingredient_q: searchIngredient,
     };
-    console.log(params);
 
     // getリクエストは第二引数までなので検索クエリと認証ヘッダー同時に渡す必要がある
     try {
@@ -44,7 +44,7 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
       );
       setSearchResult(res.data);
       setSearchSupplier("");
-      setSearchIngredient("");
+      setIsSearching(true);
       setSlideOpen(false);
     } catch (error: AxiosError | any) {
       console.log(error.response.data);
@@ -107,16 +107,6 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
                         name="searchSupplier"
                         id="searchSupplier"
                         onChange={setSearchSupplier}
-                      />
-                      <Input
-                        htmlfor="searchIngredient"
-                        text="原材料の検索"
-                        type="text"
-                        placeholder="原材料を検索"
-                        value={searchIngredient}
-                        name="searchIngredient"
-                        id="searchIngredient"
-                        onChange={setSearchIngredient}
                       />
                       <Submit text="検索" onClick={handleSubmit} />
                     </div>

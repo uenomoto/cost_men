@@ -10,7 +10,7 @@ import { loadedState } from "@/recoil/atoms/loadedState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
-import { searchResultState } from "@/recoil/atoms/searchResultState";
+import { isSearchingState } from "@/recoil/atoms/isSearchingState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
@@ -20,6 +20,7 @@ import { AlertBadge } from "../atoms/badge/AlertBadge";
 import { Input } from "../atoms/form/Input";
 import { EditSubmit } from "../atoms/form/EditSubmit";
 import { EnptyStates } from "../molecules/enptyStates/EnptyStates";
+import { SearchTable } from "./SearchTable";
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
@@ -41,8 +42,6 @@ export const SupplierIngredientTable = () => {
 
   // 検索フォームのスライドオーバー
   const [slideOpen, setSlideOpen] = useState(false);
-  // グローバルに検索結果を読み取り専用で取得
-  const searchResult = useRecoilValue(searchResultState);
 
   // 仕入れ先の編集フォームイベントハンドラ
   const [editSupplierName, setEditSupplierName] = useState("");
@@ -59,6 +58,7 @@ export const SupplierIngredientTable = () => {
   const loaded = useRecoilValue(loadedState); // tokenのロード状態を取得
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
+  const isSearching = useRecoilValue(isSearchingState); // 検索中かどうかを取得
 
   // 原材料の編集
   const editHandleSubmitIngredient = async (e: FormEvent) => {
@@ -251,6 +251,8 @@ export const SupplierIngredientTable = () => {
           <span className="font-bold mr-3">ロード中です........</span>
           <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
         </div>
+      ) : isSearching ? (
+        <SearchTable />
       ) : suppliers.reduce(
           (total, supplier) => total + supplier.ingredients.length,
           0
@@ -259,6 +261,7 @@ export const SupplierIngredientTable = () => {
       ) : (
         ""
       )}
+
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
