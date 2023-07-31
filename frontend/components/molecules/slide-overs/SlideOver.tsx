@@ -1,7 +1,7 @@
 import { FormEvent, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { searchResultState } from "@/recoil/atoms/searchResultState";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { isSearchingState } from "@/recoil/atoms/isSearchingState";
@@ -91,10 +91,13 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
                           <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                         </button>
                       </div>
-                      <div className="mt-5 text-center">
+                      <div className="mt-5 text-center space-y-1">
                         <Dialog.Title className="text-xl font-semibold leading-6 text-gray-900">
-                          こちらから検索ができます！
+                          仕入れ先と連絡先検索ができます！
                         </Dialog.Title>
+                        <p className="text-xs text-gray-500">
+                          空欄で検索すると全ての仕入れ先が検索できます
+                        </p>
                       </div>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6 space-y-12">

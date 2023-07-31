@@ -6,7 +6,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 
 export const SearchTable = () => {
   // グローバルに検索結果を読み取り専用で取得
-  const searchResults = useRecoilValue<SearchResult[]>(searchResultState);
+  const searchResults = useRecoilValue<SearchResult>(searchResultState);
 
   const setIsSearching = useSetRecoilState(isSearchingState);
 
@@ -47,18 +47,22 @@ export const SearchTable = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {searchResults
-                    ? searchResults.map((result) => (
-                        <tr key={result.supplier.id}>
-                          <td className="border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                            {result.supplier.name}
-                          </td>
-                          <td className="border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                            {result.supplier.contact_info}
-                          </td>
-                        </tr>
-                      ))
-                    : "検索された仕入れ先は登録されていません"}
+                  {searchResults.suppliers.length > 0 ? (
+                    searchResults.suppliers.map((supplier) => (
+                      <tr key={supplier.id}>
+                        <td className="border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter">
+                          {supplier.name}
+                        </td>
+                        <td className="border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-md lg:text-2xl font-semibold text-gray-900 backdrop-blur backdrop-filter">
+                          {supplier.contact_info}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <div className="mt-5 font-bold">
+                      検索された仕入れ先は登録されていません
+                    </div>
+                  )}
                 </tbody>
               </table>
             </div>

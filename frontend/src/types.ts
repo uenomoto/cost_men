@@ -75,5 +75,5 @@ export interface Tag {
 }
 
 export interface SearchResult {
-  supplier: Supplier;
+  suppliers: Supplier[];
 }
