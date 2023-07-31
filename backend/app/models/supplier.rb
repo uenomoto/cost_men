@@ -26,7 +26,7 @@ class Supplier < ApplicationRecord
   end
 
   # 検索できるカラムの設定
-  def self.ransackable_attributes(auth_object = nil)
-    ["name"]
+  def self.ransackable_attributes(_auth_object = nil)
+    ['name']
   end
 end
