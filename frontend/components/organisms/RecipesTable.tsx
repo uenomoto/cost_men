@@ -59,7 +59,7 @@ export const RecipesTable: React.FC<RecipesTableProps> = ({
     recipe.ingredients.reduce(
       (sum, ingredient) =>
         sum +
-        (ingredient.buy_quantity / ingredient.buy_cost) * ingredient.quantity,
+        (ingredient.buy_cost / ingredient.buy_quantity) * ingredient.quantity,
       0
     )
   );
