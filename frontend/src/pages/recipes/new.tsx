@@ -275,11 +275,7 @@ const RecipesNew = () => {
           <TagCheckBox onTagCheckChange={setCheckedTags} />
         </div>
       </div>
-      <RecipesTable
-        ingredients={ingredients}
-        suppliers={suppliers}
-        onRecipeChange={handleRecipeChange}
-      />
+      <RecipesTable />
       <Submit text="登録" onClick={handleSubmissions} />
 
       <Modal open={open} setModalOpen={setOpen}>
