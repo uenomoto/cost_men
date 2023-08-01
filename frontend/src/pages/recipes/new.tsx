@@ -67,7 +67,10 @@ suppliers = suppliers.map((supplier) => ({
 }));
 
 const RecipesNew = () => {
+  // タグ追加のモーダルを開く
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // tag一覧取得のロード
+
   const router = useRouter();
 
   // タグの名前登録とレシピの名前登録
@@ -79,7 +82,7 @@ const RecipesNew = () => {
 
   // トークンを取得
   const token = useRecoilValue(tokenState);
-  const loaded = useRecoilValue(loadedState);
+  const loaded = useRecoilValue(loadedState); // トークンのロード
   // タグの一覧を管理
   const [tags, setTags] = useRecoilState(tagState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
@@ -133,14 +136,16 @@ const RecipesNew = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTags(res.data.tags);
+        setLoading(false);
       } catch (error: AxiosError | any) {
-        console.log(error);
+        setErrorMessage(error.response.data.errors);
+        setLoading(false);
       }
     };
     if (loaded) {
       getTags();
     }
-  }, [token, loaded, setTags]);
+  }, [token, loaded, setTags, setErrorMessage]);
 
   // タグ削除
   const handleDelete = (id: number) => {
@@ -299,65 +304,77 @@ const RecipesNew = () => {
           </div>
           <div className="col-span-1 overflow-auto px-1 h-72">
             <h3 className="mb-5">タグ一覧</h3>
-            <ul className="space-y-3">
-              {tags.map((tag) => (
-                <li
-                  className="grid grid-cols-3 items-center gap-1"
-                  key={tag.id}
-                >
-                  <span className="text-xl text-left col-span-1 lg:w-56 md:w-40">
-                    {editTagId === tag.id ? (
-                      <>
-                        <div className="flex">
-                          <XCircleIcon
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() => setEditTagId(null)}
-                          />
-                          <input
-                            type="text"
-                            placeholder="タグ名を編集"
-                            name="editTagName"
-                            id="editTagName"
-                            className="border-0 focus:ring-0 focus:border-transparent"
-                            value={editTagName}
-                            onChange={(e) => setEditTagName(e.target.value)}
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      tag.name
-                    )}
-                  </span>
-                  <div className="grid grid-cols-2 col-span-2">
-                    <div className="text-xs col-span-1">
+            {loading ? (
+              <div
+                className="flex items-center text-center"
+                aria-label="読み込み中"
+              >
+                <span className="font-bold mr-3">ロード中です........</span>
+                <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {tags.map((tag) => (
+                  <li
+                    className="grid grid-cols-3 items-center gap-1"
+                    key={tag.id}
+                  >
+                    <span className="text-xl text-left col-span-1 lg:w-56 md:w-40">
                       {editTagId === tag.id ? (
                         <>
-                          <button
-                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
-                            onClick={(e) => editHandleSubmitTagName(e, tag.id)}
-                          >
-                            保存
-                          </button>
+                          <div className="flex">
+                            <XCircleIcon
+                              className="text-red-500 hover:text-red-700"
+                              onClick={() => setEditTagId(null)}
+                            />
+                            <input
+                              type="text"
+                              placeholder="タグ名を編集"
+                              name="editTagName"
+                              id="editTagName"
+                              className="border-0 focus:ring-0 focus:border-transparent"
+                              value={editTagName}
+                              onChange={(e) => setEditTagName(e.target.value)}
+                            />
+                          </div>
                         </>
                       ) : (
-                        <button
-                          className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
-                          onClick={() => {
-                            setEditTagId(tag.id);
-                            setEditTagName(tag.name);
-                          }}
-                        >
-                          編集
-                        </button>
+                        tag.name
                       )}
+                    </span>
+                    <div className="grid grid-cols-2 col-span-2">
+                      <div className="text-xs col-span-1">
+                        {editTagId === tag.id ? (
+                          <>
+                            <button
+                              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+                              onClick={(e) =>
+                                editHandleSubmitTagName(e, tag.id)
+                              }
+                            >
+                              保存
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+                            onClick={() => {
+                              setEditTagId(tag.id);
+                              setEditTagName(tag.name);
+                            }}
+                          >
+                            編集
+                          </button>
+                        )}
+                      </div>
+                      <div className="text-xs text-left col-span-1">
+                        <DeleteButton onClick={() => handleDelete(tag.id)} />
+                      </div>
                     </div>
-                    <div className="text-xs text-left col-span-1">
-                      <DeleteButton onClick={() => handleDelete(tag.id)} />
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </Modal>
