@@ -49,26 +49,22 @@ const RecipeShow = () => {
 
   // 販売価格のinputのstate
   const [price, setPrice] = useState("");
-  const [changedDate, setChangedDate] = useState("");
 
   // 本来は販売価格登録したデータが入るが今は仮の値です
   const [editPrice, setEditPrice] = useState("1200");
-  const [editChangedDate, setEditChangedDate] = useState("2023-07-15");
 
   const handlePriceSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log(`販売価格: ${price} 円, 設定日: ${changedDate}`);
+    console.log(`販売価格: ${price} 円`);
     setPrice("");
-    setChangedDate("");
     setSellingPriceOpen(false);
   };
 
   // 編集用
   const handleEditPriceSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log(`販売価格: ${editPrice} 円, 設定日: ${editChangedDate}`);
+    console.log(`販売価格: ${editPrice} 円`);
     setEditPrice("");
-    setEditChangedDate("");
     setEditSellingPriceOpen(false);
   };
 
@@ -145,18 +141,6 @@ const RecipeShow = () => {
                 value={price}
                 onChange={setPrice}
               />
-              <AlertBadge />
-              {/* 最初からToDayが値で入っていればuserフレンドリー */}
-              <Input
-                htmlfor="changedDate"
-                text="価格設定日"
-                type="date"
-                id="changedDate"
-                name="changedDate"
-                placeholder="価格の設定または変更日を設定してください"
-                value={changedDate}
-                onChange={setChangedDate}
-              />
               <Submit text="価格登録する" onClick={handlePriceSubmit} />
             </div>
           </div>
@@ -179,17 +163,6 @@ const RecipeShow = () => {
                 placeholder="販売価格を入力してください"
                 value={editPrice}
                 onChange={setEditPrice}
-              />
-              <AlertBadge />
-              <Input
-                htmlfor="changedDate"
-                text="価格設定日"
-                type="date"
-                id="changedDate"
-                name="changedDate"
-                placeholder="価格の設定または変更日を設定してください"
-                value={editChangedDate}
-                onChange={setEditChangedDate}
               />
               <EditSubmit text="価格編集する" onClick={handleEditPriceSubmit} />
             </div>
