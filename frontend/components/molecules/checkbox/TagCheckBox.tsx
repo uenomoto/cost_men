@@ -1,66 +1,15 @@
-import { Tag } from "@/types";
-import { useEffect, useState } from "react";
-
-const tags: Tag[] = [
-  {
-    id: 1,
-    name: "ラーメン",
-  },
-  {
-    id: 2,
-    name: "主食",
-  },
-  {
-    id: 3,
-    name: "上物",
-  },
-  {
-    id: 4,
-    name: "副菜",
-  },
-  {
-    id: 5,
-    name: "ごはんもの",
-  },
-  {
-    id: 6,
-    name: "なんか",
-  },
-  {
-    id: 7,
-    name: "なんか2",
-  },
-  {
-    id: 8,
-    name: "なんか3",
-  },
-  {
-    id: 9,
-    name: "なんか4",
-  },
-  {
-    id: 10,
-    name: "なんか5",
-  },
-  {
-    id: 11,
-    name: "なんか6",
-  },
-  {
-    id: 12,
-    name: "なんか7",
-  },
-  {
-    id: 13,
-    name: "なんか8",
-  },
-];
+import { useState } from "react";
+import { tagState } from "@/recoil/atoms/tagState";
+import { useRecoilValue } from "recoil";
 
 type Props = {
   onTagCheckChange: (checkedTags: Record<number, boolean>) => void; // 親コンポーネントにチェック状態を渡す
 };
 
 export const TagCheckBox = ({ onTagCheckChange }: Props) => {
+  const tags = useRecoilValue(tagState);
+
+  // タグのチェック状態を管理する
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>(
     tags.reduce(
       (accumulator, current) => ({ ...accumulator, [current.id]: false }),
@@ -74,10 +23,8 @@ export const TagCheckBox = ({ onTagCheckChange }: Props) => {
         ...prevState,
         [tagId]: isChecked,
       };
-
       // 親コンポーネントに新しい状態を通知する
       onTagCheckChange(newState);
-
       return newState;
     });
   };
@@ -86,7 +33,7 @@ export const TagCheckBox = ({ onTagCheckChange }: Props) => {
     <fieldset>
       <span className="font-bold">タグを選択してください</span>
       <legend className="sr-only">タグ</legend>
-      <div className="grid grid-cols-3 gap-4 lg:gap-x-4 overflow-y-auto px-3 py-1 h-40 border-2 border-sky-300 rounded-md">
+      <div className="grid grid-cols-3 gap-1 lg:gap-x-4 overflow-y-auto px-3 py-1 h-40 border-2 border-sky-300 rounded-md">
         {tags.map((tag) => (
           <div className="relative flex items-start" key={tag.id}>
             <div className="flex h-6 items-center">
