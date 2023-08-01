@@ -1,27 +1,27 @@
 import React, { FormEvent, useState, useEffect } from "react";
-import { Supplier, Tag, TagResponse } from "@/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { Supplier, TagResponse } from "@/types";
 import { Ingredient } from "@/types";
 import { useRouter } from "next/router";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { tagState } from "@/recoil/atoms/tagState";
+import { loadedState } from "@/recoil/atoms/loadedState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../components/molecules/checkbox/TagCheckBox";
 import { Modal } from "../../../components/modal/Modal";
 import { Submit } from "../../../components/atoms/form/Submit";
-import { EditButton } from "../../../components/atoms/button/EditButton";
 import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
 import { RecipesTable } from "../../../components/organisms/RecipesTable";
 import { RecipeImage } from "../../../components/molecules/recipe-image/RecipeImage";
 import { uploadImageToS3 } from "../../../utils/s3Upload";
-import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { tokenState } from "@/recoil/atoms/tokenState";
-import { tagState } from "@/recoil/atoms/tagState";
-import { loadedState } from "@/recoil/atoms/loadedState";
-import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
-import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
-import { XCircleIcon } from "@heroicons/react/20/solid";
+import { Loading } from "../../../components/molecules/loading/Loading";
 
 // 仮のデータ
 let suppliers: Supplier[] = [
@@ -305,13 +305,7 @@ const RecipesNew = () => {
           <div className="col-span-1 overflow-auto px-1 h-72">
             <h3 className="mb-5">タグ一覧</h3>
             {loading ? (
-              <div
-                className="flex items-center text-center"
-                aria-label="読み込み中"
-              >
-                <span className="font-bold mr-3">ロード中です........</span>
-                <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
-              </div>
+              <Loading />
             ) : (
               <ul className="space-y-3">
                 {tags.map((tag) => (
