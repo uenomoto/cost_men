@@ -1,10 +1,10 @@
 import React, { ChangeEvent, useState } from "react";
-import { calculateSubTotalCost } from "../../utils/calculateCost";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { Modal } from "../modal/Modal";
 import { Ingredient, SelectedIngredient } from "@/types";
 import { useRecoilValue } from "recoil";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
+import { XCircleIcon } from "@heroicons/react/24/solid";
 
 export const RecipesTable = () => {
   // 選択されていない原材料の初期値を設定
@@ -71,6 +71,13 @@ export const RecipesTable = () => {
     setSelectedIngredients((prev) => [...prev, initialIngredient]);
   };
 
+  // 初期値も含め作成した原材料を削除する
+  const handleRemoveIngredient = (id: number) => {
+    setSelectedIngredients((prev) =>
+      prev.filter((i) => i.ingredient.id !== id)
+    );
+  };
+
   // 小数点第一位で四捨五入(原材料の単価)(1/円))
   const costCalculation = (ingredient: Ingredient) => {
     return (
@@ -97,7 +104,7 @@ export const RecipesTable = () => {
   // 合計金額を計算する関数
 
   // 数量を更新すると発火するイベントハンドラ
-  const handleChange = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (id: number, e: ChangeEvent<HTMLInputElement>) => {
     setSelectedIngredients((prev) =>
       prev.map((ingredient) =>
         ingredient.ingredient.id === id
@@ -119,7 +126,7 @@ export const RecipesTable = () => {
         >
           原材料追加
         </button>
-        <div className="mx-auto mt-8 flow-root lg:max-w-5xl max-w-2xl sm:mx-0">
+        <div className="mx-auto mt-8 flow-root lg:max-w-7xl max-w-2xl sm:mx-0">
           <table className="w-full">
             <thead className="border-b border-gray-300 text-gray-900">
               <tr>
@@ -141,17 +148,42 @@ export const RecipesTable = () => {
                 >
                   計算結果
                 </th>
+                <th
+                  scope="col"
+                  className="py-3.5 pl-3 pr-4 text-right text-sm lg:text-lg font-semibold text-gray-900 sm:pr-0"
+                >
+                  <span className="sr-only">Delete</span>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {selectedIngredients.map((selectedIngredient, index) => (
-                <tr className="border-b border-gray-200" key={index}>
+              {selectedIngredients.map((selectedIngredient) => (
+                <tr
+                  className="border-b border-gray-200"
+                  key={selectedIngredient.ingredient.id}
+                >
                   {selectedIngredient.ingredient.id === 0 ? (
-                    <td className="px-3 py-5 text-left text-xs lg:text-xl text-gray-500 sm:table-cell">
-                      <PrimaryButton>
-                        <div onClick={() => setOpen(true)}>原材料選択</div>
-                      </PrimaryButton>
-                    </td>
+                    <>
+                      <td
+                        className="px-3 py-5 text-left lg:text-xl sm:table-cell"
+                        colSpan={3}
+                      >
+                        <PrimaryButton>
+                          <div onClick={() => setOpen(true)}>原材料選択</div>
+                        </PrimaryButton>
+                      </td>
+                      <td colSpan={2}>
+                        <XCircleIcon
+                          className="h-10 cursor-pointer text-red-400 hover:text-red-500
+                          transition-all ease-in-out duration-200 inline-flex"
+                          onClick={() =>
+                            handleRemoveIngredient(
+                              selectedIngredient.ingredient.id
+                            )
+                          }
+                        />
+                      </td>
+                    </>
                   ) : (
                     <>
                       <td className="px-3 py-5 font-bold text-left text-md lg:text-2xl text-gray-900 sm:table-cell">
@@ -175,6 +207,17 @@ export const RecipesTable = () => {
                         {calculateIngredientCost(
                           selectedIngredient.ingredient
                         ) + " 円"}
+                      </td>
+                      <td>
+                        <XCircleIcon
+                          className="h-10 cursor-pointer text-red-400 hover:text-red-500
+                          transition-all ease-in-out duration-200 inline-flex"
+                          onClick={() =>
+                            handleRemoveIngredient(
+                              selectedIngredient.ingredient.id
+                            )
+                          }
+                        />
                       </td>
                     </>
                   )}
