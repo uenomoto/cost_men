@@ -102,6 +102,16 @@ export const RecipesTable = () => {
   };
 
   // 合計金額を計算する関数
+  const calculateTotalCost = () => {
+    return selectedIngredients.reduce((totalCost, selectedIngredient) => {
+      const costPerUnit = costCalculation(selectedIngredient.ingredient);
+      const quantity = Number(selectedIngredient.quantity);
+      if (isNaN(costPerUnit) || isNaN(quantity)) {
+        return totalCost;
+      }
+      return totalCost + Math.round((quantity * costPerUnit * 10) / 10);
+    }, 0);
+  };
 
   // 数量を更新すると発火するイベントハンドラ
   const handleChange = (id: number, e: ChangeEvent<HTMLInputElement>) => {
@@ -234,7 +244,7 @@ export const RecipesTable = () => {
                   合計原価
                 </th>
                 <td className="pl-3 pr-4 pt-4 text-right text-md font-semibold text-gray-900 sm:pr-0">
-                  100 円
+                  {calculateTotalCost()} 円
                 </td>
               </tr>
             </tfoot>
