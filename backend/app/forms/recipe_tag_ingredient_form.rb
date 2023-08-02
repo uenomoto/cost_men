@@ -72,8 +72,12 @@ class RecipeTagIngredientForm
   end
 
   def tags_must_exist
+    @tags = checked_tags
+
+    return if @tag.nil? # checked_tagsがnilの場合は早期でメソッドを抜ける
+
     # 同様にタグのバリデーションもチェックする
-    @tags = checked_tags.map do |tag_id, _checked|
+    @tag.map do |tag_id, _checked|
       Tag.find_by(id: tag_id)
     end.compact
 

@@ -192,20 +192,33 @@ const RecipesNew = () => {
   };
 
   // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
-  const handleSubmissions = (e: FormEvent) => {
+  const handleSubmissions = async (e: FormEvent) => {
     e.preventDefault();
-    const requestBody = {
-      recipe: {
-        recipe_name: recipeName,
-        recipe_image_url: recipeImageUrl, // ここでs3のurlをrailsに送る
-        checked_tags: checkedTags,
-        recipe_ingredeients: recipeIngredients,
-      },
-    };
-    // 送信処理本来はここでAPIを叩く
-    console.log(requestBody);
+    try {
+      const requestBody = {
+        recipe: {
+          recipe_name: recipeName,
+          recipe_image_url: recipeImageUrl, // ここでs3のurlをrailsに送る
+          checked_tags: checkedTags,
+          recipe_ingredients: recipeIngredients,
+        },
+      };
+      console.log(requestBody);
 
-    router.push("/recipes");
+      const res: AxiosResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes`,
+        requestBody,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 201) {
+        setSuccessMessage("レシピを登録しました");
+      }
+    } catch (error: AxiosError | any) {
+      console.log(error.response.data);
+      setErrorMessage(error.response.data.errors);
+    }
+
+    // router.push("/recipes");
     setRecipeName("");
     setRecipeImageUrl(null);
     setCheckedTags({});
@@ -245,7 +258,9 @@ const RecipesNew = () => {
         </div>
       </div>
       <RecipesTable />
-      <Submit text="登録" onClick={handleSubmissions} />
+      <div className="mt-5">
+        <Submit text="登録" onClick={handleSubmissions} />
+      </div>
 
       <Modal open={open} setModalOpen={setOpen}>
         <SuccessMessage />

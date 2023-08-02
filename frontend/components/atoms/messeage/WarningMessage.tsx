@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { Transition } from "@headlessui/react";
 import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { useRecoilValue, useSetRecoilState } from "recoil";
