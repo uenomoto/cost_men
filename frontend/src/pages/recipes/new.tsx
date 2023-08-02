@@ -27,7 +27,7 @@ import { Loading } from "../../../components/molecules/loading/Loading";
 let suppliers: Supplier[] = [
   {
     id: 1,
-    user_id: 1,
+    user_id: "1",
     name: "上野商店",
     contact_info: "03-1234-5678",
     ingredients: [],

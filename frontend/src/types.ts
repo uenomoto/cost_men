@@ -54,7 +54,7 @@ export interface RecipeIngredient {
 // 仕入れ先の型定義
 export interface Supplier {
   id: number;
-  user_id: number;
+  user_id: string;
   name: string;
   contact_info: string;
   ingredients: Ingredient[];
@@ -66,6 +66,12 @@ export interface SupplierResponse {
 
 export interface IngredientResponse {
   ingredient: Ingredient;
+}
+
+// レシピ登録時に選択する原材料の型定義
+export interface SelectedIngredient {
+  ingredient: Ingredient;
+  quantity: string;
 }
 
 // タグの型定義
