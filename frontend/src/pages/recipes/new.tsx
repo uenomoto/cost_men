@@ -212,17 +212,16 @@ const RecipesNew = () => {
       );
       if (res.status === 201) {
         setSuccessMessage("レシピを登録しました");
+        router.push("/recipes");
+        setRecipeName("");
+        setRecipeImageUrl(null);
+        setCheckedTags({});
+        setRecipeIngredients([]);
       }
     } catch (error: AxiosError | any) {
       console.log(error.response.data);
       setErrorMessage(error.response.data.errors);
     }
-
-    // router.push("/recipes");
-    setRecipeName("");
-    setRecipeImageUrl(null);
-    setCheckedTags({});
-    setRecipeIngredients([]);
   };
 
   return (
