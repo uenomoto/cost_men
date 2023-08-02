@@ -24,7 +24,9 @@ export const TagCheckBox = ({ onTagCheckChange }: Props) => {
         [tagId]: isChecked,
       };
       // 親コンポーネントに新しい状態を通知する
-      onTagCheckChange(newState);
+      setTimeout(() => {
+        onTagCheckChange(newState);
+      }, 0);
       return newState;
     });
   };
@@ -43,7 +45,7 @@ export const TagCheckBox = ({ onTagCheckChange }: Props) => {
                 id={tag.id.toString()}
                 name={tag.name}
                 className="h-4 w-4 rounded border-gray-300 text-sky-400 focus:ring-sky-400"
-                checked={checkedTags[tag.id]}
+                checked={checkedTags[tag.id] || false}
                 onChange={(e) => handleCheckChange(tag.id, e.target.checked)}
               />
             </div>

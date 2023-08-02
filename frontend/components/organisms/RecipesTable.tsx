@@ -69,7 +69,12 @@ export const RecipesTable = () => {
 
   // 原材料追加ボタンが押された時のイベントハンドラ
   const handleAddIngredient = () => {
-    setSelectedIngredients((prev) => [...prev, initialIngredient]);
+    // id === 0の要素が存在しないときに初期値を追加
+    if (!selectedIngredients.some((i) => i.ingredient.id === 0)) {
+      setSelectedIngredients((prev) => [...prev, initialIngredient]);
+    } else {
+      alert("原材料を選択してから追加してください");
+    }
   };
 
   // 初期値も含め作成した原材料を削除する
@@ -124,8 +129,6 @@ export const RecipesTable = () => {
       )
     );
   };
-
-  console.log(selectedIngredients);
 
   return (
     <>
