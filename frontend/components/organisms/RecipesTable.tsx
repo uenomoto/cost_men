@@ -33,22 +33,42 @@ export const RecipesTable = () => {
   const suppliers = useRecoilValue(suppliersState);
 
   // 選択した原材料をstateに状態保存(選んでいない状態はinitialIngredientが入る)
-  const [selectedIngredient, setSelectedIngredient] =
-    useState<SelectedIngredient>(initialIngredient);
+  const [selectedIngredients, setSelectedIngredients] = useState<
+    SelectedIngredient[]
+  >([]);
 
   // 原材料の選択時のイベントハンドラ
   const selectIngredientHandler = (
     ingredient: Ingredient,
     quantity: string
   ) => {
-    setSelectedIngredient({ ingredient, quantity });
+    setSelectedIngredients((prev) => {
+      // 選択した原材料が元の配列に存在するかどうかを確認
+      const existingIngredientIndex = prev.findIndex(
+        (i) => i.ingredient.id === ingredient.id
+      );
+
+      // 選択した原材料が元の配列に存在しない場合
+      if (existingIngredientIndex === -1) {
+        // 新しい原材料を配列に追加
+        const newIngredients = [...prev, { ingredient, quantity }];
+
+        // 元の配列から初期値を削除(id: 0)
+        return newIngredients.filter((ingr) => ingr.ingredient.id !== 0);
+      } else {
+        // 選択した原材料が元の配列に存在する場合は、元の配列を返す
+        const newIngredients = [...prev];
+
+        return newIngredients;
+      }
+    });
+
     setOpen(false);
   };
-  // console.log(selectedIngredient);
 
   // 原材料追加ボタンが押された時のイベントハンドラ
   const handleAddIngredient = () => {
-    console.log("原材料追加ボタンが押されました");
+    setSelectedIngredients((prev) => [...prev, initialIngredient]);
   };
 
   // 小数点第一位で四捨五入(原材料の単価)(1/円))
@@ -60,29 +80,41 @@ export const RecipesTable = () => {
 
   // 1つの原材料を計算する関数
   const calculateIngredientCost = (ingredient: Ingredient) => {
-    const quantity = Number(selectedIngredient.quantity); // 数量を数値に変換
-    const cost = costCalculation(ingredient);
-    return Math.round((quantity * cost * 10) / 10);
+    // 数量がselectedIngredients配列内に結びついているので、それを取得
+    const selectedIngredient = selectedIngredients.find(
+      (i) => i.ingredient.id === ingredient.id
+    );
+    // 選択された原材料のIDと一致する原材料を取得し計算
+    if (selectedIngredient) {
+      const quantity = Number(selectedIngredient.quantity);
+      const cost = costCalculation(ingredient);
+      return Math.round((quantity * cost * 10) / 10);
+    } else {
+      return 0;
+    }
   };
 
   // 合計金額を計算する関数
 
   // 数量を更新すると発火するイベントハンドラ
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedIngredient) {
-      setSelectedIngredient({
-        ...selectedIngredient,
-        quantity: e.target.value,
-      });
-    }
+  const handleChange = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedIngredients((prev) =>
+      prev.map((ingredient) =>
+        ingredient.ingredient.id === id
+          ? { ...ingredient, quantity: e.target.value }
+          : ingredient
+      )
+    );
   };
+
+  console.log(selectedIngredients);
 
   return (
     <>
       <div className="px-4 mt-10 lg:w-5/6 max-w-2xl sm:w-full  sm:px-6 lg:px-8">
         <button
           type="button"
-          onClick={handleAddIngredient}
+          onClick={() => handleAddIngredient()}
           className="block rounded-md bg-blue-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ease-in transition-all"
         >
           原材料追加
@@ -112,40 +144,42 @@ export const RecipesTable = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-gray-200">
-                {selectedIngredient.ingredient.id === 0 ? (
-                  <td className="px-3 py-5 text-left text-xs lg:text-xl text-gray-500 sm:table-cell">
-                    <PrimaryButton>
-                      <div onClick={() => setOpen(true)}>原材料選択</div>
-                    </PrimaryButton>
-                  </td>
-                ) : (
-                  <td className="px-3 py-5 font-bold text-left text-md lg:text-2xl text-gray-900 sm:table-cell">
-                    {selectedIngredient.ingredient.name} 仕入れ先ID:
-                    {selectedIngredient.ingredient.supplier_id} 1/円:
-                    {costCalculation(selectedIngredient.ingredient)}
-                  </td>
-                )}
-                <td className="py-5 pl-3 pr-4 text-right text-sm lg:text-xl text-gray-500 sm:pr-0">
-                  <input
-                    type="number"
-                    name="quantity"
-                    id="quantity"
-                    value={selectedIngredient.quantity}
-                    onChange={handleChange}
-                    className="border rounded py-2 w-20 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
-                  />{" "}
-                  {selectedIngredient.ingredient.unit}
-                </td>
-                <td className="py-5 pl-3 pr-4 text-right text-sm lg:text-xl text-gray-500 sm:pr-0">
+              {selectedIngredients.map((selectedIngredient, index) => (
+                <tr className="border-b border-gray-200" key={index}>
                   {selectedIngredient.ingredient.id === 0 ? (
-                    <div>0 円</div>
+                    <td className="px-3 py-5 text-left text-xs lg:text-xl text-gray-500 sm:table-cell">
+                      <PrimaryButton>
+                        <div onClick={() => setOpen(true)}>原材料選択</div>
+                      </PrimaryButton>
+                    </td>
                   ) : (
-                    calculateIngredientCost(selectedIngredient.ingredient) +
-                    " 円"
+                    <>
+                      <td className="px-3 py-5 font-bold text-left text-md lg:text-2xl text-gray-900 sm:table-cell">
+                        {selectedIngredient.ingredient.name} 1/円:
+                        {costCalculation(selectedIngredient.ingredient)} 円
+                      </td>
+                      <td className="py-5 pl-3 pr-4 text-right text-sm lg:text-xl text-gray-500 sm:pr-0">
+                        <input
+                          type="number"
+                          name="quantity"
+                          id="quantity"
+                          value={selectedIngredient.quantity}
+                          onChange={(e) =>
+                            handleChange(selectedIngredient.ingredient.id, e)
+                          }
+                          className="border rounded py-2 w-20 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
+                        />{" "}
+                        {selectedIngredient.ingredient.unit}
+                      </td>
+                      <td className="py-5 pl-3 pr-4 text-right text-sm lg:text-xl text-gray-500 sm:pr-0">
+                        {calculateIngredientCost(
+                          selectedIngredient.ingredient
+                        ) + " 円"}
+                      </td>
+                    </>
                   )}
-                </td>
-              </tr>
+                </tr>
+              ))}
             </tbody>
             <tfoot>
               <tr>
@@ -183,7 +217,7 @@ export const RecipesTable = () => {
                   {supplier.ingredients.map((ingredeint) => (
                     <li
                       key={ingredeint.id}
-                      className="flex gap-x-4 px-3 py-5"
+                      className="flex gap-x-4 px-3 py-5 cursor-pointer hover:bg-gray-300"
                       onClick={() => selectIngredientHandler(ingredeint, "0")}
                     >
                       <div className="min-w-0">
