@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
@@ -6,6 +6,19 @@ import { successMessageState } from "@/recoil/atoms/successMessageState";
 export const SuccessMessage = () => {
   const successMessage = useRecoilValue(successMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
+
+  const timeoutId = useRef<NodeJS.Timeout | null>(null);
+
+  // 3秒後にメッセージを非表示にする
+  useEffect(() => {
+    if (successMessage) {
+      if (timeoutId.current) clearTimeout(timeoutId.current);
+
+      timeoutId.current = setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+    }
+  }, [successMessage, setSuccessMessage]);
 
   return (
     successMessage && (

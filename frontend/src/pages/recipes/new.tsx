@@ -23,6 +23,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { Loading } from "../../../components/molecules/loading/Loading";
+import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
@@ -214,6 +215,8 @@ const RecipesNew = () => {
   return (
     <>
       <SuccessMessage />
+      <ErrorMessage />
+      <WarningMessage />
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ新規登録</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">

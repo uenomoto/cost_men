@@ -1,8 +1,9 @@
 import React, { ChangeEvent, useState } from "react";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { Ingredient, SelectedIngredient } from "@/types";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
+import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
@@ -27,6 +28,9 @@ export const RecipesTable = () => {
     },
     quantity: "0",
   };
+
+  // 警告メッセージの更新関数
+  const setWarningMessage = useSetRecoilState(warningMessageState);
 
   // 原材料と仕入れ先を選択するモーダル
   const [open, setOpen] = useState(false);
@@ -73,7 +77,7 @@ export const RecipesTable = () => {
     if (!selectedIngredients.some((i) => i.ingredient.id === 0)) {
       setSelectedIngredients((prev) => [...prev, initialIngredient]);
     } else {
-      alert("原材料を選択してから追加してください");
+      setWarningMessage("原材料を選択してから追加してください");
     }
   };
 
