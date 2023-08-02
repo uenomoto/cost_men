@@ -1,10 +1,11 @@
 import React, { ChangeEvent, useState } from "react";
-import { PrimaryButton } from "../atoms/button/PrimaryButton";
-import { Modal } from "../modal/Modal";
-import { Ingredient, SelectedIngredient } from "@/types";
-import { useRecoilValue } from "recoil";
-import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { XCircleIcon } from "@heroicons/react/24/solid";
+import { Ingredient, SelectedIngredient } from "@/types";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { suppliersState } from "@/recoil/atoms/suppliersState";
+import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
+import { Modal } from "../modal/Modal";
+import { PrimaryButton } from "../atoms/button/PrimaryButton";
 
 export const RecipesTable = () => {
   // 選択されていない原材料の初期値を設定
@@ -33,9 +34,9 @@ export const RecipesTable = () => {
   const suppliers = useRecoilValue(suppliersState);
 
   // 選択した原材料をstateに状態保存(選んでいない状態はinitialIngredientが入る)
-  const [selectedIngredients, setSelectedIngredients] = useState<
+  const [selectedIngredients, setSelectedIngredients] = useRecoilState<
     SelectedIngredient[]
-  >([]);
+  >(recipeIngredientState);
 
   // 原材料の選択時のイベントハンドラ
   const selectIngredientHandler = (
@@ -148,7 +149,7 @@ export const RecipesTable = () => {
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 text-right text-sm lg:text-lg font-semibold text-gray-900 sm:table-cell"
+                  className="px-3 py-3.5 text-center text-sm lg:text-lg font-semibold text-gray-900 sm:table-cell"
                 >
                   数量
                 </th>
@@ -200,7 +201,7 @@ export const RecipesTable = () => {
                         {selectedIngredient.ingredient.name} 1/円:
                         {costCalculation(selectedIngredient.ingredient)} 円
                       </td>
-                      <td className="py-5 pl-3 pr-4 text-right text-sm lg:text-xl text-gray-500 sm:pr-0">
+                      <td className="py-5 pl-3 pr-4 text-center text-sm lg:text-xl text-gray-500 sm:pr-0">
                         <input
                           type="number"
                           name="quantity"

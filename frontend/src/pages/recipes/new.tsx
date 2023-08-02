@@ -8,6 +8,7 @@ import { tagState } from "@/recoil/atoms/tagState";
 import { loadedState } from "@/recoil/atoms/loadedState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
@@ -23,48 +24,48 @@ import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessag
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { Loading } from "../../../components/molecules/loading/Loading";
 
-// 仮のデータ
-let suppliers: Supplier[] = [
-  {
-    id: 1,
-    user_id: "1",
-    name: "上野商店",
-    contact_info: "03-1234-5678",
-    ingredients: [],
-  },
-];
+// // 仮のデータ
+// let suppliers: Supplier[] = [
+//   {
+//     id: 1,
+//     user_id: "1",
+//     name: "上野商店",
+//     contact_info: "03-1234-5678",
+//     ingredients: [],
+//   },
+// ];
 
-const findSupplierById = (id: number) =>
-  suppliers.find((supplier) => supplier.id === id);
+// const findSupplierById = (id: number) =>
+//   suppliers.find((supplier) => supplier.id === id);
 
-// 仮のデータ
-let ingredients: Ingredient[] = [
-  {
-    id: 1,
-    name: "にんじん",
-    supplier_id: 1,
-    buy_cost: 400,
-    buy_quantity: 500,
-    unit: "g",
-    supplier: findSupplierById(1) || suppliers[0],
-  },
-  {
-    id: 2,
-    name: "じゃがいも",
-    supplier_id: 1,
-    buy_cost: 700,
-    buy_quantity: 1000,
-    unit: "g",
-    supplier: findSupplierById(1) || suppliers[0],
-  },
-];
-// 仮のデータ
-suppliers = suppliers.map((supplier) => ({
-  ...supplier, // スプレット構文で展開することで、元のオブジェクトのプロパティをそのまま引き継ぐ
-  ingredients: ingredients.filter(
-    (ingredient) => ingredient.supplier_id === supplier.id
-  ),
-}));
+// // 仮のデータ
+// let ingredients: Ingredient[] = [
+//   {
+//     id: 1,
+//     name: "にんじん",
+//     supplier_id: 1,
+//     buy_cost: 400,
+//     buy_quantity: 500,
+//     unit: "g",
+//     supplier: findSupplierById(1) || suppliers[0],
+//   },
+//   {
+//     id: 2,
+//     name: "じゃがいも",
+//     supplier_id: 1,
+//     buy_cost: 700,
+//     buy_quantity: 1000,
+//     unit: "g",
+//     supplier: findSupplierById(1) || suppliers[0],
+//   },
+// ];
+// // 仮のデータ
+// suppliers = suppliers.map((supplier) => ({
+//   ...supplier, // スプレット構文で展開することで、元のオブジェクトのプロパティをそのまま引き継ぐ
+//   ingredients: ingredients.filter(
+//     (ingredient) => ingredient.supplier_id === supplier.id
+//   ),
+// }));
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
@@ -97,7 +98,18 @@ const RecipesNew = () => {
   // 子コンポーネント達の状態を管理する
   const [recipeImageUrl, setRecipeImageUrl] = useState<string | null>(null);
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
-  const [recipeIngredients, setRecipeIngredients] = useState<Ingredient[]>([]);
+
+  // レシピの原材料の状態管理
+  const recipeIngredientsState = useRecoilValue(recipeIngredientState);
+  const setRecipeIngredients = useSetRecoilState(recipeIngredientState);
+
+  // railsに送るリクエストボディresipeIngredientsのデータ整形する
+  const recipeIngredients = recipeIngredientsState.map((ingredientData) => {
+    return {
+      id: ingredientData.ingredient.id,
+      quantity: parseInt(ingredientData.quantity),
+    };
+  });
 
   // タグ登録
   const tagHendleSubmit = async (e: FormEvent) => {
@@ -221,22 +233,19 @@ const RecipesNew = () => {
     }
   };
 
-  // 子コンポーネント(recipeTableForm)から渡されたレシピで状態を更新
-  const handleRecipeChange = (recipe: Ingredient[]) => {
-    setRecipeIngredients(recipe);
-  };
-
   // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
   const handleSubmissions = (e: FormEvent) => {
     e.preventDefault();
-    const data = {
-      recipeName,
-      recipeImageUrl, // ここでs3のurlをrailsに送る
-      checkedTags,
-      recipeIngredients,
+    const requestBody = {
+      recipe: {
+        recipe_name: recipeName,
+        recipe_image_url: recipeImageUrl, // ここでs3のurlをrailsに送る
+        checked_tags: checkedTags,
+        recipe_ingredeients: recipeIngredients,
+      },
     };
     // 送信処理本来はここでAPIを叩く
-    console.log(data);
+    console.log(requestBody);
 
     router.push("/recipes");
     setRecipeName("");
