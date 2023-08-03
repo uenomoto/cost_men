@@ -213,6 +213,7 @@ export const RecipesTable = () => {
                           type="number"
                           name="quantity"
                           id="quantity"
+                          min="0"
                           value={selectedIngredient.quantity}
                           onChange={(e) =>
                             handleChange(selectedIngredient.ingredient.id, e)

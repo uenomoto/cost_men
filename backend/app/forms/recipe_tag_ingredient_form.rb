@@ -13,7 +13,7 @@ class RecipeTagIngredientForm
   validates :recipe_name, presence: true
   validates :checked_tags, presence: true
   validates :recipe_ingredients, presence: true
-  validate :ingredients_must_exist, :tags_must_exist, :ingredients_quantity_must_be_positive
+  validate :ingredients_must_exist, :tags_must_exist, :ingredients_quantity_must_be_positive, :image_url_check
 
   def save
     return false unless valid?
@@ -94,4 +94,13 @@ class RecipeTagIngredientForm
 
     errors.add(:tags, '一部のタグが存在しません')
   end
+
+  # S3から送られてきた画像のURLが正しいかをチェックする
+  def image_url_check
+    url_regex = /\Ahttps:\/\/cost-men-bucket\.s3\.ap-northeast-1\.amazonaws\.com\/\w+(\-\w+)*\.(jpg|jpeg|png|gif|svg|webp)\z/
+    unless recipe_image_url =~ url_regex
+      errors.add(:recipe_image_url, '画像のURLが正しくありません')
+    end
+  end
+
 end
