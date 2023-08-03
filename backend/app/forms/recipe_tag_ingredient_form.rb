@@ -13,7 +13,7 @@ class RecipeTagIngredientForm
   validates :recipe_name, presence: true
   validates :checked_tags, presence: true
   validates :recipe_ingredients, presence: true
-  validate :ingredients_must_exist, :tags_must_exist
+  validate :ingredients_must_exist, :tags_must_exist, :ingredients_quantity_must_be_positive
 
   def save
     return false unless valid?
@@ -60,7 +60,16 @@ class RecipeTagIngredientForm
     recipe.update!(total_cost: recipe.total_cost)
   end
 
-  # 材料のバリデーションをチェックする
+  # 材料の数量が1以上であり空欄でないかをチェックする
+  def ingredients_quantity_must_be_positive
+    recipe_ingredients.each do |ingredient|
+      if ingredient[:quantity].blank? || ingredient[:quantity].to_i <= 0
+        errors.add(:recipe_ingredients, '全ての材料の数量は0以上でなければなりません')
+      end
+    end
+  end
+
+  # 材料がしっかりと存在するかをチェックする
   def ingredients_must_exist
     @ingredients = recipe_ingredients.map do |ingredient|
       Ingredient.find_by(id: ingredient[:id])
@@ -76,7 +85,7 @@ class RecipeTagIngredientForm
 
     return if @tag.nil? # checked_tagsがnilの場合は早期でメソッドを抜ける
 
-    # 同様にタグのバリデーションもチェックする
+    # 同様にタグも存在するかをチェックする
     @tag.map do |tag_id, _checked|
       Tag.find_by(id: tag_id)
     end.compact
