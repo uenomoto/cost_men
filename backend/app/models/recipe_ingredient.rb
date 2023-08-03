@@ -16,7 +16,7 @@ class RecipeIngredient < ApplicationRecord
     total_cost = recipe.recipe_ingredients.sum do |recipe_ingredient|
       (recipe_ingredient.ingredient.buy_cost / recipe_ingredient.ingredient.buy_quantity) * recipe_ingredient.quantity
     end
-
+    total_cost = total_cost.round(1)
     recipe.update(total_cost:)
   end
 end
