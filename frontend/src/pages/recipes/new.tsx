@@ -219,8 +219,7 @@ const RecipesNew = () => {
         setRecipeIngredients([]);
       }
     } catch (error: AxiosError | any) {
-      console.log(error.response.data);
-      setErrorMessage(error.response.data.errors);
+      setErrorMessage(error.response.data.data);
     }
   };
 

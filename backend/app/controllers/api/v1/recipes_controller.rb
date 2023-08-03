@@ -36,7 +36,7 @@ module Api
         if form.save
           render json: { status: 'SUCCESS!', data: form.recipe }, status: :created
         else
-          render json: { status: 'ERROR', data: form.errors }, status: :unprocessable_entity
+          render json: { data: form.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
@@ -62,7 +62,7 @@ module Api
       # RecipeTagIngredientFormで定義したパラメータを受け取る
       def recipe_params
         params.require(:recipe).permit(:recipe_name, :recipe_image_url,
-                                        checked_tags: {},
+                                       checked_tags: {},
                                        recipe_ingredients: %i[id quantity])
       end
     end
