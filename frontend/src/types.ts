@@ -27,8 +27,9 @@ export interface Recipe {
   id: number;
   name: string;
   total_cost: number;
-  imageUrl: string;
-  ingredients: RecipeIngredient[];
+  image_aws_url: string;
+  recipe_ingredients: RecipeIngredient[];
+  tags: Tag[];
 }
 
 // 原材料の型定義
@@ -77,6 +78,7 @@ export interface SelectedIngredient {
 // タグの型定義
 export interface Tag {
   id: number;
+  user_id: string;
   name: string;
 }
 
