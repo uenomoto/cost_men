@@ -16,10 +16,12 @@ import { SelectedIngredient, Tag, TagResponse } from "@/types";
 import { tagState } from "@/recoil/atoms/tagState";
 import { editTagState } from "@/recoil/atoms/editTagState";
 import { RecipesEditTable } from "../../../../components/organisms/RecipesEditTable";
+import { WarningMessage } from "../../../../components/atoms/messeage/WarningMessage";
+import { ErrorMessage } from "../../../../components/atoms/messeage/ErrorMessage";
+import { SuccessMessage } from "../../../../components/atoms/messeage/SuccessMessage";
 
 const RecipesEdit = () => {
   const recipeShow = useRecoilValue(recipeShowState);
-  console.log(recipeShow);
   const token = useRecoilValue(tokenState);
   const setTags = useSetRecoilState<Tag[]>(tagState); // 全てのタグ一覧
   const [editTags, setEditTag] = useRecoilState(editTagState); // 登録されているタグ
@@ -35,7 +37,7 @@ const RecipesEdit = () => {
 
   // RecipeImageコンポーネントから情報を受け取り管理する
   const [recipeEditImageUrl, setRecipeEditImageUrl] = useState<string | null>(
-    null
+    recipeShow.image_aws_url
   );
 
   // レシピ原材料のデータをRecipesEditTableコンポーネントから受け取り管理する
@@ -131,22 +133,24 @@ const RecipesEdit = () => {
         requestBody,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (res.status === 201) {
+      if (res.status === 200) {
         setSuccessMessage("レシピを編集しました");
-        router.push(`recipes/${res.data.recipe.id}`);
+        router.push(`/recipes/${id}`);
         setRecipeEditName("");
         setRecipeEditImageUrl(null);
         setEditTag({});
         setUpdatedRecipeIngredients([]);
       }
     } catch (error: AxiosError | any) {
-      console.log(error.response.data.data);
       setErrorMessage(error.response.data.data);
     }
   };
 
   return (
     <>
+      <SuccessMessage />
+      <ErrorMessage />
+      <WarningMessage />
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ編集画面</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
@@ -163,7 +167,10 @@ const RecipesEdit = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 place-items-center md:grid-cols-2 lg:grid-cols-3">
-        <RecipeImage onImageChange={handleFileChange} />
+        <RecipeImage
+          onImageChange={handleFileChange}
+          initialImageUrl={recipeShow.image_aws_url}
+        />
         {uploadStatus.status === "error" && (
           <p>エラーが発生しました: {uploadStatus.error?.message}</p>
         )}
@@ -172,7 +179,9 @@ const RecipesEdit = () => {
         </div>
       </div>
       <RecipesEditTable setUpdatedIngredients={setUpdatedRecipeIngredients} />
-      <EditSubmit text="レシピ全体の編集" onClick={handleEditSubmissions} />
+      <div className="mt-5">
+        <EditSubmit text="レシピ全体の編集" onClick={handleEditSubmissions} />
+      </div>
     </>
   );
 };

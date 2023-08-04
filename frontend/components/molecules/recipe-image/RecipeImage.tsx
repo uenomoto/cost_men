@@ -11,15 +11,23 @@ import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 
 type Props = {
   onImageChange: (file: File | null) => void; // 親コンポーネントにファイルを渡す
+  initialImageUrl?: string; // 編集用の登録されている画像
 };
 
-export const RecipeImage = ({ onImageChange }: Props) => {
+export const RecipeImage = ({ onImageChange, initialImageUrl }: Props) => {
   const [preview, setPreview] = useState<string | null>("/no_image.png");
 
   // DOM操作したい時はuseRefを使う
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const setWarningMessage = useSetRecoilState(warningMessageState);
+
+  // 編集の場合登録してあるのですでに登録してある画像を表示する
+  useEffect(() => {
+    if (initialImageUrl) {
+      setPreview(initialImageUrl);
+    }
+  }, [initialImageUrl]);
 
   // ファイルが選択された時に発火するイベントハンドラ関数
   const handleImageChange = useCallback(
@@ -74,7 +82,7 @@ export const RecipeImage = ({ onImageChange }: Props) => {
       </div>
       <div className="col-span-1">
         {preview && (
-          <Image src={preview} alt="recipe" width={300} height={400} priority />
+          <Image src={preview} alt="recipe" width={300} height={200} />
         )}
       </div>
     </>

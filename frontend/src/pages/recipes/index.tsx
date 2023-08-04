@@ -13,6 +13,7 @@ import { SelectBox } from "../../../components/molecules/selectbox/SelectBox";
 import { Pagination } from "../../../components/molecules/pagination/Pagination";
 import axios, { AxiosError } from "axios";
 import { Loading } from "../../../components/molecules/loading/Loading";
+import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 
 const RecipesIndex: NextPage = () => {
   // レシピ一覧を管理する
@@ -84,6 +85,7 @@ const RecipesIndex: NextPage = () => {
         <meta name="description" content="一覧画面" />
       </Head>
       <SelectBox />
+      <SuccessMessage />
       {loading ? (
         <Loading />
       ) : (
@@ -113,12 +115,11 @@ const RecipesIndex: NextPage = () => {
                         画像をタップして詳細画面へ
                       </span>
                       <Image
-                        className="h-72 w-96 rounded-3xl object-cover transition-transform duration-500 hover:scale-105 hover:opacity-90"
+                        className="rounded-3xl transition-transform duration-500 hover:scale-105 hover:opacity-90"
                         src={recipe.image_aws_url}
                         alt="めん"
-                        width={500}
+                        width={400}
                         height={300}
-                        priority
                       />
                     </div>
                   </div>

@@ -47,7 +47,7 @@ module Api
         if edit_form.update(recipe_params)
           render json: { status: 'SUCCESS!', data: edit_form.recipe }, status: :ok
         else
-          render json: { status: 'ERROR', data: edit_form.errors }, status: :unprocessable_entity
+          render json: { data: edit_form.errors.full_messages}, status: :unprocessable_entity
         end
       end
 
