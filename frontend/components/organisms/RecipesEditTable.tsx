@@ -1,15 +1,19 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { Ingredient, SelectedIngredient } from "@/types";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { warningMessageState } from "@/recoil/atoms/warningMessageState";
-import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
 import { recipeShowState } from "@/recoil/atoms/recipeShowState";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 
-export const RecipesTable = () => {
+type Props = {
+  setUpdatedIngredients: (ingredients: SelectedIngredient[]) => void;
+};
+
+export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
   // 選択されていない原材料の初期値を設定
   const initialIngredient: SelectedIngredient = {
     ingredient: {
@@ -30,6 +34,11 @@ export const RecipesTable = () => {
     quantity: "0",
   };
 
+  const router = useRouter();
+
+  // レシピ詳細をRecoilから取得
+  const recipeShow = useRecoilValue(recipeShowState);
+
   // 警告メッセージの更新関数
   const setWarningMessage = useSetRecoilState(warningMessageState);
 
@@ -38,17 +47,22 @@ export const RecipesTable = () => {
   // 仕入れ先と原材料をRecoilから取得
   const suppliers = useRecoilValue(suppliersState);
 
-  // 選択した原材料をstateに状態保存(選んでいない状態はinitialIngredientが入る)
-  const [selectedIngredients, setSelectedIngredients] = useRecoilState<
+  // 編集専用の原材料をstateに状態保存(親に渡す必要あり)
+  const [editedIngredients, setEditedIngredients] = useState<
     SelectedIngredient[]
-  >(recipeIngredientState);
+  >([]);
+
+  // 編集専用の原材料を親コンポーネントに渡す
+  useEffect(() => {
+    setUpdatedIngredients(editedIngredients);
+  }, [editedIngredients, setUpdatedIngredients]);
 
   // 原材料の選択時のイベントハンドラ
   const selectIngredientHandler = (
     ingredient: Ingredient,
     quantity: string
   ) => {
-    setSelectedIngredients((prev) => {
+    setEditedIngredients((prev) => {
       // 選択した原材料が元の配列に存在するかどうかを確認
       const existingIngredientIndex = prev.findIndex(
         (i) => i.ingredient.id === ingredient.id
@@ -75,8 +89,8 @@ export const RecipesTable = () => {
   // 原材料追加ボタンが押された時のイベントハンドラ
   const handleAddIngredient = () => {
     // id === 0の要素が存在しないときに初期値を追加
-    if (!selectedIngredients.some((i) => i.ingredient.id === 0)) {
-      setSelectedIngredients((prev) => [...prev, initialIngredient]);
+    if (!editedIngredients.some((i) => i.ingredient.id === 0)) {
+      setEditedIngredients((prev) => [...prev, initialIngredient]);
     } else {
       setWarningMessage("原材料を選択してから追加してください");
     }
@@ -84,9 +98,7 @@ export const RecipesTable = () => {
 
   // 初期値も含め作成した原材料を削除する
   const handleRemoveIngredient = (id: number) => {
-    setSelectedIngredients((prev) =>
-      prev.filter((i) => i.ingredient.id !== id)
-    );
+    setEditedIngredients((prev) => prev.filter((i) => i.ingredient.id !== id));
   };
 
   // 小数点第一位で四捨五入(原材料の単価)(1/円))
@@ -99,7 +111,7 @@ export const RecipesTable = () => {
   // 1つの原材料を計算する関数
   const calculateIngredientCost = (ingredient: Ingredient) => {
     // 数量がselectedIngredients配列内に結びついているので、それを取得
-    const selectedIngredient = selectedIngredients.find(
+    const selectedIngredient = editedIngredients.find(
       (i) => i.ingredient.id === ingredient.id
     );
     // 選択された原材料のIDと一致する原材料を取得し計算
@@ -114,7 +126,7 @@ export const RecipesTable = () => {
 
   // 合計金額を計算する関数
   const calculateTotalCost = () => {
-    return selectedIngredients.reduce((totalCost, selectedIngredient) => {
+    return editedIngredients.reduce((totalCost, selectedIngredient) => {
       const costPerUnit = costCalculation(selectedIngredient.ingredient);
       const quantity = Number(selectedIngredient.quantity);
       if (isNaN(costPerUnit) || isNaN(quantity)) {
@@ -126,7 +138,7 @@ export const RecipesTable = () => {
 
   // 数量を更新すると発火するイベントハンドラ
   const handleChange = (id: number, e: ChangeEvent<HTMLInputElement>) => {
-    setSelectedIngredients((prev) =>
+    setEditedIngredients((prev) =>
       prev.map((ingredient) =>
         ingredient.ingredient.id === id
           ? { ...ingredient, quantity: e.target.value }
@@ -134,6 +146,16 @@ export const RecipesTable = () => {
       )
     );
   };
+
+  // ここで既存のレシピ全体のデータをsetEditedIngredientsに格納する
+  useEffect(() => {
+    const ingredients = recipeShow.recipe_ingredients.map((ingredient) => ({
+      ...ingredient,
+      quantity: ingredient.quantity.toString(),
+    }));
+
+    setEditedIngredients(ingredients);
+  }, [recipeShow.recipe_ingredients]);
 
   return (
     <>
@@ -176,7 +198,7 @@ export const RecipesTable = () => {
               </tr>
             </thead>
             <tbody>
-              {selectedIngredients.map((selectedIngredient) => (
+              {editedIngredients.map((selectedIngredient) => (
                 <tr
                   className="border-b border-gray-200"
                   key={selectedIngredient.ingredient.id}
@@ -248,7 +270,7 @@ export const RecipesTable = () => {
               <tr>
                 <th
                   scope="row"
-                  colSpan={3}
+                  colSpan={2}
                   className="pl-4 pr-3 pt-4 text-right text-xl font-semibold text-gray-900 sm:pl-0"
                 >
                   合計原価

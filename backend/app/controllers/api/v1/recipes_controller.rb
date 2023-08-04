@@ -4,6 +4,7 @@ module Api
   module V1
     class RecipesController < SecuredController
       before_action :authorize_request
+      before_action :update_find_recipe, only: %i[update]
 
       # レシピの一覧とそのレシピの原材料とレシピについているタグを取得
       def index
@@ -36,18 +37,15 @@ module Api
         if form.save
           render json: { status: 'SUCCESS!', data: form.recipe }, status: :created
         else
-          render json: { status: 'ERROR', data: form.errors }, status: :unprocessable_entity
+          render json: { data: form.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
       def update
-        edit_form = RecipeTagIngredientEditForm.new(recipe_params.merge(user: current_user))
-        edit_form.recipe = current_user.recipes.find(params[:id])
-
-        if edit_form.update(recipe_params)
-          render json: { status: 'SUCCESS!', data: edit_form.recipe }, status: :ok
+        if @edit_form.update(recipe_params)
+          render json: { status: 'SUCCESS!', data: @edit_form.recipe }, status: :ok
         else
-          render json: { status: 'ERROR', data: edit_form.errors }, status: :unprocessable_entity
+          render json: { data: @edit_form.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
@@ -59,12 +57,16 @@ module Api
 
       private
 
+      def update_find_recipe
+        @edit_form = RecipeTagIngredientEditForm.new(recipe_params.merge(user: current_user))
+        @edit_form.recipe = current_user.recipes.find(params[:id])
+        @edit_form
+      end
+
       # RecipeTagIngredientFormで定義したパラメータを受け取る
       def recipe_params
-        # hashのkeyを取得する.try(:keys)はnilの場合のエラー回避↓
-        checked_tags_keys = params[:recipe][:checked_tags].try(:keys)
         params.require(:recipe).permit(:recipe_name, :recipe_image_url,
-                                       { checked_tags: checked_tags_keys },
+                                       checked_tags: {},
                                        recipe_ingredients: %i[id quantity])
       end
     end

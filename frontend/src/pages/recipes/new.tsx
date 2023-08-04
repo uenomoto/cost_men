@@ -1,13 +1,13 @@
 import React, { FormEvent, useState, useEffect } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Supplier, TagResponse } from "@/types";
-import { Ingredient } from "@/types";
+import { TagResponse } from "@/types";
 import { useRouter } from "next/router";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { tagState } from "@/recoil/atoms/tagState";
 import { loadedState } from "@/recoil/atoms/loadedState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
@@ -22,49 +22,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { Loading } from "../../../components/molecules/loading/Loading";
-
-// 仮のデータ
-let suppliers: Supplier[] = [
-  {
-    id: 1,
-    user_id: 1,
-    name: "上野商店",
-    contact_info: "03-1234-5678",
-    ingredients: [],
-  },
-];
-
-const findSupplierById = (id: number) =>
-  suppliers.find((supplier) => supplier.id === id);
-
-// 仮のデータ
-let ingredients: Ingredient[] = [
-  {
-    id: 1,
-    name: "にんじん",
-    supplier_id: 1,
-    buy_cost: 400,
-    buy_quantity: 500,
-    unit: "g",
-    supplier: findSupplierById(1) || suppliers[0],
-  },
-  {
-    id: 2,
-    name: "じゃがいも",
-    supplier_id: 1,
-    buy_cost: 700,
-    buy_quantity: 1000,
-    unit: "g",
-    supplier: findSupplierById(1) || suppliers[0],
-  },
-];
-// 仮のデータ
-suppliers = suppliers.map((supplier) => ({
-  ...supplier, // スプレット構文で展開することで、元のオブジェクトのプロパティをそのまま引き継ぐ
-  ingredients: ingredients.filter(
-    (ingredient) => ingredient.supplier_id === supplier.id
-  ),
-}));
+import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
@@ -97,7 +55,18 @@ const RecipesNew = () => {
   // 子コンポーネント達の状態を管理する
   const [recipeImageUrl, setRecipeImageUrl] = useState<string | null>(null);
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
-  const [recipeIngredients, setRecipeIngredients] = useState<Ingredient[]>([]);
+
+  // レシピの原材料の状態管理
+  const recipeIngredientsState = useRecoilValue(recipeIngredientState);
+  const setRecipeIngredients = useSetRecoilState(recipeIngredientState);
+
+  // railsに送るリクエストボディresipeIngredientsのデータ整形する
+  const recipeIngredients = recipeIngredientsState.map((ingredientData) => {
+    return {
+      id: ingredientData.ingredient.id,
+      quantity: parseInt(ingredientData.quantity),
+    };
+  });
 
   // タグ登録
   const tagHendleSubmit = async (e: FormEvent) => {
@@ -221,33 +190,43 @@ const RecipesNew = () => {
     }
   };
 
-  // 子コンポーネント(recipeTableForm)から渡されたレシピで状態を更新
-  const handleRecipeChange = (recipe: Ingredient[]) => {
-    setRecipeIngredients(recipe);
-  };
-
   // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
-  const handleSubmissions = (e: FormEvent) => {
+  const handleSubmissions = async (e: FormEvent) => {
     e.preventDefault();
-    const data = {
-      recipeName,
-      recipeImageUrl, // ここでs3のurlをrailsに送る
-      checkedTags,
-      recipeIngredients,
-    };
-    // 送信処理本来はここでAPIを叩く
-    console.log(data);
+    try {
+      const requestBody = {
+        recipe: {
+          recipe_name: recipeName,
+          recipe_image_url: recipeImageUrl, // ここでs3のurlをrailsに送る
+          checked_tags: checkedTags,
+          recipe_ingredients: recipeIngredients,
+        },
+      };
+      console.log(requestBody);
 
-    router.push("/recipes");
-    setRecipeName("");
-    setRecipeImageUrl(null);
-    setCheckedTags({});
-    setRecipeIngredients([]);
+      const res: AxiosResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes`,
+        requestBody,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 201) {
+        setSuccessMessage("レシピを登録しました");
+        router.push("/recipes");
+        setRecipeName("");
+        setRecipeImageUrl(null);
+        setCheckedTags({});
+        setRecipeIngredients([]);
+      }
+    } catch (error: AxiosError | any) {
+      setErrorMessage(error.response.data.data);
+    }
   };
 
   return (
     <>
       <SuccessMessage />
+      <ErrorMessage />
+      <WarningMessage />
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ新規登録</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
@@ -275,12 +254,10 @@ const RecipesNew = () => {
           <TagCheckBox onTagCheckChange={setCheckedTags} />
         </div>
       </div>
-      <RecipesTable
-        ingredients={ingredients}
-        suppliers={suppliers}
-        onRecipeChange={handleRecipeChange}
-      />
-      <Submit text="登録" onClick={handleSubmissions} />
+      <RecipesTable />
+      <div className="mt-5">
+        <Submit text="登録" onClick={handleSubmissions} />
+      </div>
 
       <Modal open={open} setModalOpen={setOpen}>
         <SuccessMessage />

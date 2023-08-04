@@ -8,9 +8,9 @@ RSpec.describe SellingPrice do
   end
 
   describe 'validations' do
-    context 'when 販売価格は空欄禁止かつ整数で0以上である' do
+    context 'when 販売価格は空欄禁止かつ整数で1以上である' do
       it { is_expected.to validate_presence_of(:price) }
-      it { is_expected.to validate_numericality_of(:price).only_integer.is_greater_than_or_equal_to(0) }
+      it { is_expected.to validate_numericality_of(:price).only_integer.is_greater_than_or_equal_to(1) }
     end
   end
 end

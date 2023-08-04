@@ -1,87 +1,27 @@
-import React from "react";
-import { useState } from "react";
-import { Modal } from "../modal/Modal";
+import React, { useState } from "react";
 import { EditButton } from "../atoms/button/EditButton";
-import { Input } from "../atoms/form/Input";
 import Link from "next/link";
-
-// 架空データ
-const ingredients = [
-  {
-    id: 1,
-    recipe_id: 1,
-    ingredient_id: 1,
-    quantity: 100.0,
-    ingredient: {
-      id: 1,
-      supplier_id: 1,
-      buy_cost: 300.0,
-      buy_quantity: 100.0,
-      unit: "g",
-      name: "玉ねぎ",
-    },
-  },
-  {
-    id: 2,
-    recipe_id: 1,
-    ingredient_id: 2,
-    quantity: 200.0,
-    ingredient: {
-      id: 2,
-      supplier_id: 1,
-      buy_cost: 500.0,
-      buy_quantity: 50.0,
-      unit: "g",
-      name: "のり",
-    },
-  },
-  {
-    id: 3,
-    recipe_id: 1,
-    ingredient_id: 3,
-    quantity: 150.0,
-    ingredient: {
-      id: 3,
-      supplier_id: 2,
-      buy_cost: 600.0,
-      buy_quantity: 200.0,
-      unit: "g",
-      name: "煮卵",
-    },
-  },
-  {
-    id: 4,
-    recipe_id: 1,
-    ingredient_id: 4,
-    quantity: 50.0,
-    ingredient: {
-      id: 4,
-      supplier_id: 2,
-      buy_cost: 400.0,
-      buy_quantity: 100.0,
-      unit: "g",
-      name: "ネギ",
-    },
-  },
-  {
-    id: 5,
-    recipe_id: 1,
-    ingredient_id: 5,
-    quantity: 100.0,
-    ingredient: {
-      id: 5,
-      supplier_id: 3,
-      buy_cost: 700.0,
-      buy_quantity: 250.0,
-      unit: "g",
-      name: "チャーシュー",
-    },
-  },
-];
+import { useRecoilValue } from "recoil";
+import { recipeShowState } from "@/recoil/atoms/recipeShowState";
+import { Ingredient, RecipeIngredient } from "@/types";
 
 export const IngredientIndex = () => {
-  // map関数で回しているので、idをkeyにしているこれをやらないと全てのモーダルが開いてしまう
-  const [openIngredientId, setOpenIngredientId] = useState<number | null>(null);
+  const recipeShow = useRecoilValue(recipeShowState);
+
+  // 1つの原材料の単価(1/円)を計算する
+  const costCalculation = (ingredient: Ingredient) => {
+    return (
+      Math.round((ingredient.buy_cost / ingredient.buy_quantity) * 10) / 10
+    );
+  };
+
+  // 1つの原材料の合計金額を計算する(subtotal)
+  const calculateIngredientCost = (recipeIngredient: RecipeIngredient) => {
+    const quantity = Number(recipeIngredient.quantity);
+    // 1つの原材料の単価(1/円)をcost定数に代入
+    const cost = costCalculation(recipeIngredient.ingredient);
+    return Math.round((quantity * cost * 10) / 10); // 小数点第一位で四捨五入で計算
+  };
 
   return (
     <>
@@ -94,7 +34,7 @@ export const IngredientIndex = () => {
           </div>
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
             <EditButton>
-              <Link href="/recipes/edit/1">
+              <Link href={`/recipes/edit/${recipeShow.id}`}>
                 <div className="text-xl">レシピ編集</div>
               </Link>
             </EditButton>
@@ -127,42 +67,17 @@ export const IngredientIndex = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  {ingredients.map((ingredient) => (
-                    <tr key={ingredient.id} className="even:bg-gray-50">
+                  {recipeShow.recipe_ingredients.map((recipeIngredient) => (
+                    <tr key={recipeIngredient.id} className="even:bg-gray-50">
                       <td className="whitespace-nowrap py-4 px-0 text-lg text-left font-bold text-gray-900">
-                        {ingredient.ingredient.name}
+                        {recipeIngredient.ingredient.name}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-lg font-bold text-left text-gray-900">
-                        {ingredient.quantity}
-                        {ingredient.ingredient.unit}
+                        {recipeIngredient.quantity}
+                        {recipeIngredient.ingredient.unit}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-lg font-bold text-center text-gray-900">
-                        {ingredient.ingredient.buy_cost} 円
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => setOpenIngredientId(ingredient.id)}
-                          className="font-bold text-sky-500 hover:text-sky-700 transition-all ease-in"
-                        >
-                          編集
-                        </button>
-                        {openIngredientId === ingredient.id && (
-                          <Modal
-                            open={openIngredientId === ingredient.id}
-                            setModalOpen={() => setOpenIngredientId(null)}
-                          >
-                            <ul>
-                              <li>できたら実装する</li>
-                              <li>レシピ登録からの編集する部分</li>
-                              <li>原材料</li>
-                              <li>仕入れ先</li>
-                              <li>数量</li>
-                              <li>
-                                これらピンポイントだから実装は難しそう。。。
-                              </li>
-                            </ul>
-                          </Modal>
-                        )}
+                        {calculateIngredientCost(recipeIngredient)} 円
                       </td>
                     </tr>
                   ))}
@@ -174,7 +89,7 @@ export const IngredientIndex = () => {
       </div>
 
       <div className="my-10 font-bold text-right text-2xl">
-        原価合計金額: 2500円
+        原価合計金額: {recipeShow.total_cost} 円
       </div>
     </>
   );

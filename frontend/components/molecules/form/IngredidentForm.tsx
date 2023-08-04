@@ -92,7 +92,6 @@ export const IngredidentForm = () => {
         setSuppliers(updatedSuppliers);
       }
     } catch (error: AxiosError | any) {
-      console.log(error);
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
     }
