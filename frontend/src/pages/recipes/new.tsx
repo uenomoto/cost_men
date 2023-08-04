@@ -1,7 +1,6 @@
 import React, { FormEvent, useState, useEffect } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Supplier, TagResponse } from "@/types";
-import { Ingredient } from "@/types";
+import { TagResponse } from "@/types";
 import { useRouter } from "next/router";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { tagState } from "@/recoil/atoms/tagState";
