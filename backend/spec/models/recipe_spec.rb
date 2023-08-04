@@ -10,7 +10,7 @@ RSpec.describe Recipe do
     it { is_expected.to have_many(:recipe_procedures).dependent(:destroy) }
     it { is_expected.to have_many(:recipe_tags).dependent(:destroy) }
     it { is_expected.to have_many(:tags).through(:recipe_tags).dependent(:destroy) }
-    it { is_expected.to have_many(:selling_prices).dependent(:destroy) }
+    it { is_expected.to have_one(:selling_price).dependent(:destroy) }
   end
 
   describe 'validations' do
