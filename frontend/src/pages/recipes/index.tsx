@@ -100,16 +100,6 @@ const RecipesIndex: NextPage = () => {
                         <h2 className="xl:text-2xl md:text-xl">
                           {recipe.name}
                         </h2>
-                        <div className="ml-5">
-                          <span className="inline-flex px-3 py-1 mr-2 rounded-full text-sm font-medium bg-sky-100 text-sky-800">
-                            {recipe.tags.length > 0 && (
-                              <span>{recipe.tags[0].name}</span>
-                            )}
-                          </span>
-                          <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                            手順未定義
-                          </span>
-                        </div>
                       </div>
                       <span className="lg:hidden sm:inline-block px-3 py-1 mb-3 rounded-full text-md font-bold bg-sky-100 text-sky-800">
                         画像をタップして詳細画面へ
