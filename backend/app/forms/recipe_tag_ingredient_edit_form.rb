@@ -10,7 +10,7 @@ class RecipeTagIngredientEditForm
   validates :recipe_name, presence: true
   validates :checked_tags, presence: true
   validates :recipe_ingredients, presence: true
-  validate :ingredients_must_exist, :tags_must_exist
+  validate :ingredients_must_exist, :tags_must_exist, :ingredients_quantity_must_be_positive
 
   def update(_params)
     return false unless valid?
@@ -54,6 +54,15 @@ class RecipeTagIngredientEditForm
     # total_costを計算する前にrecipe_ingredientsをリロードして最新のデータを取得する(quantityの部分)
     @recipe.recipe_ingredients.reload
     @recipe.recipe_ingredients.each(&:update_total_cost)
+  end
+
+  # 材料の数量が1以上であり空欄でないかをチェックする
+  def ingredients_quantity_must_be_positive
+    recipe_ingredients.each do |ingredient|
+      if ingredient[:quantity].blank? || ingredient[:quantity].to_i <= 0
+        errors.add(:recipe_ingredients, '全ての材料の数量は0以上でなければなりません')
+      end
+    end
   end
 
   # 材料のバリデーションをチェックする

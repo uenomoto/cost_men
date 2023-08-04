@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { Ingredient, SelectedIngredient } from "@/types";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -7,7 +8,6 @@ import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { recipeShowState } from "@/recoil/atoms/recipeShowState";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
-import { SuccessButton } from "../atoms/button/SuccessButton";
 
 type Props = {
   setUpdatedIngredients: (ingredients: SelectedIngredient[]) => void;
@@ -34,6 +34,8 @@ export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
     quantity: "0",
   };
 
+  const router = useRouter();
+
   // レシピ詳細をRecoilから取得
   const recipeShow = useRecoilValue(recipeShowState);
 
@@ -51,7 +53,9 @@ export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
   >([]);
 
   // 編集専用の原材料を親コンポーネントに渡す
-  setUpdatedIngredients(editedIngredients);
+  useEffect(() => {
+    setUpdatedIngredients(editedIngredients);
+  }, [editedIngredients, setUpdatedIngredients]);
 
   // 原材料の選択時のイベントハンドラ
   const selectIngredientHandler = (
