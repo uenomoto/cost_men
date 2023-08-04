@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Api::V1::SellingPrices' do
   let(:user) { create(:user) }
   let(:recipe) { create(:recipe, user:) }
-  let(:selling_price) { create(:selling_price, recipe:) }
+  let!(:selling_price) { create(:selling_price, recipe:) }
 
   before do
     allow_any_instance_of(SecuredController).to receive(:current_user).and_return(user)
