@@ -25,13 +25,13 @@ const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
   const [sellingPriceOpen, setSellingPriceOpen] = useState(false);
   const [editSellingPriceOpen, setEditSellingPriceOpen] = useState(false);
+  // 販売価格を格納し表示する
+  const [sellingPrice, setSellingPrice] = useState<number>(0);
+
   // 販売価格のテキストフィールドのstate
   const [price, setPrice] = useState<number>(0);
   // 販売価格の編集用のテキストフィールドのstate
-  const [editPrice, setEditPrice] = useState<number>(0);
-
-  // 販売価格を格納し表示する
-  const [sellingPrice, setSellingPrice] = useState<number>(0);
+  const [editPrice, setEditPrice] = useState<number>(sellingPrice);
 
   const [recipeShow, setRecipeShow] = useRecoilState<Recipe>(recipeShowState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
@@ -132,6 +132,11 @@ const RecipeShow = () => {
     }
   };
 
+  // sellingPriceを監視し編集する際にテキストフィールドに販売価格を表示する
+  useEffect(() => {
+    setEditPrice(sellingPrice);
+  }, [sellingPrice]);
+
   // 原価率の計算(売上原価 / 売上高)
   const costRatio = Math.round((sellingPrice / recipeShow.total_cost) * 100);
 
@@ -224,6 +229,9 @@ const RecipeShow = () => {
           <div className="flex flex-col items-center">
             <div className="w-full">
               <AlertBadge />
+              <p className="text-xs text-red-500 mb-3">
+                ※半角数字でお願いします
+              </p>
               <Input
                 htmlfor="price"
                 text="販売価格"
@@ -249,6 +257,9 @@ const RecipeShow = () => {
           <div className="flex flex-col items-center">
             <div className="w-full">
               <AlertBadge />
+              <p className="text-xs text-red-500 mb-3">
+                ※半角数字でお願いします
+              </p>
               <Input
                 htmlfor="price"
                 text="販売価格"
