@@ -2,7 +2,6 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Input } from "../../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../../components/molecules/checkbox/TagCheckBox";
-import { RecipesTable } from "../../../../components/organisms/RecipesTable";
 import { RecipeImage } from "../../../../components/molecules/recipe-image/RecipeImage";
 import { EditSubmit } from "../../../../components/atoms/form/EditSubmit";
 import axios, { AxiosError, AxiosResponse } from "axios";
@@ -13,9 +12,10 @@ import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { uploadImageToS3 } from "../../../../utils/s3Upload";
 import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
-import { Tag, TagResponse } from "@/types";
+import { SelectedIngredient, Tag, TagResponse } from "@/types";
 import { tagState } from "@/recoil/atoms/tagState";
 import { editTagState } from "@/recoil/atoms/editTagState";
+import { RecipesEditTable } from "../../../../components/organisms/RecipesEditTable";
 
 const RecipesEdit = () => {
   const recipeShow = useRecoilValue(recipeShowState);
@@ -33,17 +33,18 @@ const RecipesEdit = () => {
   // タグの名前登録とレシピの名前登録
   const [recipeEditName, setRecipeEditName] = useState(recipeShow.name);
 
-  // 子コンポーネント達の状態を管理する
+  // RecipeImageコンポーネントから情報を受け取り管理する
   const [recipeEditImageUrl, setRecipeEditImageUrl] = useState<string | null>(
     null
   );
 
-  // レシピの原材料の状態管理
-  const recipeIngredientsEditState = useRecoilValue(recipeIngredientState);
-  const setRecipeIngredientsEdit = useSetRecoilState(recipeIngredientState);
+  // レシピ原材料のデータをRecipesEditTableコンポーネントから受け取り管理する
+  const [updatedRecipeIngredientsState, setUpdatedRecipeIngredients] = useState<
+    SelectedIngredient[]
+  >([]);
 
   // railsに送るリクエストボディresipeIngredientsのデータ整形する
-  const recipeIngredientsEdit = recipeIngredientsEditState.map(
+  const updatedRecipeIngredients = updatedRecipeIngredientsState.map(
     (ingredientData) => {
       return {
         id: ingredientData.ingredient.id,
@@ -120,7 +121,7 @@ const RecipesEdit = () => {
           recipe_name: recipeEditName,
           recipe_image_url: recipeEditImageUrl, // ここでs3のurlをrailsに送る
           checked_tags: editTags,
-          recipe_ingredients: recipeIngredientsEdit,
+          recipe_ingredients: updatedRecipeIngredients,
         },
       };
       console.log(requestBody);
@@ -136,7 +137,7 @@ const RecipesEdit = () => {
         setRecipeEditName("");
         setRecipeEditImageUrl(null);
         setEditTag({});
-        setRecipeIngredientsEdit([]);
+        setUpdatedRecipeIngredients([]);
       }
     } catch (error: AxiosError | any) {
       console.log(error.response.data.data);
@@ -170,8 +171,8 @@ const RecipesEdit = () => {
           <TagCheckBox />
         </div>
       </div>
-      <RecipesTable />
-      <EditSubmit text="レシピ編集" onClick={handleEditSubmissions} />
+      <RecipesEditTable setUpdatedIngredients={setUpdatedRecipeIngredients} />
+      <EditSubmit text="レシピ全体の編集" onClick={handleEditSubmissions} />
     </>
   );
 };
