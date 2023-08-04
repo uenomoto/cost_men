@@ -69,6 +69,10 @@ export interface IngredientResponse {
   ingredient: Ingredient;
 }
 
+export interface RecipeResponse {
+  recipe: Recipe;
+}
+
 // レシピ登録時に選択する原材料の型定義
 export interface SelectedIngredient {
   ingredient: Ingredient;
@@ -89,4 +93,15 @@ export interface TagResponse {
 
 export interface SearchResult {
   suppliers: Supplier[];
+}
+
+export interface SellingPrice {
+  id: number;
+  recipe_id: number;
+  selling_price: number;
+  price: number;
+}
+
+export interface SellingPriceResponse {
+  selling_price: SellingPrice;
 }

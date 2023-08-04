@@ -7,7 +7,7 @@ class Recipe < ApplicationRecord
   has_many :recipe_procedures, dependent: :destroy
   has_many :recipe_tags, dependent: :destroy
   has_many :tags, through: :recipe_tags, dependent: :destroy
-  has_many :selling_prices, dependent: :destroy
+  has_one :selling_price, dependent: :destroy # レシピに対して販売価格は一つだけ
 
   validates :name, presence: true, uniqueness: { scope: :user_id, case_sensitive: false }
   validates :total_cost, presence: true, numericality: { greater_than_or_equal_to: 0 }
@@ -17,11 +17,11 @@ class Recipe < ApplicationRecord
   accepts_nested_attributes_for :recipe_ingredients, allow_destroy: true, reject_if: :all_blank
   validates_associated :recipe_ingredients
 
-  # レシピで使用する原材料の合計金額を計算する(全て計算し終わったら、小数点第２で四捨五入)
+  # レシピで使用する原材料の合計金額を計算する(全て計算し終わったら、合計を小数点第一位で切り上げる)
   def total_cost
     total = recipe_ingredients.sum do |recipe_ingredient|
       (recipe_ingredient.ingredient.buy_cost / recipe_ingredient.ingredient.buy_quantity) * recipe_ingredient.quantity
     end
-    total.round(1)
+    total.ceil
   end
 end

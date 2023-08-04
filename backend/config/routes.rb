@@ -9,7 +9,7 @@ Rails.application.routes.draw do
         resources :recipe_ingredients, only: %i[index create update], path: 'ingredients'
         resources :recipe_tags, only: %i[index create destroy], path: 'tags'
         resources :recipe_procedures, only: %i[index create update destroy], path: 'procedures'
-        resources :selling_prices, only: %i[show create update]
+        resource :selling_prices, only: %i[show create update]
       end
       resources :ingredients, only: %i[index show create update destroy]
       get 'suppliers/select_index', to: 'suppliers#select_index'

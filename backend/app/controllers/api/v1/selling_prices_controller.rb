@@ -12,7 +12,7 @@ module Api
 
       def create
         recipe = current_user.recipes.find(params[:recipe_id])
-        selling_price = recipe.selling_prices.build(selling_price_params)
+        selling_price = recipe.build_selling_price(selling_price_params) # １対1だとこうなる
         if selling_price.save
           render json: { selling_price: }, status: :created
         else
@@ -25,7 +25,7 @@ module Api
         if @selling_price.update(selling_price_params)
           render json: { selling_price: @selling_price }, status: :ok
         else
-          render json: { errors: selling_price.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @selling_price.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
@@ -33,7 +33,7 @@ module Api
 
       def set_current_user_recipe_selling_price
         recipe = current_user.recipes.find(params[:recipe_id])
-        @selling_price = recipe.selling_prices.find(params[:id])
+        @selling_price = recipe.selling_price
       end
 
       def selling_price_params
