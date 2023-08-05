@@ -19,9 +19,13 @@ export const Divider = () => {
   >([]); // 既存の手順一覧state
   const [newProcedures, setNewProcedures] = useState<string[]>([]); // 新規に追加する手順一覧state
 
-  // 手順を追加するテキストエリアを表示
+  // 手順を追加するテキストエリアを表示、空欄で再度追加はできないようにする
   const handleAddStep = useCallback(() => {
-    setNewProcedures([...newProcedures, ""]);
+    const emptyProcedure = newProcedures.some((procedure) => procedure === "");
+
+    if (!emptyProcedure) {
+      setNewProcedures([...newProcedures, ""]);
+    }
   }, [newProcedures]);
 
   // 手順を削除する
@@ -138,7 +142,8 @@ export const Divider = () => {
           <button
             type="button"
             onClick={handleAddStep}
-            className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            disabled={newProcedures.some((procedure) => procedure === "")}
+            className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <PlusIcon
               className="-ml-1 -mr-0.5 h-5 w-5 text-gray-400"
