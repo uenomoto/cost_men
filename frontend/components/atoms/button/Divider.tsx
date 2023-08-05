@@ -15,6 +15,7 @@ import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { TextArea } from "../form/TextArea";
 import { SuccessMessage } from "../messeage/SuccessMessage";
 import { ErrorMessage } from "../messeage/ErrorMessage";
+import { Loading } from "../../molecules/loading/Loading";
 
 export const Divider = () => {
   const token = useRecoilValue(tokenState);
@@ -22,6 +23,7 @@ export const Divider = () => {
   const { id } = router.query;
   const setSuccessMessage = useSetRecoilState(successMessageState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [existingProcedures, setExistingProcedures] = useState<
     ExistingRecipeProcedure[]
@@ -102,6 +104,7 @@ export const Divider = () => {
             (procedure: ExistingRecipeProcedure) => procedure
           )
         );
+        setLoading(false);
       } catch (error: AxiosError | any) {
         console.log(error.message);
       }
@@ -159,6 +162,7 @@ export const Divider = () => {
 
   return (
     <>
+      {loading && <Loading />}
       {existingProcedures.map((procedure, index) => (
         <>
           <div key={procedure.id}>
