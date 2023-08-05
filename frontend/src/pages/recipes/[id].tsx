@@ -9,6 +9,7 @@ import { tokenState } from "@/recoil/atoms/tokenState";
 import { recipeShowState } from "@/recoil/atoms/recipeShowState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { Modal } from "../../../components/modal/Modal";
 import { Tab } from "../../../components/molecules/tab/Tab";
 import { EditButton } from "../../../components/atoms/button/EditButton";
@@ -20,6 +21,7 @@ import { Loading } from "../../../components/molecules/loading/Loading";
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { SuccessButton } from "../../../components/atoms/button/SuccessButton";
+import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
 
 const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
@@ -36,6 +38,7 @@ const RecipeShow = () => {
   const [recipeShow, setRecipeShow] = useRecoilState<Recipe>(recipeShowState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
+  const setWarningMessage = useSetRecoilState(warningMessageState);
 
   const router = useRouter();
   const { id } = router.query; // パスのパラメータを取得
@@ -54,11 +57,16 @@ const RecipeShow = () => {
           setLoading(false);
         }
       } catch (error: AxiosError | any) {
-        console.log(error.response.data.message);
+        setErrorMessage(error.response.data.errors);
+        setLoading(false);
+        setWarningMessage("3秒後にレシピ一覧ページに戻ります");
+        setTimeout(() => {
+          router.push("/recipes");
+        }, 3000);
       }
     };
     getRecipeShow();
-  }, [setRecipeShow, token, id]);
+  }, [setRecipeShow, token, id, setWarningMessage, setErrorMessage, router]);
 
   // 販売価格の詳細を取得する
   useEffect(() => {
@@ -132,6 +140,8 @@ const RecipeShow = () => {
     }
   };
 
+  // レシピ削除
+
   // sellingPriceを監視し編集する際にテキストフィールドに販売価格を表示する
   useEffect(() => {
     setEditPrice(sellingPrice);
@@ -145,6 +155,8 @@ const RecipeShow = () => {
       <Head>
         <title>{recipeShow.name}</title>
       </Head>
+      <ErrorMessage />
+      <WarningMessage />
       {loading ? (
         <Loading />
       ) : (

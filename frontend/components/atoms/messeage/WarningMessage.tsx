@@ -17,7 +17,7 @@ export const WarningMessage = () => {
 
       timeoutId.current = setTimeout(() => {
         setWarningMessage(null);
-      }, 10000);
+      }, 3000);
     }
   }, [warningMessage, setWarningMessage]);
 

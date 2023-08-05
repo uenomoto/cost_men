@@ -22,7 +22,7 @@ export const uploadImageToS3 = async (file: File) => {
   try {
     // S3に画像をアップロードする
     const data = await s3.upload(params).promise();
-    console.log("画像アップロード成功:", data.Location);
+    // console.log("画像アップロード成功:", data.Location);
     return data.Location;
   } catch (error) {
     console.error("画像アップロードエラー:", error);

@@ -1,4 +1,5 @@
 import React, { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { SupplierResponse } from "@/types";
 import { IngredientResponse } from "@/types";
 import { Ingredient } from "@/types";
@@ -32,6 +33,7 @@ const classNames = (...classes: (string | false)[]): string => {
 export const SupplierIngredientTable = () => {
   const [loading, setLoading] = useState(true);
   const setWarningMessage = useSetRecoilState(warningMessageState);
+  const router = useRouter();
 
   // Recoilで仕入れ先と原材料の一覧を管理
   const [suppliers, setSuppliers] = useRecoilState(suppliersState);
@@ -238,11 +240,14 @@ export const SupplierIngredientTable = () => {
       } catch (error: AxiosError | any) {
         setLoading(false);
         setErrorMessage(error.response.data.errors);
-        setWarningMessage("レシピ一覧ページに移動してください");
+        setWarningMessage("3秒後にレシピ一覧ページに戻ります");
+        setTimeout(() => {
+          router.push("/recipes");
+        }, 3000);
       }
     };
     getSuppliers();
-  }, [token, loaded, setErrorMessage, setSuppliers, setWarningMessage]);
+  }, [token, loaded, router, setErrorMessage, setSuppliers, setWarningMessage]);
 
   return (
     <>

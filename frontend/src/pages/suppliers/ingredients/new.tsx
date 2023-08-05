@@ -9,7 +9,7 @@ const SupplierIngredientNew: NextPage = () => {
   return (
     <>
       <h1 className="text-xl lg:text-3xl">
-        お先に仕入れ先と登録し原材料の登録してください
+        お先に仕入れ先を登録し原材料の登録してください
       </h1>
       <ErrorMessage />
       <SupplierRegistrationTab />

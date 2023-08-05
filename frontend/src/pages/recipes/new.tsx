@@ -110,11 +110,14 @@ const RecipesNew = () => {
       } catch (error: AxiosError | any) {
         setErrorMessage(error.response.data.errors);
         setLoading(false);
-        setWarningMessage("レシピ一覧ページに移動してください");
+        setWarningMessage("3秒後にレシピ一覧ページに戻ります");
+        setTimeout(() => {
+          router.push("/recipes");
+        }, 3000);
       }
     };
     getTags();
-  }, [token, setTags, setErrorMessage, setWarningMessage]);
+  }, [token, router, setTags, setErrorMessage, setWarningMessage]);
 
   // タグ削除
   const handleDelete = (id: number) => {
