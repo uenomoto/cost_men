@@ -8,6 +8,7 @@ import { loadedState } from "@/recoil/atoms/loadedState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
+import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
@@ -45,6 +46,7 @@ const RecipesNew = () => {
   const [tags, setTags] = useRecoilState(tagState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setWarningMessage = useSetRecoilState(warningMessageState);
 
   // 画像アップロード状況を追跡する
   const [uploadStatus, setUploadStates] = useState<{
@@ -97,7 +99,6 @@ const RecipesNew = () => {
 
   // タグ一覧取得
   useEffect(() => {
-    if (!token || !loaded) return;
     const getTags = async () => {
       try {
         const res: AxiosResponse<TagResponse> = await axios.get(
@@ -109,12 +110,11 @@ const RecipesNew = () => {
       } catch (error: AxiosError | any) {
         setErrorMessage(error.response.data.errors);
         setLoading(false);
+        setWarningMessage("レシピ一覧ページに移動してください");
       }
     };
-    if (loaded) {
-      getTags();
-    }
-  }, [token, loaded, setTags, setErrorMessage]);
+    getTags();
+  }, [token, setTags, setErrorMessage, setWarningMessage]);
 
   // タグ削除
   const handleDelete = (id: number) => {
@@ -202,7 +202,7 @@ const RecipesNew = () => {
           recipe_ingredients: recipeIngredients,
         },
       };
-      console.log(requestBody);
+      // console.log(requestBody);
 
       const res: AxiosResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes`,
