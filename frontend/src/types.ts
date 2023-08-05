@@ -105,3 +105,10 @@ export interface SellingPrice {
 export interface SellingPriceResponse {
   selling_price: SellingPrice;
 }
+
+// 登録後のレシピの手順
+export interface ExistingRecipeProcedure {
+  id: number;
+  recipe_id: number;
+  procedure: string;
+}

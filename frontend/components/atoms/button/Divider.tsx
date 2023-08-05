@@ -1,90 +1,287 @@
-import React, { useState, useCallback, FormEvent } from "react";
+import React, { useState, useCallback, FormEvent, useEffect } from "react";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/router";
 import ReactMarkdown from "react-markdown";
+import { ExistingRecipeProcedure } from "@/types";
 import { PlusIcon } from "@heroicons/react/20/solid";
+import { TrashIcon } from "@heroicons/react/20/solid";
+import { PencilIcon } from "@heroicons/react/20/solid";
+import { CheckIcon } from "@heroicons/react/20/solid";
+import { XCircleIcon } from "@heroicons/react/24/solid";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { TextArea } from "../form/TextArea";
-import { SaveButton } from "../form/SaveSubmit";
-import { Submit } from "../form/Submit";
+import { SuccessMessage } from "../messeage/SuccessMessage";
+import { ErrorMessage } from "../messeage/ErrorMessage";
+import { Loading } from "../../molecules/loading/Loading";
 
 export const Divider = () => {
-  const [texts, setTexts] = useState<string[]>([""]);
-  const [isEdit, setIsEdit] = useState<boolean[]>([true]);
+  const token = useRecoilValue(tokenState);
+  const router = useRouter();
+  const { id } = router.query;
+  const setSuccessMessage = useSetRecoilState(successMessageState);
+  const setErrorMessage = useSetRecoilState(errorMessageState);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const handleAddStep = useCallback(
+  const [existingProcedures, setExistingProcedures] = useState<
+    ExistingRecipeProcedure[]
+  >([]); // 既存の手順一覧state
+  const [newProcedures, setNewProcedures] = useState<string[]>([]); // 新規に追加する手順一覧state
+
+  // 手順編集する際にIDを取得管理するstate
+  const [editprocedureId, setEditProcedureId] = useState<number | null>(null);
+  const [editProcedure, setEditProcedure] = useState<string>("");
+
+  // 手順を追加するテキストエリアを表示、空欄で再度追加はできないようにする
+  const handleAddStep = useCallback(() => {
+    const emptyProcedure = newProcedures.some((procedure) => procedure === "");
+
+    if (!emptyProcedure) {
+      setNewProcedures([...newProcedures, ""]);
+    }
+  }, [newProcedures]);
+
+  // 手順を削除する
+  const handleRemoveStep = useCallback(
     (index: number) => {
-      const newIsEdit = [...isEdit];
-      newIsEdit[index] = false;
-      setIsEdit(newIsEdit);
-      setTexts([...texts, ""]);
-      setIsEdit([...newIsEdit, true]);
+      if (confirm("手順を削除しますか？")) {
+        setNewProcedures(newProcedures.filter((_, idx) => idx !== index));
+      }
     },
-    [texts, isEdit]
+    [newProcedures]
   );
 
-  const handleChenge = useCallback(
-    (index: number, newText: string) => {
-      const newItems = [...texts];
-      newItems[index] = newText;
-      setTexts(newItems);
+  // 新しい手順の文字を状態管理する
+  const handleChange = useCallback(
+    (index: number, newProcedure: string) => {
+      const updatedProcedures = [...newProcedures];
+      updatedProcedures[index] = newProcedure;
+      setNewProcedures(updatedProcedures);
     },
-    [texts]
+    [newProcedures]
   );
 
-  const handleSubmit = useCallback(
-    (e: FormEvent) => {
-      e.preventDefault();
-      const validTexts =
-        texts[texts.length - 1] === "" ? texts.slice(0, -1) : texts;
-      console.log(validTexts);
-      setIsEdit(validTexts.map(() => false).concat(true));
-      setTexts([...validTexts, ""]);
-    },
-    [texts]
-  );
+  // 手順を保存する
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const params = {
+        recipe_procedure: {
+          procedure: newProcedures,
+        },
+      };
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(res.data.recipe_procedures);
+      setExistingProcedures([
+        ...existingProcedures,
+        ...res.data.recipe_procedures,
+      ]);
+      setNewProcedures([]);
+      setSuccessMessage("手順を保存しました");
+    } catch (error: AxiosError | any) {
+      console.log(error.response.data.errors);
+      setErrorMessage(error.response.data.errors);
+    }
+  };
+
+  // 手順一覧を取得
+  useEffect(() => {
+    const getProcedures = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setExistingProcedures(
+          res.data.recipe_procedures.map(
+            (procedure: ExistingRecipeProcedure) => procedure
+          )
+        );
+        setLoading(false);
+      } catch (error: AxiosError | any) {
+        console.log(error.message);
+      }
+    };
+    getProcedures();
+  }, [id, token]);
+
+  // 登録済みの手順を削除
+  const handleDelete = async (procedureId: number) => {
+    if (confirm("手順を削除しますか？") === false) return;
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures/${procedureId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setExistingProcedures(
+        existingProcedures.filter((procedure) => procedure.id !== procedureId)
+      );
+      setSuccessMessage("手順を削除しました");
+    } catch (error: AxiosError | any) {
+      console.log(error.message);
+      setErrorMessage("手順の削除に失敗しました");
+    }
+  };
+
+  // 手順を編集する
+  const handleEdit = async (e: FormEvent, procedureId: number) => {
+    e.preventDefault();
+
+    try {
+      const params = {
+        recipe_procedure: {
+          procedure: editProcedure,
+        },
+      };
+
+      const res = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures/${procedureId}`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setExistingProcedures(
+        existingProcedures.map((procedure) =>
+          procedure.id === procedureId ? res.data.recipe_procedure : procedure
+        )
+      );
+      setEditProcedureId(null);
+      setSuccessMessage("手順を編集しました");
+    } catch (error: AxiosError | any) {
+      console.log(error.response.data.errors);
+      setErrorMessage(error.response.data.errors);
+    }
+  };
 
   return (
     <>
-      {texts.map((text, index) => (
-        <div key={index}>
-          {isEdit[index] ? (
-            <TextArea
-              text={text}
-              setText={(newText) => handleChenge(index, newText)}
+      {loading && <Loading />}
+      {existingProcedures.map((procedure, index) => (
+        <>
+          <div key={procedure.id}>
+            {editprocedureId === procedure.id ? (
+              <>
+                <div className="flex items-center space-x-10">
+                  <XCircleIcon
+                    className="h-6 w-6 cursor-pointer text-red-500 hover:text-red-700"
+                    onClick={() => setEditProcedureId(null)}
+                  />
+                  <textarea
+                    placeholder="手順を編集"
+                    rows={5}
+                    name="editProcedure"
+                    id="editProcedure"
+                    className="font-bold text-md block w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:leading-6"
+                    value={editProcedure}
+                    onChange={(e) => setEditProcedure(e.target.value)}
+                  />
+                </div>
+              </>
+            ) : (
+              <ReactMarkdown className="text-left font-bold text-2xl">
+                {procedure.procedure}
+              </ReactMarkdown>
+            )}
+          </div>
+          <div className="flex justify-end space-x-3">
+            {editprocedureId === procedure.id ? (
+              <CheckIcon
+                className="h-6 w-6 text-green-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-green-700"
+                onClick={(e) => handleEdit(e, procedure.id)}
+              />
+            ) : (
+              <PencilIcon
+                className="h-6 w-6 text-gray-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-sky-500"
+                aria-hidden="true"
+                onClick={() => {
+                  setEditProcedureId(procedure.id);
+                  setEditProcedure(procedure.procedure);
+                }}
+              />
+            )}
+            <TrashIcon
+              className="h-6 w-6 text-gray-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-red-500"
+              aria-hidden="true"
+              onClick={() => handleDelete(procedure.id)}
             />
-          ) : (
-            <ReactMarkdown className="text-left font-bold text-2xl">
-              {text}
-            </ReactMarkdown>
-          )}
-          <div className="relative mt-4">
+          </div>
+          <div className="relative my-4">
             <div
               className="absolute inset-0 flex items-center"
               aria-hidden="true"
             >
-              <div className="w-full border-t border-gray-300" />
+              <div
+                className={`w-full ${
+                  index < existingProcedures.length - 1
+                    ? "border-t border-gray-300"
+                    : ""
+                }`}
+              />
             </div>
-            <div className="relative flex justify-center">
-              {/* 追加したらただのborderにする */}
-              {isEdit[index] ? (
-                <button
-                  type="button"
-                  onClick={() => handleAddStep(index)}
-                  className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                >
-                  <PlusIcon
-                    className="-ml-1 -mr-0.5 h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  <span>手順を追加</span>
-                </button>
-              ) : (
-                <div className="mb-5"></div>
-              )}
-            </div>
+            <div className="relative flex justify-center"></div>
+          </div>
+        </>
+      ))}
+      {newProcedures.map((procedure, index) => (
+        <div key={index}>
+          <TextArea
+            text={procedure}
+            setText={(newProcedure: string) =>
+              handleChange(index, newProcedure)
+            }
+          />
+          <div className="text-right">
+            <button
+              className="text-md font-bold text-red-500 mt-5 transition-all duration-500 hover:scale-110 hover:text-red-700"
+              onClick={() => handleRemoveStep(index)}
+            >
+              作成中の手順を削除
+            </button>
           </div>
         </div>
       ))}
+      <div className="relative my-4">
+        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+          <div className="w-full border-t border-gray-300" />
+        </div>
+        <div className="relative flex justify-center">
+          <button
+            type="button"
+            onClick={handleAddStep}
+            disabled={newProcedures.some((procedure) => procedure === "")}
+            className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <PlusIcon
+              className="-ml-1 -mr-0.5 h-5 w-5 text-gray-400"
+              aria-hidden="true"
+            />
+            <span>手順を追加</span>
+          </button>
+        </div>
+      </div>
+      <ErrorMessage />
+      <SuccessMessage />
       <div className="my-7 flex justify-end">
-        <Submit text="手順を保存する" onClick={handleSubmit} />
+        <div className="text-center">
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={
+              newProcedures.length === 0 ||
+              newProcedures.every((p) => p.trim() === "")
+            }
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 lg:px-24 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            手順を保存する
+          </button>
+        </div>
       </div>
     </>
   );
