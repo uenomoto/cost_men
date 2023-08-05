@@ -26,7 +26,6 @@ export const Sidebar = () => {
 
   const navigation = [
     { name: "レシピ一覧", href: "/recipes", icon: InboxIcon },
-    { name: "レシピ登録", href: "/recipes/new", icon: ReceiptPercentIcon },
     {
       name: "仕入れ先登録",
       href: "/suppliers/ingredients/new",
@@ -37,6 +36,7 @@ export const Sidebar = () => {
       href: "/suppliers/ingredients/new",
       icon: ReceiptRefundIcon,
     },
+    { name: "レシピ登録", href: "/recipes/new", icon: ReceiptPercentIcon },
     {
       name: "ログアウト",
       action: () =>
