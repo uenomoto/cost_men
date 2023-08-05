@@ -2,6 +2,8 @@ import React, { useState, useCallback, FormEvent, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { TrashIcon } from "@heroicons/react/20/solid";
+import { PencilIcon } from "@heroicons/react/20/solid";
+import { CheckIcon } from "@heroicons/react/20/solid";
 import { TextArea } from "../form/TextArea";
 import { Submit } from "../form/Submit";
 import axios, { AxiosError } from "axios";
@@ -9,6 +11,7 @@ import { useRouter } from "next/router";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { useRecoilValue } from "recoil";
 import { ExistingRecipeProcedure } from "@/types";
+import { XCircleIcon } from "@heroicons/react/24/solid";
 
 export const Divider = () => {
   const token = useRecoilValue(tokenState);
@@ -19,6 +22,10 @@ export const Divider = () => {
     ExistingRecipeProcedure[]
   >([]); // 既存の手順一覧state
   const [newProcedures, setNewProcedures] = useState<string[]>([]); // 新規に追加する手順一覧state
+
+  // 手順編集する際にIDを取得管理するstate
+  const [editprocedureId, setEditProcedureId] = useState<number | null>(null);
+  const [editProcedure, setEditProcedure] = useState<string>("");
 
   // 手順を追加するテキストエリアを表示、空欄で再度追加はできないようにする
   const handleAddStep = useCallback(() => {
@@ -53,13 +60,12 @@ export const Divider = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const params = {
-      recipe_procedure: {
-        procedure: newProcedures,
-      },
-    };
-
     try {
+      const params = {
+        recipe_procedure: {
+          procedure: newProcedures,
+        },
+      };
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures`,
         params,
@@ -113,16 +119,78 @@ export const Divider = () => {
     }
   };
 
+  // 手順を編集する
+  const handleEdit = async (e: FormEvent, procedureId: number) => {
+    e.preventDefault();
+
+    try {
+      const params = {
+        recipe_procedure: {
+          procedure: editProcedure,
+        },
+      };
+
+      const res = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures/${procedureId}`,
+        params,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setExistingProcedures(
+        existingProcedures.map((procedure) =>
+          procedure.id === procedureId ? res.data.recipe_procedure : procedure
+        )
+      );
+      setEditProcedureId(null);
+    } catch (error: AxiosError | any) {
+      console.log(error.response.data.errors);
+    }
+  };
+
   return (
     <>
       {existingProcedures.map((procedure, index) => (
         <>
           <div key={procedure.id}>
-            <ReactMarkdown className="text-left font-bold text-2xl">
-              {procedure.procedure}
-            </ReactMarkdown>
+            {editprocedureId === procedure.id ? (
+              <>
+                <div className="flex items-center space-x-10">
+                  <XCircleIcon
+                    className="h-6 w-6 cursor-pointer text-red-500 hover:text-red-700"
+                    onClick={() => setEditProcedureId(null)}
+                  />
+                  <textarea
+                    placeholder="手順を編集"
+                    rows={5}
+                    name="editProcedure"
+                    id="editProcedure"
+                    className="font-bold text-md block w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:leading-6"
+                    value={editProcedure}
+                    onChange={(e) => setEditProcedure(e.target.value)}
+                  />
+                </div>
+              </>
+            ) : (
+              <ReactMarkdown className="text-left font-bold text-2xl">
+                {procedure.procedure}
+              </ReactMarkdown>
+            )}
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end space-x-3">
+            {editprocedureId === procedure.id ? (
+              <CheckIcon
+                className="h-6 w-6 text-green-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-green-700"
+                onClick={(e) => handleEdit(e, procedure.id)}
+              />
+            ) : (
+              <PencilIcon
+                className="h-6 w-6 text-gray-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-sky-500"
+                aria-hidden="true"
+                onClick={() => {
+                  setEditProcedureId(procedure.id);
+                  setEditProcedure(procedure.procedure);
+                }}
+              />
+            )}
             <TrashIcon
               className="h-6 w-6 text-gray-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-red-500"
               aria-hidden="true"

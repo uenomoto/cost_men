@@ -295,7 +295,7 @@ const RecipesNew = () => {
                         <>
                           <div className="flex">
                             <XCircleIcon
-                              className="text-red-500 hover:text-red-700"
+                              className="text-red-500 hover:text-red-700 cursor-pointer"
                               onClick={() => setEditTagId(null)}
                             />
                             <input
