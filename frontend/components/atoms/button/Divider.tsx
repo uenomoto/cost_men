@@ -1,6 +1,7 @@
 import React, { useState, useCallback, FormEvent, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { PlusIcon } from "@heroicons/react/20/solid";
+import { TrashIcon } from "@heroicons/react/20/solid";
 import { TextArea } from "../form/TextArea";
 import { Submit } from "../form/Submit";
 import axios, { AxiosError } from "axios";
@@ -44,7 +45,6 @@ export const Divider = () => {
       const updatedProcedures = [...newProcedures];
       updatedProcedures[index] = newProcedure;
       setNewProcedures(updatedProcedures);
-      console.log(updatedProcedures);
     },
     [newProcedures]
   );
@@ -96,21 +96,51 @@ export const Divider = () => {
     getProcedures();
   }, [id, token]);
 
+  // 登録済みの手順を削除
+  const handleDelete = async (procedureId: number) => {
+    if (confirm("手順を削除しますか？") === false) return;
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures/${procedureId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setExistingProcedures(
+        existingProcedures.filter((procedure) => procedure.id !== procedureId)
+      );
+    } catch (error: AxiosError | any) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <>
       {existingProcedures.map((procedure, index) => (
         <>
-          <div key={index}>
+          <div key={procedure.id}>
             <ReactMarkdown className="text-left font-bold text-2xl">
               {procedure.procedure}
             </ReactMarkdown>
+          </div>
+          <div className="flex justify-end">
+            <TrashIcon
+              className="h-6 w-6 text-gray-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-red-500"
+              aria-hidden="true"
+              onClick={() => handleDelete(procedure.id)}
+            />
           </div>
           <div className="relative my-4">
             <div
               className="absolute inset-0 flex items-center"
               aria-hidden="true"
             >
-              <div className="w-full border-t border-gray-300" />
+              <div
+                className={`w-full ${
+                  index < existingProcedures.length - 1
+                    ? "border-t border-gray-300"
+                    : ""
+                }`}
+              />
             </div>
             <div className="relative flex justify-center"></div>
           </div>
