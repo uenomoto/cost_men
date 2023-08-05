@@ -1,4 +1,4 @@
-[ヘルスチェック(接続チェック)](https://workoutkeep.com/api/v1/health_check)
+[ヘルスチェック(接続チェック)](https://cost-men.site/api/v1/health_check)
 
 ↑ 7/11 現在サービスとタスク削除中
 
