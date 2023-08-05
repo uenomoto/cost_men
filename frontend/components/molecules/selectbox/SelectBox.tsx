@@ -3,15 +3,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Tag } from "@/types";
 
-const tags: Tag[] = [
-  { id: 1, name: "スープ" },
-  { id: 2, name: "上物" },
-  { id: 3, name: "デザート" },
-  { id: 4, name: "副食" },
-  { id: 5, name: "ごはんもの" },
-  { id: 6, name: "なんか" },
-  { id: 7, name: "なんか２" },
-];
+const tags: Tag[] = [{ id: 1, user_id: "1", name: "スープ" }];
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
