@@ -24,6 +24,16 @@ export const Divider = () => {
     setNewProcedures([...newProcedures, ""]);
   }, [newProcedures]);
 
+  // 手順を削除する
+  const handleRemoveStep = useCallback(
+    (index: number) => {
+      if (confirm("手順を削除しますか？")) {
+        setNewProcedures(newProcedures.filter((_, idx) => idx !== index));
+      }
+    },
+    [newProcedures]
+  );
+
   // 新しい手順の文字を状態管理する
   const handleChange = useCallback(
     (index: number, newProcedure: string) => {
@@ -110,6 +120,14 @@ export const Divider = () => {
               handleChange(index, newProcedure)
             }
           />
+          <div className="text-right">
+            <button
+              className="text-md font-bold text-red-500 mt-5 transition-all duration-500 hover:scale-110 hover:text-red-700"
+              onClick={() => handleRemoveStep(index)}
+            >
+              作成中の手順を削除
+            </button>
+          </div>
         </div>
       ))}
       <div className="relative my-4">
