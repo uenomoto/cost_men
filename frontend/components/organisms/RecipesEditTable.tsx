@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { Ingredient, SelectedIngredient } from "@/types";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -33,8 +32,6 @@ export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
     },
     quantity: "0",
   };
-
-  const router = useRouter();
 
   // レシピ詳細をRecoilから取得
   const recipeShow = useRecoilValue(recipeShowState);
