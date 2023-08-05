@@ -14,6 +14,7 @@ import { Pagination } from "../../../components/molecules/pagination/Pagination"
 import axios, { AxiosError } from "axios";
 import { Loading } from "../../../components/molecules/loading/Loading";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
+import { RecipeEnptyStates } from "../../../components/molecules/enptyStates/RecipeEnptyStates";
 
 const RecipesIndex: NextPage = () => {
   // レシピ一覧を管理する
@@ -52,7 +53,7 @@ const RecipesIndex: NextPage = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setRecipes(res.data.recipes);
-        console.log(res.data.recipes);
+        // console.log(res.data.recipes);
         setLoading(false);
       } catch (e: AxiosError | any) {
         console.log(e.message);
@@ -86,6 +87,7 @@ const RecipesIndex: NextPage = () => {
       </Head>
       <SelectBox />
       <SuccessMessage />
+      {recipes.length === 0 && !loading && <RecipeEnptyStates />}
       {loading ? (
         <Loading />
       ) : (

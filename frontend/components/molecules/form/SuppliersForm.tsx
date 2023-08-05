@@ -26,7 +26,7 @@ export const SuppliersForm = () => {
         contact_info: contactInfo,
       },
     };
-    console.log(params);
+    // console.log(params);
     // console.log(token);
     try {
       const res: AxiosResponse<Supplier> = await axios.post(

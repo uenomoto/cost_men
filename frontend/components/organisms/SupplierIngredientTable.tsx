@@ -100,7 +100,6 @@ export const SupplierIngredientTable = () => {
         setSuppliers(updatedSuppliers);
       }
     } catch (error: AxiosError | any) {
-      console.log(error);
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
       setSupplierIngredientEditOpen(null);
@@ -208,7 +207,6 @@ export const SupplierIngredientTable = () => {
 
       setErrorMessage(null);
     } catch (error: AxiosError | any) {
-      console.log(error);
       setErrorMessage(error.response.data); // railsから返されたエラーメッセージをステートに格納
       setSuccessMessage(null);
     }
