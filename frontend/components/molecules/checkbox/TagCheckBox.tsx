@@ -1,15 +1,24 @@
 import { useState } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tagState } from "@/recoil/atoms/tagState";
-import { useRecoilValue } from "recoil";
+import { editTagState } from "@/recoil/atoms/editTagState";
+import { useRouter } from "next/router";
 
+// 親コンポーネントにチェック状態を渡す 編集では使わないのでオプショナルプロパティにする
 type Props = {
-  onTagCheckChange: (checkedTags: Record<number, boolean>) => void; // 親コンポーネントにチェック状態を渡す
+  onTagCheckChange?: (checkedTags: Record<number, boolean>) => void;
 };
 
 export const TagCheckBox = ({ onTagCheckChange }: Props) => {
-  const tags = useRecoilValue(tagState);
+  const tags = useRecoilValue(tagState); // 全てのタグ一覧
+  const checkedEditTags = useRecoilValue(editTagState); // 編集用で登録されているタグ
+  const setEditTag = useSetRecoilState(editTagState);
 
-  // タグのチェック状態を管理する
+  // 編集ページか登録ページかを判定する
+  const router = useRouter();
+  const isEditPage = router.pathname.startsWith("/recipes/edit/");
+
+  // 新規登録、タグのチェック状態を管理する
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>(
     tags.reduce(
       (accumulator, current) => ({ ...accumulator, [current.id]: false }),
@@ -23,9 +32,26 @@ export const TagCheckBox = ({ onTagCheckChange }: Props) => {
         ...prevState,
         [tagId]: isChecked,
       };
-      // 親コンポーネントに新しい状態を通知する
-      onTagCheckChange(newState);
+
+      if (onTagCheckChange) {
+        // 親コンポーネントに新しい状態を通知する
+        setTimeout(() => {
+          onTagCheckChange(newState);
+        }, 0);
+      }
+
       return newState;
+    });
+  };
+
+  // 編集専用のタグのチェック状態を管理する
+  const handleCheckChangeEdit = (tagId: number, isChecked: boolean) => {
+    setEditTag((prevState) => {
+      const editState = {
+        ...prevState,
+        [tagId]: isChecked,
+      };
+      return editState;
     });
   };
 
@@ -43,8 +69,16 @@ export const TagCheckBox = ({ onTagCheckChange }: Props) => {
                 id={tag.id.toString()}
                 name={tag.name}
                 className="h-4 w-4 rounded border-gray-300 text-sky-400 focus:ring-sky-400"
-                checked={checkedTags[tag.id]}
-                onChange={(e) => handleCheckChange(tag.id, e.target.checked)}
+                checked={
+                  isEditPage
+                    ? checkedEditTags[tag.id] || false
+                    : checkedTags[tag.id] || false
+                }
+                onChange={(e) =>
+                  isEditPage
+                    ? handleCheckChangeEdit(tag.id, e.target.checked)
+                    : handleCheckChange(tag.id, e.target.checked)
+                }
               />
             </div>
             <div className="ml-3 text-sm leading-6">

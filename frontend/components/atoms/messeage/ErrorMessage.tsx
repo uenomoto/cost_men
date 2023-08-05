@@ -1,10 +1,24 @@
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useEffect, useRef } from "react";
 
 export const ErrorMessage = () => {
   const errorMessage = useRecoilValue(errorMessageState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
+
+  const timeoutId = useRef<NodeJS.Timeout | null>(null);
+
+  // 3秒後にメッセージを非表示にする
+  useEffect(() => {
+    if (errorMessage) {
+      if (timeoutId.current) clearTimeout(timeoutId.current);
+
+      timeoutId.current = setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  }, [errorMessage, setErrorMessage]);
 
   return (
     errorMessage && (

@@ -33,7 +33,7 @@ RSpec.describe 'Api::V1::Recipes' do
       {
         recipe: {
           recipe_name: 'テストレシピ名',
-          recipe_image_url: 'https://example.com',
+          recipe_image_url: 'https://cost-men-bucket.s3.ap-northeast-1.amazonaws.com/0-net.jpg',
           checked_tags: { tag1.id => true },
           recipe_ingredients: [
             { id: ingredient1.id, quantity: '1000' }

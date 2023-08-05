@@ -2,7 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["profile.line-scdn.net", "s.gravatar.com", "cdn.auth0.com"],
+    domains: [
+      "profile.line-scdn.net",
+      "s.gravatar.com",
+      "cdn.auth0.com",
+      "cost-men-bucket.s3.ap-northeast-1.amazonaws.com",
+    ],
   },
   env: {
     ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,

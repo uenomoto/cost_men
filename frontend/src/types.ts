@@ -27,8 +27,9 @@ export interface Recipe {
   id: number;
   name: string;
   total_cost: number;
-  imageUrl: string;
-  ingredients: RecipeIngredient[];
+  image_aws_url: string;
+  recipe_ingredients: RecipeIngredient[];
+  tags: Tag[];
 }
 
 // 原材料の型定義
@@ -54,7 +55,7 @@ export interface RecipeIngredient {
 // 仕入れ先の型定義
 export interface Supplier {
   id: number;
-  user_id: number;
+  user_id: string;
   name: string;
   contact_info: string;
   ingredients: Ingredient[];
@@ -68,9 +69,20 @@ export interface IngredientResponse {
   ingredient: Ingredient;
 }
 
+export interface RecipeResponse {
+  recipe: Recipe;
+}
+
+// レシピ登録時に選択する原材料の型定義
+export interface SelectedIngredient {
+  ingredient: Ingredient;
+  quantity: string;
+}
+
 // タグの型定義
 export interface Tag {
   id: number;
+  user_id: string;
   name: string;
 }
 
@@ -81,4 +93,22 @@ export interface TagResponse {
 
 export interface SearchResult {
   suppliers: Supplier[];
+}
+
+export interface SellingPrice {
+  id: number;
+  recipe_id: number;
+  selling_price: number;
+  price: number;
+}
+
+export interface SellingPriceResponse {
+  selling_price: SellingPrice;
+}
+
+// 登録後のレシピの手順
+export interface ExistingRecipeProcedure {
+  id: number;
+  recipe_id: number;
+  procedure: string;
 }

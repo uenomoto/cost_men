@@ -1,145 +1,156 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Supplier, Tag } from "@/types";
-import { Ingredient } from "@/types";
 import { Input } from "../../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../../components/molecules/checkbox/TagCheckBox";
-import { RecipesTable } from "../../../../components/organisms/RecipesTable";
 import { RecipeImage } from "../../../../components/molecules/recipe-image/RecipeImage";
 import { EditSubmit } from "../../../../components/atoms/form/EditSubmit";
-
-const tags: Tag[] = [
-  {
-    id: 1,
-    name: "ラーメン",
-  },
-  {
-    id: 2,
-    name: "主食",
-  },
-  {
-    id: 3,
-    name: "上物",
-  },
-  {
-    id: 4,
-    name: "副菜",
-  },
-  {
-    id: 5,
-    name: "ごはんもの",
-  },
-  {
-    id: 6,
-    name: "なんか",
-  },
-  {
-    id: 7,
-    name: "なんか2",
-  },
-  {
-    id: 8,
-    name: "なんか3",
-  },
-  {
-    id: 9,
-    name: "なんか4",
-  },
-  {
-    id: 10,
-    name: "なんか5",
-  },
-  {
-    id: 11,
-    name: "なんか6",
-  },
-  {
-    id: 12,
-    name: "なんか7",
-  },
-];
-
-// 仮のデータ
-let suppliers: Supplier[] = [
-  {
-    id: 1,
-    user_id: 1,
-    name: "上野商店",
-    contact_info: "03-1234-5678",
-    ingredients: [],
-  },
-];
-
-const findSupplierById = (id: number) =>
-  suppliers.find((supplier) => supplier.id === id);
-
-// 仮のデータ
-let ingredients: Ingredient[] = [
-  {
-    id: 1,
-    name: "にんじん",
-    supplier_id: 1,
-    buy_cost: 400,
-    buy_quantity: 500,
-    unit: "g",
-    supplier: findSupplierById(1) || suppliers[0],
-  },
-  {
-    id: 2,
-    name: "じゃがいも",
-    supplier_id: 1,
-    buy_cost: 700,
-    buy_quantity: 1000,
-    unit: "g",
-    supplier: findSupplierById(1) || suppliers[0],
-  },
-];
-// 仮のデータ
-suppliers = suppliers.map((supplier) => ({
-  ...supplier, // スプレット構文で展開することで、元のオブジェクトのプロパティをそのまま引き継ぐ
-  ingredients: ingredients.filter(
-    (ingredient) => ingredient.supplier_id === supplier.id
-  ),
-}));
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { recipeShowState } from "@/recoil/atoms/recipeShowState";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { uploadImageToS3 } from "../../../../utils/s3Upload";
+import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
+import { SelectedIngredient, Tag, TagResponse } from "@/types";
+import { tagState } from "@/recoil/atoms/tagState";
+import { editTagState } from "@/recoil/atoms/editTagState";
+import { RecipesEditTable } from "../../../../components/organisms/RecipesEditTable";
+import { WarningMessage } from "../../../../components/atoms/messeage/WarningMessage";
+import { ErrorMessage } from "../../../../components/atoms/messeage/ErrorMessage";
+import { SuccessMessage } from "../../../../components/atoms/messeage/SuccessMessage";
 
 const RecipesEdit = () => {
+  const recipeShow = useRecoilValue(recipeShowState);
+  const token = useRecoilValue(tokenState);
+  const setTags = useSetRecoilState<Tag[]>(tagState); // 全てのタグ一覧
+  const [editTags, setEditTag] = useRecoilState(editTagState); // 登録されているタグ
+
+  const setSuccessMessage = useSetRecoilState(successMessageState);
+  const setErrorMessage = useSetRecoilState(errorMessageState);
+
   const router = useRouter();
+  const { id } = router.query;
 
   // タグの名前登録とレシピの名前登録
-  const [recipeName, setRecipeName] =
-    useState("本来は登録されているレシピ名が入る");
+  const [recipeEditName, setRecipeEditName] = useState(recipeShow.name);
 
-  // 子コンポーネント達の状態を管理する
-  const [recipeImage, setRecipeImage] = useState<File | null>(null);
-  const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
-  const [recipes, setRecipes] = useState<Ingredient[]>([]);
+  // RecipeImageコンポーネントから情報を受け取り管理する
+  const [recipeEditImageUrl, setRecipeEditImageUrl] = useState<string | null>(
+    recipeShow.image_aws_url
+  );
 
-  // 子コンポーネント(recipeTableForm)から渡されたレシピで状態を更新
-  const handleRecipeChange = (recipe: Ingredient[]) => {
-    setRecipes(recipe);
+  // レシピ原材料のデータをRecipesEditTableコンポーネントから受け取り管理する
+  const [updatedRecipeIngredientsState, setUpdatedRecipeIngredients] = useState<
+    SelectedIngredient[]
+  >([]);
+
+  // railsに送るリクエストボディresipeIngredientsのデータ整形する
+  const updatedRecipeIngredients = updatedRecipeIngredientsState.map(
+    (ingredientData) => {
+      return {
+        id: ingredientData.ingredient.id,
+        quantity: parseInt(ingredientData.quantity),
+      };
+    }
+  );
+
+  // 全てのタグ一覧取得
+  useEffect(() => {
+    const getTags = async () => {
+      try {
+        const res: AxiosResponse<TagResponse> = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/tags`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setTags(res.data.tags);
+      } catch (error: AxiosError | any) {
+        console.log(error.response.data.data);
+      }
+    };
+    getTags();
+  }, [token, setTags]);
+
+  // 現在登録されているタグの状態を取得しオブジェクト化してeditTagStateにセットする
+  useEffect(() => {
+    const tagsCheck = recipeShow.tags.reduce(
+      (acc, tag) => {
+        return {
+          ...acc, // accは初期値{}を引き継ぐ
+          [tag.id]: true,
+        };
+      },
+      {} as Record<number, boolean>
+    );
+
+    setEditTag(tagsCheck);
+  }, [recipeShow.tags, setEditTag]);
+
+  // 画像アップロード状況を追跡する
+  const [uploadStatus, setUploadStates] = useState<{
+    status: "idle" | "uploading" | "error";
+    error?: Error | null;
+  }>({ status: "idle", error: null });
+
+  // S3に画像をアップロードしurlを取得する
+  const handleFileChange = async (file: File | null) => {
+    if (!file) return;
+    setUploadStates({ status: "uploading" });
+
+    try {
+      const url = await uploadImageToS3(file);
+      // s3のurlをrecipeImageにセット
+      setRecipeEditImageUrl(url);
+    } catch (error) {
+      // しっかりとエラーをキャッチする(unknownではなくerrorとして)
+      if (error instanceof Error) {
+        setUploadStates({ status: "error", error });
+      } else {
+        setUploadStates({
+          status: "error",
+          error: new Error("アップロードに失敗しました"),
+        });
+      }
+    }
   };
 
-  // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
-  const handleEditSubmissions = (e: FormEvent) => {
+  // recipe編集のリクエストボディを作成する
+  const handleEditSubmissions = async (e: FormEvent) => {
     e.preventDefault();
-    const data = {
-      recipeName,
-      recipeImage,
-      checkedTags,
-      recipes,
-    };
-    // 送信処理本来はここでAPIを叩く
-    console.log(data);
+    try {
+      const requestBody = {
+        recipe: {
+          recipe_name: recipeEditName,
+          recipe_image_url: recipeEditImageUrl, // ここでs3のurlをrailsに送る
+          checked_tags: editTags,
+          recipe_ingredients: updatedRecipeIngredients,
+        },
+      };
+      console.log(requestBody);
 
-    // router.push("/recipes");
-    setRecipeName("");
-    setRecipeImage(null);
-    setCheckedTags({});
-    setRecipes([]);
+      const res: AxiosResponse = await axios.patch(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}`,
+        requestBody,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200) {
+        setSuccessMessage("レシピを編集しました");
+        router.push(`/recipes/${id}`);
+        setRecipeEditName("");
+        setRecipeEditImageUrl(null);
+        setEditTag({});
+        setUpdatedRecipeIngredients([]);
+      }
+    } catch (error: AxiosError | any) {
+      setErrorMessage(error.response.data.data);
+    }
   };
 
   return (
     <>
+      <SuccessMessage />
+      <ErrorMessage />
+      <WarningMessage />
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ編集画面</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
@@ -150,24 +161,27 @@ const RecipesEdit = () => {
             placeholder="レシピ名を入力してください"
             name="recipeName"
             id="recipeName"
-            value={recipeName}
-            onChange={setRecipeName}
+            value={recipeEditName}
+            onChange={setRecipeEditName}
           />
         </div>
       </div>
       <div className="grid grid-cols-1 place-items-center md:grid-cols-2 lg:grid-cols-3">
-        <RecipeImage onImageChange={setRecipeImage} />
-
+        <RecipeImage
+          onImageChange={handleFileChange}
+          initialImageUrl={recipeShow.image_aws_url}
+        />
+        {uploadStatus.status === "error" && (
+          <p>エラーが発生しました: {uploadStatus.error?.message}</p>
+        )}
         <div className="lg:col-span-1 md:col-span-2">
-          <TagCheckBox onTagCheckChange={setCheckedTags} />
+          <TagCheckBox />
         </div>
       </div>
-      <RecipesTable
-        ingredients={ingredients}
-        suppliers={suppliers}
-        onRecipeChange={handleRecipeChange}
-      />
-      <EditSubmit text="レシピ編集" onClick={handleEditSubmissions} />
+      <RecipesEditTable setUpdatedIngredients={setUpdatedRecipeIngredients} />
+      <div className="mt-5">
+        <EditSubmit text="レシピ全体の編集" onClick={handleEditSubmissions} />
+      </div>
     </>
   );
 };
