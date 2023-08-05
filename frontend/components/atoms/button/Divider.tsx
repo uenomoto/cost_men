@@ -1,22 +1,27 @@
 import React, { useState, useCallback, FormEvent, useEffect } from "react";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/router";
 import ReactMarkdown from "react-markdown";
+import { ExistingRecipeProcedure } from "@/types";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { TrashIcon } from "@heroicons/react/20/solid";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { TextArea } from "../form/TextArea";
-import { Submit } from "../form/Submit";
-import axios, { AxiosError } from "axios";
-import { useRouter } from "next/router";
-import { tokenState } from "@/recoil/atoms/tokenState";
-import { useRecoilValue } from "recoil";
-import { ExistingRecipeProcedure } from "@/types";
 import { XCircleIcon } from "@heroicons/react/24/solid";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { successMessageState } from "@/recoil/atoms/successMessageState";
+import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { TextArea } from "../form/TextArea";
+import { SuccessMessage } from "../messeage/SuccessMessage";
+import { ErrorMessage } from "../messeage/ErrorMessage";
 
 export const Divider = () => {
   const token = useRecoilValue(tokenState);
   const router = useRouter();
   const { id } = router.query;
+  const setSuccessMessage = useSetRecoilState(successMessageState);
+  const setErrorMessage = useSetRecoilState(errorMessageState);
 
   const [existingProcedures, setExistingProcedures] = useState<
     ExistingRecipeProcedure[]
@@ -77,8 +82,10 @@ export const Divider = () => {
         ...res.data.recipe_procedures,
       ]);
       setNewProcedures([]);
+      setSuccessMessage("手順を保存しました");
     } catch (error: AxiosError | any) {
       console.log(error.response.data.errors);
+      setErrorMessage(error.response.data.errors);
     }
   };
 
@@ -114,8 +121,10 @@ export const Divider = () => {
       setExistingProcedures(
         existingProcedures.filter((procedure) => procedure.id !== procedureId)
       );
+      setSuccessMessage("手順を削除しました");
     } catch (error: AxiosError | any) {
       console.log(error.message);
+      setErrorMessage("手順の削除に失敗しました");
     }
   };
 
@@ -141,8 +150,10 @@ export const Divider = () => {
         )
       );
       setEditProcedureId(null);
+      setSuccessMessage("手順を編集しました");
     } catch (error: AxiosError | any) {
       console.log(error.response.data.errors);
+      setErrorMessage(error.response.data.errors);
     }
   };
 
@@ -163,7 +174,7 @@ export const Divider = () => {
                     rows={5}
                     name="editProcedure"
                     id="editProcedure"
-                    className="font-bold text-md block w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:leading-6"
+                    className="font-bold text-md block w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:leading-6"
                     value={editProcedure}
                     onChange={(e) => setEditProcedure(e.target.value)}
                   />
@@ -251,8 +262,22 @@ export const Divider = () => {
           </button>
         </div>
       </div>
+      <ErrorMessage />
+      <SuccessMessage />
       <div className="my-7 flex justify-end">
-        <Submit text="手順を保存する" onClick={handleSubmit} />
+        <div className="text-center">
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={
+              newProcedures.length === 0 ||
+              newProcedures.every((p) => p.trim() === "")
+            }
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 lg:px-24 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            手順を保存する
+          </button>
+        </div>
       </div>
     </>
   );
