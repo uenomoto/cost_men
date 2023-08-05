@@ -1,55 +1,55 @@
-# name: Deploy to Rails ECS
+name: Deploy to Rails ECS
 
-# on:
-#   push:
-#     branches: ["main"]
-#     paths:
-#       - "backend/**"
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "backend/**"
 
-# permissions:
-#   id-token: write
-#   contents: read
+permissions:
+  id-token: write
+  contents: read
 
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-#       - uses: aws-actions/configure-aws-credentials@v2
-#         with:
-#           role-to-assume: arn:aws:iam::511837944532:role/ecs-deploy-role
-#           aws-region: ap-northeast-1
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::511837944532:role/ecs-deploy-role
+          aws-region: ap-northeast-1
 
-#       - name: Login to Amazon ECR
-#         id: login-ecr
-#         uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-#       - name: Build tag and push image to Amazon ECR
-#         id: build-image
-#         env:
-#           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }} # Amazon ECR registry URL
-#           ECR_REPOSITORY: cost-men
-#           IMAGE_TAG: ${{ github.sha }}
-#         run: |
-#           docker build -f container/backend/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-#           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+      - name: Build tag and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }} # Amazon ECR registry URL
+          ECR_REPOSITORY: cost-men
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -f container/backend/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
-#       - name: Fill in the new image ID in the Amazon ECS task definition
-#         id: task-def
-#         uses: aws-actions/amazon-ecs-render-task-definition@v1
-#         with:
-#           task-definition: backend/.aws/task-definition.json
-#           container-name: rails
-#           image: ${{ env.image }}
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: backend/.aws/task-definition.json
+          container-name: rails
+          image: ${{ env.image }}
 
-#       - name: Deploy Amazon ECS task definition
-#         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#         with:
-#           task-definition: ${{ steps.task-def.outputs.task-definition }}
-#           service: cost-men-service
-#           cluster: cost-men-cluster
-#           wait-for-service-stability: true
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: cost-men-service
+          cluster: cost-men-cluster
+          wait-for-service-stability: true
