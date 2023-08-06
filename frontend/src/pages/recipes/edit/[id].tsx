@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { Input } from "../../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../../components/molecules/checkbox/TagCheckBox";
 import { RecipeImage } from "../../../../components/molecules/recipe-image/RecipeImage";
@@ -11,7 +12,6 @@ import { tokenState } from "@/recoil/atoms/tokenState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { uploadImageToS3 } from "../../../../utils/s3Upload";
-import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
 import { SelectedIngredient, Tag, TagResponse } from "@/types";
 import { tagState } from "@/recoil/atoms/tagState";
 import { editTagState } from "@/recoil/atoms/editTagState";
@@ -148,6 +148,9 @@ const RecipesEdit = () => {
 
   return (
     <>
+      <Head>
+        <title>{recipeShow.name}編集</title>
+      </Head>
       <SuccessMessage />
       <ErrorMessage />
       <WarningMessage />

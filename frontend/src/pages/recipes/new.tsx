@@ -2,6 +2,7 @@ import React, { FormEvent, useState, useEffect } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { TagResponse } from "@/types";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { tagState } from "@/recoil/atoms/tagState";
 import { loadedState } from "@/recoil/atoms/loadedState";
@@ -235,6 +236,10 @@ const RecipesNew = () => {
 
   return (
     <>
+      <Head>
+        <title>レシピ新規登録</title>
+        <meta name="description" content="レシピ作成" />
+      </Head>
       <SuccessMessage />
       <ErrorMessage />
       <WarningMessage />
