@@ -3,6 +3,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "../../recoil/atoms/tokenState";
@@ -22,11 +23,12 @@ const RecipesIndex: NextPage = () => {
   const [loading, setLoading] = useState(true);
 
   // トークンを取得して、RecoilのtokenStateにセットする
-  const { getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const setToken = useSetRecoilState(tokenState);
   const setLoaded = useSetRecoilState(loadedState);
   const token = useRecoilValue(tokenState);
   const loaded = useRecoilValue(loadedState);
+  const router = useRouter();
 
   // レシピをタグで絞り込む
   const [selected, setSelected] = useState<Tag | null>(null);
@@ -35,9 +37,13 @@ const RecipesIndex: NextPage = () => {
   useEffect(() => {
     const getToken = async () => {
       try {
-        const accessToken = await getAccessTokenSilently({});
-        setToken(accessToken);
-        setLoaded(true); // ロード完了
+        if (!isAuthenticated && !isLoading) {
+          router.push("/");
+        } else {
+          const accessToken = await getAccessTokenSilently({});
+          setToken(accessToken);
+          setLoaded(true); // ロード完了
+        }
       } catch (e) {
         if (e instanceof Error) {
           console.log(e.message);
@@ -45,7 +51,14 @@ const RecipesIndex: NextPage = () => {
       }
     };
     getToken();
-  }, [getAccessTokenSilently, setToken, setLoaded]);
+  }, [
+    getAccessTokenSilently,
+    setToken,
+    setLoaded,
+    isAuthenticated,
+    isLoading,
+    router,
+  ]);
 
   // レシピ一覧を取得する
   useEffect(() => {
