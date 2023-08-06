@@ -22,7 +22,6 @@ import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { SuccessButton } from "../../../components/atoms/button/SuccessButton";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
-import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
 
 const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
