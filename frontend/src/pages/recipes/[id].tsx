@@ -22,6 +22,7 @@ import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { SuccessButton } from "../../../components/atoms/button/SuccessButton";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
+import { DeleteModal } from "../../../components/modal/DeleteModal";
 
 const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
@@ -43,6 +44,12 @@ const RecipeShow = () => {
   const router = useRouter();
   const { id } = router.query; // パスのパラメータを取得
   const [loading, setLoading] = useState(true);
+  // stateは関数も格納できる優れもの！
+  const [confirmDelete, setConfirmDelete] = useState<
+    (() => Promise<void>) | null
+  >(null);
+  // delete用のモーダル
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // レシピの詳細を取得する
   useEffect(() => {
@@ -142,18 +149,27 @@ const RecipeShow = () => {
 
   // レシピ削除
   const handleDelete = async (id: number) => {
-    if (confirm("レシピ全体を削除しますか？") === false) return;
-    try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setSuccessMessage("レシピを削除しました");
-      router.push("/recipes");
-    } catch (error: AxiosError | any) {
-      console.log(error.response.data.errors);
-      setErrorMessage(error.response.data.errors);
-    }
+    // 削除する関数を定義しモーダルから呼び出す
+    const confirmDeleteFunc = async () => {
+      try {
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setSuccessMessage("レシピを削除しました");
+        router.push("/recipes");
+      } catch (error: AxiosError | any) {
+        console.log(error.response.data.errors);
+        setErrorMessage(error.response.data.errors);
+      } finally {
+        // finallyは成功でも失敗でも最後に実行される
+        setDeleteModalOpen(false);
+      }
+    };
+
+    // 削除する関数をconrirmDeletestateに格納
+    setConfirmDelete(() => confirmDeleteFunc);
+    setDeleteModalOpen(true);
   };
 
   // sellingPriceを監視し編集する際にテキストフィールドに販売価格を表示する
@@ -322,6 +338,12 @@ const RecipeShow = () => {
           </div>
         </div>
       </Modal>
+      <DeleteModal
+        text="レシピ全体を削除しますか？"
+        open={deleteModalOpen}
+        setDeleteModalOpen={setDeleteModalOpen}
+        onConfirm={() => confirmDelete && confirmDelete()}
+      />
       <section>
         <h3 className="text-2xl font-bold my-7 text-gray-900">
           こちらから原材料名か手順かを選択してください
