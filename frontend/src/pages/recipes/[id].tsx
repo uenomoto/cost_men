@@ -22,6 +22,7 @@ import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { SuccessButton } from "../../../components/atoms/button/SuccessButton";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
+import { DeleteButton } from "../../../components/atoms/button/DeleteButton";
 
 const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
@@ -141,6 +142,20 @@ const RecipeShow = () => {
   };
 
   // レシピ削除
+  const handleDelete = async (id: number) => {
+    if (confirm("レシピ全体を削除しますか？") === false) return;
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSuccessMessage("レシピを削除しました");
+      router.push("/recipes");
+    } catch (error: AxiosError | any) {
+      console.log(error.response.data.errors);
+      setErrorMessage(error.response.data.errors);
+    }
+  };
 
   // sellingPriceを監視し編集する際にテキストフィールドに販売価格を表示する
   useEffect(() => {
@@ -182,26 +197,46 @@ const RecipeShow = () => {
               <SuccessMessage />
               {/* 販売価格データがなかったら設定ボタンのみであったら編集ボタンのみにする */}
               {sellingPrice === 0 ? (
-                <div>
-                  <SuccessButton>
-                    <div onClick={() => setSellingPriceOpen(true)}>
-                      販売価格を設定する
-                    </div>
-                  </SuccessButton>
-                  <p className="text-xs mt-2 text-gray-500">
-                    ※販売価格設定後に価格が表示されます
-                  </p>
+                <div className="grid grid-cols-2">
+                  <div className="col-span-1">
+                    <SuccessButton>
+                      <div onClick={() => setSellingPriceOpen(true)}>
+                        販売価格を設定する
+                      </div>
+                    </SuccessButton>
+                    <p className="text-xs mt-2 text-gray-500">
+                      ※販売価格設定後に価格が表示されます
+                    </p>
+                  </div>
+                  <div className="col-span-1">
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 hover:scale-110"
+                      onClick={() => handleDelete(recipeShow.id)}
+                    >
+                      レシピを削除する
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div>
-                  <EditButton>
-                    <div onClick={() => setEditSellingPriceOpen(true)}>
-                      販売価格を編集する
-                    </div>
-                  </EditButton>
-                  <p className="text-xs mt-2 text-gray-500">
-                    ※販売価格はこちらで変更できます
-                  </p>
+                <div className="grid grid-cols-2">
+                  <div className="col-span-1">
+                    <EditButton>
+                      <div onClick={() => setEditSellingPriceOpen(true)}>
+                        販売価格を編集する
+                      </div>
+                    </EditButton>
+                    <p className="text-xs mt-2 text-gray-500">
+                      ※販売価格はこちらで変更できます
+                    </p>
+                  </div>
+                  <div className="col-span-1">
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 hover:scale-110"
+                      onClick={() => handleDelete(recipeShow.id)}
+                    >
+                      レシピを削除する
+                    </button>
+                  </div>
                 </div>
               )}
               <div className="flex justify-between items-center">
