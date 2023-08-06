@@ -24,6 +24,7 @@ import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessag
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { Loading } from "../../../components/molecules/loading/Loading";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
+import { DeleteModal } from "../../../components/modal/DeleteModal";
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
@@ -38,6 +39,12 @@ const RecipesNew = () => {
   // タグ編集
   const [editTagId, setEditTagId] = useState<number | null>(null);
   const [editTagName, setEditTagName] = useState("");
+  // タグ削除
+  const [confirmDelete, setConfirmDelete] = useState<
+    (() => Promise<void>) | null
+  >(null);
+  // delete用のモーダル
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // トークンを取得
   const token = useRecoilValue(tokenState);
@@ -121,11 +128,8 @@ const RecipesNew = () => {
 
   // タグ削除
   const handleDelete = (id: number) => {
-    if (!token || !loaded) return;
     const deleteTag = async () => {
-      if (confirm("本当に削除しますか?") === false) return;
       const tagFind = tags.find((tag) => tag.id === id);
-
       try {
         await axios.delete(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/tags/${id}`,
@@ -137,9 +141,13 @@ const RecipesNew = () => {
         }
       } catch (error: AxiosError | any) {
         setErrorMessage(error.response.data.errors);
+      } finally {
+        setDeleteModalOpen(false);
       }
     };
-    deleteTag();
+
+    setConfirmDelete(() => deleteTag);
+    setDeleteModalOpen(true);
   };
 
   // タグを編集
@@ -343,6 +351,12 @@ const RecipesNew = () => {
                       </div>
                       <div className="text-xs text-left col-span-1">
                         <DeleteButton onClick={() => handleDelete(tag.id)} />
+                        <DeleteModal
+                          text="タグを削除しますか？"
+                          open={deleteModalOpen}
+                          setDeleteModalOpen={setDeleteModalOpen}
+                          onConfirm={() => confirmDelete && confirmDelete()}
+                        />
                       </div>
                     </div>
                   </li>

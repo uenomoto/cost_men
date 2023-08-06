@@ -16,6 +16,7 @@ import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { EditButton } from "../atoms/button/EditButton";
 import { DeleteButton } from "../atoms/button/DeleteButton";
 import { Modal } from "../modal/Modal";
+import { DeleteModal } from "../modal/DeleteModal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { SlideOver } from "../molecules/slide-overs/SlideOver";
 import { AlertBadge } from "../atoms/badge/AlertBadge";
@@ -58,6 +59,12 @@ export const SupplierIngredientTable = () => {
   const [editBuyCost, setEditBuyCost] = useState("");
   const [editBuyQuantity, setEditBuyQuantity] = useState("");
   const [editUnit, setEditUnit] = useState("");
+
+  // 原材料の削除用ステート
+  const [confirmDelete, setConfirmDelete] = useState<
+    (() => Promise<void>) | null
+  >(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // RecoilのTokenを取得する
   const token = useRecoilValue(tokenState);
@@ -181,40 +188,46 @@ export const SupplierIngredientTable = () => {
   }, [supplierIngredienteditOpen, suppliers]);
 
   const handleDelete = async (id: number) => {
-    if (confirm("本当に削除しますか？") === false) return;
-    try {
-      // 仕入れ先の原材料のid取得
-      const ingredientToDelete = suppliers
-        .flatMap((supplier) => supplier.ingredients)
-        .find((ingredient) => ingredient.id === id);
+    // 削除する関数を定義しモーダルから呼ぶ
+    const confirmDeleteFunc = async () => {
+      try {
+        // 仕入れ先の原材料のid取得
+        const ingredientToDelete = suppliers
+          .flatMap((supplier) => supplier.ingredients)
+          .find((ingredient) => ingredient.id === id);
 
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/ingredients/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setSuppliers(
+          suppliers.map((supplier) => ({
+            ...supplier, // 仕入れ先情報をコピーして新しい配列(ボタンを押したidを削除)を作成
+            ingredients: supplier.ingredients.filter(
+              (ingredient) => ingredient.id !== id
+            ),
+          }))
+        );
+
+        if (ingredientToDelete) {
+          setSuccessMessage(`${ingredientToDelete.name}の削除に成功しました`);
+        } else {
+          setSuccessMessage("原材料の削除に成功しました");
         }
-      );
 
-      setSuppliers(
-        suppliers.map((supplier) => ({
-          ...supplier, // 仕入れ先情報をコピーして新しい配列(ボタンを押したidを削除)を作成
-          ingredients: supplier.ingredients.filter(
-            (ingredient) => ingredient.id !== id
-          ),
-        }))
-      );
-
-      if (ingredientToDelete) {
-        setSuccessMessage(`${ingredientToDelete.name}の削除に成功しました`);
-      } else {
-        setSuccessMessage("原材料の削除に成功しました");
+        setErrorMessage(null);
+      } catch (error: AxiosError | any) {
+        setErrorMessage(error.response.data); // railsから返されたエラーメッセージをステートに格納
+        setSuccessMessage(null);
+      } finally {
+        setDeleteModalOpen(false);
       }
+    };
 
-      setErrorMessage(null);
-    } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data); // railsから返されたエラーメッセージをステートに格納
-      setSuccessMessage(null);
-    }
+    setConfirmDelete(() => confirmDeleteFunc);
+    setDeleteModalOpen(true);
   };
 
   // 原材料の単価を計算する
@@ -568,6 +581,14 @@ export const SupplierIngredientTable = () => {
                             >
                               <DeleteButton
                                 onClick={() => handleDelete(ingredient.id)}
+                              />
+                              <DeleteModal
+                                text="原材料を削除しますか？"
+                                open={deleteModalOpen}
+                                setDeleteModalOpen={setDeleteModalOpen}
+                                onConfirm={() =>
+                                  confirmDelete && confirmDelete()
+                                }
                               />
                             </td>
                           </tr>
