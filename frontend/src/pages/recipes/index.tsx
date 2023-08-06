@@ -30,6 +30,10 @@ const RecipesIndex: NextPage = () => {
   const loaded = useRecoilValue(loadedState);
   const router = useRouter();
 
+  // ページネーション
+  const [totalPages, setTotalPages] = useState(0);
+  const currentPage = Number(router.query.page) || 1;
+
   // レシピをタグで絞り込む
   const [selected, setSelected] = useState<Tag | null>(null);
 
@@ -60,16 +64,16 @@ const RecipesIndex: NextPage = () => {
     router,
   ]);
 
-  // レシピ一覧を取得する
+  // レシピ一覧とページング情報を取得する
   useEffect(() => {
     const getRecipes = async () => {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes`,
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes?page=${currentPage}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setRecipes(res.data.recipes);
-        // console.log(res.data.recipes);
+        setTotalPages(res.data.meta.total_pages); // ページネーションの総ページ数
         setLoading(false);
       } catch (e: AxiosError | any) {
         console.log(e.message);
@@ -78,7 +82,7 @@ const RecipesIndex: NextPage = () => {
     if (loaded) {
       getRecipes();
     }
-  }, [token, setRecipes, loaded]);
+  }, [token, setRecipes, currentPage, loaded]);
 
   // レシピ一覧をタグでフィルタリングする
   const filteredRecipes = recipes.filter((recipe: Recipe) => {
@@ -202,7 +206,7 @@ const RecipesIndex: NextPage = () => {
         </div>
       )}
 
-      <Pagination />
+      <Pagination currentPage={currentPage} totalPages={totalPages} />
     </>
   );
 };

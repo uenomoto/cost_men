@@ -40,6 +40,7 @@ gem 'rack-cors'
 
 gem 'dotenv-rails'
 gem 'jwt'
+gem 'kaminari'
 gem 'ransack'
 
 group :development, :test do
