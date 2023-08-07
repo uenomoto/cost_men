@@ -27,6 +27,7 @@ import { SearchTable } from "./SearchTable";
 import { Loading } from "../molecules/loading/Loading";
 import { WarningMessage } from "../atoms/messeage/WarningMessage";
 import { Pagination } from "../molecules/pagination/Pagination";
+import { IngredientsEnptyStates } from "../molecules/enptyStates/IngredientsEnptyStates";
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
@@ -276,7 +277,7 @@ export const SupplierIngredientTable = () => {
   return (
     <>
       <WarningMessage />
-      <div className="mt-20">
+      <div className="mt-16">
         {loading ? (
           <Loading />
         ) : isSearching ? (
@@ -285,11 +286,13 @@ export const SupplierIngredientTable = () => {
             (total, supplier) => total + supplier.ingredients.length,
             0
           ) === 0 ? (
-          <EnptyStates />
+          <>
+            {suppliers.length === 0 && <EnptyStates />}
+            <IngredientsEnptyStates />
+          </>
         ) : (
           ""
         )}
-
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
