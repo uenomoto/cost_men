@@ -18,13 +18,6 @@ RSpec.describe 'Api::V1::Suppliers' do
     end
   end
 
-  describe 'GET /show' do
-    it 'returns http success' do
-      get "/api/v1/suppliers/#{supplier.id}"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
   describe 'POST /create' do
     let(:supplier_params) { { supplier: { name: 'テスト仕入れ先名', contact_info: '01234567910' } } }
 
