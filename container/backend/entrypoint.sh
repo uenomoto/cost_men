@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# ruby config/smm_params_store.rb
+ruby config/smm_params_store.rb
 
 rm -f /cost_men/tmp/pids/server.pid
 

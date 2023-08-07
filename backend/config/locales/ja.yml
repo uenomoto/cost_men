@@ -1,0 +1,120 @@
+ja:
+  activerecord:
+    models:
+      supplier: "仕入れ先"
+      ingredient: "原材料"
+      recipe: "レシピ"
+      selling_price: "販売価格"
+      tag: "タグ"
+      user: "ユーザー"
+      recipe_ingredient: "レシピ原材料"
+      recipe_tag: "レシピタグ"
+      recipe_procedure: "レシピ手順"
+    attributes:
+      supplier:
+        name: "仕入れ先名"
+        contact_info: "連絡先"
+      ingredient:
+        name: "原材料名"
+        buy_cost: "仕入れ値段"
+        buy_quantity: "仕入れ数量"
+        unit: "単位"
+      recipe:
+        name: "レシピ名"
+        total_cost: "合計原価"
+        image_aws_url: "画像URL"
+      selling_price:
+        price: "販売価格"
+      tag:
+        name: "タグ名"
+      recipe_ingredient:
+        quantity: "数量"
+      recipe_procedure:
+        procedure: "手順"
+    errors:
+      models:
+        supplier:
+          attributes:
+            name:
+              blank: "を入力してください"
+              taken: "既に存在する仕入れ先名です"
+              too_long: "は%{count}文字以内で入力してください"
+            contact_info:
+              too_long: "は%{count}文字以内で入力してください"
+        ingredient:
+          attributes:
+            name:
+              blank: "を入力してください"
+            unit:
+              blank: "を入力してください"
+            buy_cost:
+              greater_than_or_equal_to: "は%{count}以上である必要があります"
+            buy_quantity:
+              greater_than_or_equal_to: "は%{count}以上である必要があります"
+        recipe:
+          attributes:
+            name:
+              blank: "を入力してください"
+            image_aws_url:
+              not_image_url: "画像のURLが正しくありません又は画像が選択されていません"
+        selling_price:
+          attributes:
+            price:
+              blank: "を入力してください"
+              greater_than_or_equal_to: "は%{count}以上である必要があります"
+              not_an_integer: "は整数で入力してください"
+        tag:
+          attributes:
+            name:
+              blank: "を入力してください"
+              too_long: "は%{count}文字以内で入力してください"
+              taken: "既に存在するタグ名です"
+        recipe_procedure:
+          attributes:
+            procedure:
+              blank: "を入力してください"
+              too_long: "は%{count}文字以内で入力してください"
+  # フォームオブジェクトのエラーメッセージ↓
+  activemodel:
+    models:
+      recipe_tag_ingredient_form: "レシピタグ原材料フォーム"
+      recipe_tag_ingredient_edit_form: "レシピタグ原材料編集フォーム"
+    attributes:
+      recipe_tag_ingredient_form:
+        recipe_name: "レシピ名"
+        checked_tags: "タグ"
+        recipe_ingredients: "レシピの材料"
+        recipe_image_url: "レシピ画像のURL"
+      recipe_tag_ingredient_edit_form:
+        recipe_name: "レシピ名"
+        checked_tags: "タグ"
+        recipe_ingredients: "レシピの材料"
+        recipe_image_url: "レシピ画像のURL"
+    errors:
+      models:
+        recipe_tag_ingredient_form:
+          attributes:
+            recipe_name:
+              blank: "を入力してください"
+            checked_tags:
+              blank: "を選択してください"
+              not_tags: "一部のタグが存在しません"
+            recipe_ingredients:
+              quantity_not_positive: "全ての材料の数量は0以上でなければなりません"
+              not_ingredients: "一部の材料が存在しません"
+              blank: "を入力してください"
+            recipe_image_url:
+              not_image_url: "画像のURLが正しくありません又は画像が選択されていません"
+        recipe_tag_ingredient_edit_form:
+          attributes:
+            recipe_name:
+              blank: "を入力してください"
+            checked_tags:
+              blank: "を選択してください"
+              not_tags: "一部のタグが存在しません"
+            recipe_ingredients:
+              quantity_not_positive: "全ての材料の数量は0以上でなければなりません"
+              not_ingredients: "一部の材料が存在しません"
+              blank: "を入力してください"
+            recipe_image_url:
+              not_image_url: "画像のURLが正しくありません又は画像が選択されていません"

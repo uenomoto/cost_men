@@ -127,7 +127,7 @@ const RecipesEdit = () => {
           recipe_ingredients: updatedRecipeIngredients,
         },
       };
-      console.log(requestBody);
+      // console.log(requestBody);
 
       const res: AxiosResponse = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}`,
