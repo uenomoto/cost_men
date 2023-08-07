@@ -62,6 +62,7 @@ export interface Supplier {
 }
 
 export interface SupplierResponse {
+  suppliers: Supplier[];
   supplier: Supplier;
 }
 

@@ -115,7 +115,7 @@ export const IngredidentForm = () => {
         </div>
         <div className="mt-5 grid gap-1 grid-cols-2">
           <div className="col-span-1">
-            <AlertBadge />
+            <AlertBadge text="入力必須" />
             <Input
               htmlfor="name"
               text="原材料名"
@@ -126,12 +126,12 @@ export const IngredidentForm = () => {
               value={ingredientName}
               onChange={setName}
             />
-            <AlertBadge />
+            <AlertBadge text="半角英数字 入力必須" />
             <Input
               htmlfor="buy_quantity"
               text="購入時の数量"
               type="number"
-              placeholder="購入時の数量を入力"
+              placeholder="購入時の数量を入力 例: 1000"
               id="buy_quantity"
               name="buy_quantity"
               value={buyQuantity}
@@ -139,23 +139,23 @@ export const IngredidentForm = () => {
             />
           </div>
           <div className="col-span-1">
-            <AlertBadge />
+            <AlertBadge text="半角英数字 入力必須" />
             <Input
               htmlfor="buy_cost"
               text="購入時の値段"
               type="number"
-              placeholder="購入時の値段を入力"
+              placeholder="購入時の値段を入力 例: 700"
               id="buy_cost"
               name="buy_cost"
               value={buyCost}
               onChange={setBuyCost}
             />
-            <AlertBadge />
+            <AlertBadge text="入力必須" />
             <Input
               htmlfor="unit"
               text="単位"
               type="text"
-              placeholder="単位を入力してください"
+              placeholder="単位を入力してください 例: g"
               id="unit"
               name="unit"
               value={unit}

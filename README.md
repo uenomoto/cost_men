@@ -1,33 +1,109 @@
-[ヘルスチェック(接続チェック)](https://workoutkeep.com/api/v1/health_check)
-
-↑ 7/11 現在サービスとタスク削除中
+[ヘルスチェック(接続チェック)](https://workoutkeep.com/api/v1/health_check): 8/5 現在 ECS 起動
 
 [![Test and Lint CI](https://github.com/uenomoto/cost_men/actions/workflows/rspec-and-rubocop.yml/badge.svg)](https://github.com/uenomoto/cost_men/actions/workflows/rspec-and-rubocop.yml)
+[![.github/workflows/auto-deploy.yml](https://github.com/uenomoto/cost_men/actions/workflows/auto-deploy.yml/badge.svg)](https://github.com/uenomoto/cost_men/actions/workflows/auto-deploy.yml)
 
-# オリジナルプロダクトざっくりタスクリスト
+# CostMen アプリの URL
 
-# 8/13 日までに完成させること
+https://cost-men.com/
 
-細かい部分は Trello に書いていく。細かくタスクを作ってやってる感を出して自分を鼓舞する。
+テストユーザーとしてお好きにログインしてお使いください。
 
-- [ ] 第一フェーズ：開発環境構築 7/10 OK!
-- [ ] 第二フェーズ：本番環境構築(test_deploy)7/10~7/11 クラスター、タスク、サービス、ALB は削除するまたすぐ作れるようメモ OK!
-- [ ] 第三フェーズ：全画面のビュー作成、JSX,CSS のみ(frontend)7/11~7/18
-      この段階のビューは直接データ書いて良い。データベースとの連携はしない。↑
-      ここで Vercel にデプロイして、デプロイした URL をメンターさんに見せる
-- [ ] 第四フェーズ：ユーザー登録機能の実装, ログイン機能の実装 7/18~7/20
-- [ ] 第五フェーズ：API の実装(backend)※必ずこの段階で postman で API 叩けるか確認すること！！7/20~7/25
-- [ ] 第六フェーズ：API テストの実装、モデルテストの実装 7/25~7/26
-      ここで AWS ECS にデプロイし独自ドメインでポストマンと繋げてテストデプロイする。
-- [ ] 第七フェーズ：フロントエンドとバックエンドの統合(API との連携)7/26~8/7
-- [ ] 第八フェーズ：ここが正念場！！View を作り込む。8/7~8/12
-- [ ] 最終フェーズ: ラストデプロイ！8/13
+- email: test@email.com
+- password: Test4649
 
-厳しかったら作り込むな、まずは完成させろ！ということを優先していく
+LINE アカウントを持っている方は、LINE ログインで簡単にログインできます。
 
-追加機能がない限りテストは後回し
+Auth0 認証サービスを利用しているためセキュリティ面は安心です。
 
-## 時間が余ったらやること
+## なぜ作ったのか
 
-フロント側もボタンテストだけは挑戦してみる
-jest と react testing library を使用する
+知人の経営する飲食店の、原価管理作業は Excel で作成していました。
+
+レシピと原価表は別々のファイルで管理していて、仕入れ先は常に頭で記憶していたり納品書を見て管理していました
+
+そこから、レシピの原価を計算するのに大変手間がかかっていました。
+
+そこでレシピと原価表を統一させてかつ、レシピの原価を計算するのに手間がかからないアプリができないかと知人と考えました。
+
+**まずそこでアプリ開発する醍醐味として、**
+
+- ユーザーに計算はさせない！
+- ユーザーは仕入れ先とその原材料と購入値段と数量を DB に登録しあとはレシピで使う材料の数量を設定しを組み立てるだけ！
+
+たったこれだけで、レシピの原価を計算するのにかかる手間が大幅に減ります。(やったね！)
+
+## 使い方
+
+1. 仕入れ先を登録します
+2. 仕入れ先に原材料と必要な情報を登録します
+3. レシピに使用するカテゴリー(タグ)を登録します
+4. レシピに使う原材料と数量、レシピ名、タグ、盛り付け写真を登録します
+
+ここから任意
+
+5. レシピに対する販売価格を設定します
+6. レシピに対する手順を登録します
+
+以上です！
+
+## 機能一覧
+
+comming soon....
+
+## 開発環境
+
+- Docker version 20.10.23
+- Docker Compose version v2.15.1
+
+- インフラ
+
+  - AWS(ECS Fargate/ECR/RDS/ALB/Route53/ACM/VPC/S3/cloudformation)
+  - Vercel
+
+- 継続的インテグレーション/継続的デリバリー
+
+  - GitHub Actions
+
+- 認証機能
+  - Auth0
+
+## 技術一覧
+
+- フロントエンド
+  - TypeScript
+  - React
+  - Next.js
+  - Tailwind CSS
+  - axios
+  - ESLint
+  - Prettier
+- バックエンド
+  - Ruby 3.0.5
+  - Ruby on Rails 7.0.5
+  - RSpec
+  - Rubocop
+  - PostgreSQL
+  - Nginx
+  - Puma
+
+## ER 図
+
+![cost_men](https://github.com/uenomoto/cost_men/assets/113354283/504279f2-fbd3-4a0c-8590-4c363180862b)
+
+
+## システム構成図
+
+![AWSアーキテクチャ図](https://github.com/uenomoto/cost_men/assets/113354283/d2306de2-ec4d-4046-8f0e-cfe3d513203c)
+
+
+## 開発途中な機能
+
+- 印刷機能
+- タグ検索機能
+- ページネーション
+- 原材料検索機能
+
+## どんな思いで作ったのか、下準備
+
+[こちらのリポジトリにまとめてあります](https://github.com/uenomoto/original_product)

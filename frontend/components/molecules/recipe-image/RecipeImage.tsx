@@ -75,7 +75,7 @@ export const RecipeImage = ({ onImageChange, initialImageUrl }: Props) => {
         <button
           type="button"
           onClick={handleButtonClick}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold lg:ml-24 py-2 px-4 rounded ease-in transition-all"
         >
           画像を選択
         </button>
