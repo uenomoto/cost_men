@@ -91,17 +91,13 @@ comming soon....
 
 ![cost_men](https://github.com/uenomoto/cost_men/assets/113354283/504279f2-fbd3-4a0c-8590-4c363180862b)
 
-
 ## システム構成図
 
 ![AWSアーキテクチャ図](https://github.com/uenomoto/cost_men/assets/113354283/d2306de2-ec4d-4046-8f0e-cfe3d513203c)
 
-
 ## 開発途中な機能
 
 - 印刷機能
-- タグ検索機能
-- ページネーション
 - 原材料検索機能
 
 ## どんな思いで作ったのか、下準備
