@@ -8,6 +8,7 @@ import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
 import { recipeShowState } from "@/recoil/atoms/recipeShowState";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
+import { AlertBadge } from "../atoms/badge/AlertBadge";
 
 export const RecipesTable = () => {
   // 選択されていない原材料の初期値を設定
@@ -159,6 +160,7 @@ export const RecipesTable = () => {
                   scope="col"
                   className="px-3 py-3.5 text-center text-sm lg:text-lg font-semibold text-gray-900 sm:table-cell"
                 >
+                  <span className="text-xs text-red-400 mr-1">※0以上必須</span>
                   数量
                 </th>
                 <th

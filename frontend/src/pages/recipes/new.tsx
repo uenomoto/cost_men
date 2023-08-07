@@ -26,6 +26,7 @@ import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { Loading } from "../../../components/molecules/loading/Loading";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
 import { DeleteModal } from "../../../components/modal/DeleteModal";
+import { AlertBadge } from "../../../components/atoms/badge/AlertBadge";
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
@@ -246,6 +247,7 @@ const RecipesNew = () => {
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ新規登録</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
+          <AlertBadge text="入力必須" />
           <Input
             htmlfor="recipeName"
             text="レシピ名"
@@ -282,6 +284,7 @@ const RecipesNew = () => {
           <div className="grid col-span-1 px-16">
             <h3 className="mb-16">タグ登録</h3>
             <div className="mb-11">
+              <AlertBadge text="入力必須" />
               <Input
                 htmlfor="tagName"
                 text="タグ名"

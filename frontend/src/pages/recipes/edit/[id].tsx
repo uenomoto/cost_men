@@ -19,6 +19,7 @@ import { RecipesEditTable } from "../../../../components/organisms/RecipesEditTa
 import { WarningMessage } from "../../../../components/atoms/messeage/WarningMessage";
 import { ErrorMessage } from "../../../../components/atoms/messeage/ErrorMessage";
 import { SuccessMessage } from "../../../../components/atoms/messeage/SuccessMessage";
+import { AlertBadge } from "../../../../components/atoms/badge/AlertBadge";
 
 const RecipesEdit = () => {
   const recipeShow = useRecoilValue(recipeShowState);
@@ -157,6 +158,7 @@ const RecipesEdit = () => {
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ編集画面</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
+          <AlertBadge text="入力必須" />
           <Input
             htmlfor="recipeName"
             text="レシピ名"

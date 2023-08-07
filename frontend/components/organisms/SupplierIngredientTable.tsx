@@ -389,7 +389,7 @@ export const SupplierIngredientTable = () => {
                                           仕入れ先編集
                                         </h3>
                                         <div className="mt-5">
-                                          <AlertBadge />
+                                          <AlertBadge text="入力必須です" />
                                           <Input
                                             htmlfor="name"
                                             text="仕入れ先名"
@@ -514,7 +514,7 @@ export const SupplierIngredientTable = () => {
                                     <div className="mt-5">
                                       <div className="grid gap-1 grid-cols-2">
                                         <div className="col-span-1">
-                                          <AlertBadge />
+                                          <AlertBadge text="入力必須" />
                                           <Input
                                             htmlfor="name"
                                             text="原材料名"
@@ -525,7 +525,7 @@ export const SupplierIngredientTable = () => {
                                             value={editName}
                                             onChange={setEditName}
                                           />
-                                          <AlertBadge />
+                                          <AlertBadge text="半角英数字 入力必須" />
                                           <Input
                                             htmlfor="buy_quantity"
                                             text="購入時の数量"
@@ -538,7 +538,7 @@ export const SupplierIngredientTable = () => {
                                           />
                                         </div>
                                         <div className="col-span-1">
-                                          <AlertBadge />
+                                          <AlertBadge text="半角英数字 入力必須" />
                                           <Input
                                             htmlfor="buy_cost"
                                             text="購入時の値段"
@@ -549,7 +549,7 @@ export const SupplierIngredientTable = () => {
                                             value={editBuyCost}
                                             onChange={setEditBuyCost}
                                           />
-                                          <AlertBadge />
+                                          <AlertBadge text="入力必須" />
                                           <Input
                                             htmlfor="unit"
                                             text="単位"

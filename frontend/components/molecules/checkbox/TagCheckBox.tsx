@@ -58,7 +58,10 @@ export const TagCheckBox = ({ onTagCheckChange }: Props) => {
 
   return (
     <fieldset>
-      <span className="font-bold">タグを選択してください</span>
+      <span className="font-bold">
+        <span className="text-xs text-red-400 mr-1">※選択必須</span>
+        タグを選択してください
+      </span>
       <legend className="sr-only">タグ</legend>
       <div className="grid grid-cols-3 gap-1 lg:gap-x-4 overflow-y-auto px-3 py-1 h-40 border-2 border-sky-300 rounded-md">
         {tags.length === 0 && !isEditPage && <TagEnptyStates />}

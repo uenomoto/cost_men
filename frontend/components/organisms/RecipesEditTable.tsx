@@ -178,6 +178,7 @@ export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
                   scope="col"
                   className="px-3 py-3.5 text-center text-sm lg:text-lg font-semibold text-gray-900 sm:table-cell"
                 >
+                  <span className="text-xs text-red-400 mr-1">※0以上必須</span>
                   数量
                 </th>
                 <th

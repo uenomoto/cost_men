@@ -56,7 +56,7 @@ export const SuppliersForm = () => {
           <p>こちらから仕入れ先を登録できます</p>
         </div>
         <div className="w-full mt-5">
-          <AlertBadge />
+          <AlertBadge text="入力必須" />
           <Input
             htmlfor="name"
             text="仕入れ先名"
