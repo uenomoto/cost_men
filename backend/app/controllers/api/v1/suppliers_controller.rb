@@ -5,9 +5,16 @@ module Api
     class SuppliersController < SecuredController
       before_action :authorize_request
 
+      # ページネーション込みの一覧
       def index
-        suppliers = Supplier.with_ingredients_for_user(current_user)
-        render json: { suppliers: }, status: :ok
+        page = params[:page] || 1
+        per_page = 1
+
+        suppliers = Supplier.with_ingredients_for_user(current_user, page, per_page)
+        render json: { suppliers: suppliers[:suppliers],
+                       meta: {
+                         total_pages: suppliers[:total_pages]
+                       } }, status: :ok
       end
 
       # セレクトボックスで使うためのindexのapi
@@ -16,15 +23,16 @@ module Api
         render json: { suppliers: }, status: :ok
       end
 
-      def show
-        supplier = current_user.suppliers.find(params[:id])
-        supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
-        if supplier_with_ingredient
-          render json: { supplier: supplier_with_ingredient }, status: :ok
-        else
-          render_not_found_response
-        end
-      end
+      # 編集時に詳細を取得するためのapiとして作ったがupdateアクションの中に統合したため使わないのでテストしながら消していく
+      # def show
+      #   supplier = current_user.suppliers.find(params[:id])
+      #   supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
+      #   if supplier_with_ingredient
+      #     render json: { supplier: supplier_with_ingredient }, status: :ok
+      #   else
+      #     render_not_found_response
+      #   end
+      # end
 
       def create
         # 仕入れ先とuserが紐付いていれば↓この記述でuser_idが自動的に現在のuserのsubになる。

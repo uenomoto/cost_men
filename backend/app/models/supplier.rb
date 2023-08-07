@@ -9,13 +9,21 @@ class Supplier < ApplicationRecord
 
   scope :oldest, -> { order(created_at: :asc) }
 
-  # 少し複雑なDB操作なためモデルに記述します
-  def self.with_ingredients_for_user(user)
-    user.suppliers.oldest.select(:id, :user_id, :name, :contact_info).includes(:ingredients).map do |supplier|
-      supplier.attributes.merge(
-        ingredients: supplier.ingredients.select(:id, :supplier_id, :buy_cost, :buy_quantity, :unit, :name)
-      )
+  # 仕入れ先一覧取得する1つの仕入れ先でページネーションを行う
+  def self.with_ingredients_for_user(user, page = 1, per_page = 1)
+    paginated_suppliers = user.suppliers.oldest.select(:id, :user_id, :name,
+                                                       :contact_info).includes(:ingredients).page(page).per(per_page)
+    suppliers_data = paginated_suppliers.map do |supplier|
+      {
+        id: supplier.id,
+        user_id: supplier.user_id,
+        name: supplier.name,
+        contact_info: supplier.contact_info,
+        ingredients: supplier.ingredients.select(:id, :supplier_id,
+                                                 :buy_cost, :buy_quantity, :unit, :name)
+      }
     end
+    { suppliers: suppliers_data, total_pages: paginated_suppliers.total_pages }
   end
 
   # 詳細取得し編集後のデータを返す

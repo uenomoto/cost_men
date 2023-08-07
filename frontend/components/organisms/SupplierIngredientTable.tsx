@@ -26,6 +26,7 @@ import { EnptyStates } from "../molecules/enptyStates/EnptyStates";
 import { SearchTable } from "./SearchTable";
 import { Loading } from "../molecules/loading/Loading";
 import { WarningMessage } from "../atoms/messeage/WarningMessage";
+import { Pagination } from "../molecules/pagination/Pagination";
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
@@ -72,6 +73,10 @@ export const SupplierIngredientTable = () => {
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
   const isSearching = useRecoilValue(isSearchingState); // 検索中かどうかを取得
+
+  // ページネーション
+  const [totalPages, setTotalPages] = useState(0);
+  const currentPage = Number(router.query.page) || 1;
 
   // 原材料の編集
   const editHandleSubmitIngredient = async (e: FormEvent) => {
@@ -239,15 +244,14 @@ export const SupplierIngredientTable = () => {
 
   // 仕入れ先情報一覧を取得する
   useEffect(() => {
-    // if (!token || !loaded) return;
-    setLoading(true);
     const getSuppliers = async () => {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers?page=${currentPage}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setSuppliers(res.data.suppliers); // APIから取得した仕入れ先情報をステートに格納
+        setTotalPages(res.data.meta.total_pages);
         setLoading(false);
         setErrorMessage(null);
       } catch (error: AxiosError | any) {
@@ -260,7 +264,14 @@ export const SupplierIngredientTable = () => {
       }
     };
     getSuppliers();
-  }, [token, loaded, router, setErrorMessage, setSuppliers, setWarningMessage]);
+  }, [
+    token,
+    router,
+    currentPage,
+    setErrorMessage,
+    setSuppliers,
+    setWarningMessage,
+  ]);
 
   return (
     <>
@@ -602,6 +613,7 @@ export const SupplierIngredientTable = () => {
           </div>
         </div>
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} />
     </>
   );
 };
