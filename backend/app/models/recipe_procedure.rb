@@ -3,7 +3,7 @@
 class RecipeProcedure < ApplicationRecord
   belongs_to :recipe
 
-  validates :procedure, presence: true, length: { maximum: 200 }
+  validates :procedure, presence: true, length: { maximum: 100 }
 
   scope :oldest, -> { order(created_at: :asc) }
 
