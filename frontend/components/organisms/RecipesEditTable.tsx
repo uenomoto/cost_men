@@ -6,14 +6,13 @@ import {
   Supplier,
   SupplierResponse,
 } from "@/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { recipeShowState } from "@/recoil/atoms/recipeShowState";
+import { tokenState } from "@/recoil/atoms/tokenState";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
-import { tokenState } from "@/recoil/atoms/tokenState";
-import axios, { AxiosError, AxiosResponse } from "axios";
 
 type Props = {
   setUpdatedIngredients: (ingredients: SelectedIngredient[]) => void;
