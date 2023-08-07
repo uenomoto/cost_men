@@ -273,7 +273,7 @@ const RecipesNew = () => {
         </div>
       </div>
       <RecipesTable />
-      <div className="mt-5">
+      <div className="mt-5 pb-5">
         <Submit text="登録" onClick={handleSubmissions} />
       </div>
 

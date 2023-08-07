@@ -184,7 +184,7 @@ const RecipesEdit = () => {
         </div>
       </div>
       <RecipesEditTable setUpdatedIngredients={setUpdatedRecipeIngredients} />
-      <div className="mt-5">
+      <div className="mt-5 pb-5">
         <EditSubmit text="レシピ全体の編集" onClick={handleEditSubmissions} />
       </div>
     </>

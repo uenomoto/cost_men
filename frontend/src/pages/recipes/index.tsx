@@ -121,7 +121,7 @@ const RecipesIndex: NextPage = () => {
       {loading ? (
         <Loading />
       ) : (
-        <div className="grid grid-cols-1 lg:gap-10 xl:gap-64 sm:grid-cols-1 lg:grid-cols-2 mt-7">
+        <div className="grid grid-cols-1 gap-10 xl:gap-64 sm:grid-cols-1 lg:grid-cols-2 mt-7">
           <ul className="grid-cols-1">
             {(selected === null ? recipes : filteredRecipes).map(
               (recipe: Recipe, index) => (

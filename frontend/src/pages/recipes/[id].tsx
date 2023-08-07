@@ -290,7 +290,7 @@ const RecipeShow = () => {
           </h3>
           <div className="flex flex-col items-center">
             <div className="w-full">
-              <AlertBadge />
+              <AlertBadge text="必須" />
               <p className="text-xs text-red-500 mb-3">
                 ※半角数字でお願いします
               </p>
@@ -318,7 +318,7 @@ const RecipeShow = () => {
           </h3>
           <div className="flex flex-col items-center">
             <div className="w-full">
-              <AlertBadge />
+              <AlertBadge text="必須" />
               <p className="text-xs text-red-500 mb-3">
                 ※半角数字でお願いします
               </p>
