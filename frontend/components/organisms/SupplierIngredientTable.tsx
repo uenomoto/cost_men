@@ -28,6 +28,7 @@ import { Loading } from "../molecules/loading/Loading";
 import { WarningMessage } from "../atoms/messeage/WarningMessage";
 import { Pagination } from "../molecules/pagination/Pagination";
 import { IngredientsEnptyStates } from "../molecules/enptyStates/IngredientsEnptyStates";
+import { ErrorMessage } from "../atoms/messeage/ErrorMessage";
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
@@ -120,7 +121,6 @@ export const SupplierIngredientTable = () => {
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
-      setSupplierIngredientEditOpen(null);
     }
   };
 
@@ -153,7 +153,6 @@ export const SupplierIngredientTable = () => {
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
-      setSupplierEditOpen(null);
     }
   };
 
@@ -399,6 +398,7 @@ export const SupplierIngredientTable = () => {
                                       }
                                     >
                                       <div className="md:p-5">
+                                        <ErrorMessage />
                                         <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
                                           仕入れ先編集
                                         </h3>
@@ -522,6 +522,7 @@ export const SupplierIngredientTable = () => {
                                   }
                                 >
                                   <div className="md:p-5">
+                                    <ErrorMessage />
                                     <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
                                       原材料編集
                                     </h3>
