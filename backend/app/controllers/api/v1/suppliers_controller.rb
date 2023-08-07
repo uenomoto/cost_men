@@ -17,6 +17,12 @@ module Api
                        } }, status: :ok
       end
 
+      # ページネーションなしの仕入れ先一覧
+      def index_all
+        suppliers = Supplier.with_all_ingredients_for_user(current_user)
+        render json: { suppliers: }, status: :ok
+      end
+
       # セレクトボックスで使うためのindexのapi
       def select_index
         suppliers = current_user.suppliers.select(:id, :name)

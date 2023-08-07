@@ -1,6 +1,11 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { XCircleIcon } from "@heroicons/react/24/solid";
-import { Ingredient, SelectedIngredient } from "@/types";
+import {
+  Ingredient,
+  SelectedIngredient,
+  Supplier,
+  SupplierResponse,
+} from "@/types";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { warningMessageState } from "@/recoil/atoms/warningMessageState";
@@ -9,6 +14,8 @@ import { recipeShowState } from "@/recoil/atoms/recipeShowState";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { AlertBadge } from "../atoms/badge/AlertBadge";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { tokenState } from "@/recoil/atoms/tokenState";
 
 export const RecipesTable = () => {
   // 選択されていない原材料の初期値を設定
@@ -36,13 +43,29 @@ export const RecipesTable = () => {
 
   // 原材料と仕入れ先を選択するモーダル
   const [open, setOpen] = useState(false);
-  // 仕入れ先と原材料をRecoilから取得
-  const suppliers = useRecoilValue(suppliersState);
+  const token = useRecoilValue(tokenState);
+  const [allSuppliers, setAllSuppliers] = useState<Supplier[]>([]);
 
   // 選択した原材料をstateに状態保存(選んでいない状態はinitialIngredientが入る)
   const [selectedIngredients, setSelectedIngredients] = useRecoilState<
     SelectedIngredient[]
   >(recipeIngredientState);
+
+  // 原材料選択の際に使用する仕入れ先データ全取得
+  useEffect(() => {
+    const getAllSuppliers = async () => {
+      try {
+        const res: AxiosResponse<SupplierResponse> = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/index_all`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setAllSuppliers(res.data.suppliers);
+      } catch (error: AxiosError | any) {
+        console.log(error.response);
+      }
+    };
+    getAllSuppliers();
+  }, [token]);
 
   // 原材料の選択時のイベントハンドラ
   const selectIngredientHandler = (
@@ -271,7 +294,7 @@ export const RecipesTable = () => {
           className="h-96 overflow-y-auto p-2 lg:p-0"
           aria-label="ingredients"
         >
-          {suppliers
+          {allSuppliers
             .filter((supplier) => supplier.ingredients.length > 0)
             .map((supplier) => (
               <div key={supplier.id} className="relative">

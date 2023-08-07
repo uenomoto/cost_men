@@ -1,12 +1,19 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { XCircleIcon } from "@heroicons/react/24/solid";
-import { Ingredient, SelectedIngredient } from "@/types";
+import {
+  Ingredient,
+  SelectedIngredient,
+  Supplier,
+  SupplierResponse,
+} from "@/types";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
 import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { recipeShowState } from "@/recoil/atoms/recipeShowState";
 import { Modal } from "../modal/Modal";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
+import { tokenState } from "@/recoil/atoms/tokenState";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 type Props = {
   setUpdatedIngredients: (ingredients: SelectedIngredient[]) => void;
@@ -41,8 +48,9 @@ export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
 
   // 原材料と仕入れ先を選択するモーダル
   const [open, setOpen] = useState(false);
-  // 仕入れ先と原材料をRecoilから取得
-  const suppliers = useRecoilValue(suppliersState);
+  const token = useRecoilValue(tokenState);
+  // 選択時に使用する全ての仕入れ先データ
+  const [allSuppliers, setAllSuppliers] = useState<Supplier[]>([]);
 
   // 編集専用の原材料をstateに状態保存(親に渡す必要あり)
   const [editedIngredients, setEditedIngredients] = useState<
@@ -120,6 +128,22 @@ export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
       return 0;
     }
   };
+
+  // 原材料選択の際に使用する仕入れ先データ全取得
+  useEffect(() => {
+    const getAllSuppliers = async () => {
+      try {
+        const res: AxiosResponse<SupplierResponse> = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers/index_all`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setAllSuppliers(res.data.suppliers);
+      } catch (error: AxiosError | any) {
+        console.log(error.response);
+      }
+    };
+    getAllSuppliers();
+  }, [token]);
 
   // 合計金額を計算する関数
   const calculateTotalCost = () => {
@@ -289,7 +313,7 @@ export const RecipesEditTable = ({ setUpdatedIngredients }: Props) => {
           className="h-96 overflow-y-auto p-2 lg:p-0"
           aria-label="ingredients"
         >
-          {suppliers
+          {allSuppliers
             .filter((supplier) => supplier.ingredients.length > 0)
             .map((supplier) => (
               <div key={supplier.id} className="relative">

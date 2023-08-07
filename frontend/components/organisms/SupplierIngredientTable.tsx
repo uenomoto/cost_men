@@ -242,7 +242,7 @@ export const SupplierIngredientTable = () => {
     );
   };
 
-  // 仕入れ先情報一覧を取得する
+  // 仕入れ先情報一覧(ページネーション)を取得する
   useEffect(() => {
     const getSuppliers = async () => {
       try {

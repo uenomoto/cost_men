@@ -26,6 +26,15 @@ class Supplier < ApplicationRecord
     { suppliers: suppliers_data, total_pages: paginated_suppliers.total_pages }
   end
 
+  # 全ての仕入れ先の原材料を取得する
+  def self.with_all_ingredients_for_user(user)
+    user.suppliers.oldest.select(:id, :user_id, :name, :contact_info).includes(:ingredients).map do |supplier|
+      supplier.attributes.merge(
+        ingredients: supplier.ingredients.select(:id, :supplier_id, :buy_cost, :buy_quantity, :unit, :name)
+      )
+    end
+  end
+
   # 詳細取得し編集後のデータを返す
   def self.with_ingredient_for_user(supplier)
     supplier.attributes.merge(
