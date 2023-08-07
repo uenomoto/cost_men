@@ -9,6 +9,7 @@ import { tokenState } from "@/recoil/atoms/tokenState";
 import { recipeShowState } from "@/recoil/atoms/recipeShowState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
+import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { Modal } from "../../../components/modal/Modal";
 import { Tab } from "../../../components/molecules/tab/Tab";
 import { EditButton } from "../../../components/atoms/button/EditButton";
@@ -20,6 +21,8 @@ import { Loading } from "../../../components/molecules/loading/Loading";
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessage";
 import { SuccessButton } from "../../../components/atoms/button/SuccessButton";
+import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
+import { DeleteModal } from "../../../components/modal/DeleteModal";
 
 const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
@@ -36,10 +39,17 @@ const RecipeShow = () => {
   const [recipeShow, setRecipeShow] = useRecoilState<Recipe>(recipeShowState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
+  const setWarningMessage = useSetRecoilState(warningMessageState);
 
   const router = useRouter();
   const { id } = router.query; // パスのパラメータを取得
   const [loading, setLoading] = useState(true);
+  // stateは関数も格納できる優れもの！
+  const [confirmDelete, setConfirmDelete] = useState<
+    (() => Promise<void>) | null
+  >(null);
+  // delete用のモーダル
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // レシピの詳細を取得する
   useEffect(() => {
@@ -54,11 +64,16 @@ const RecipeShow = () => {
           setLoading(false);
         }
       } catch (error: AxiosError | any) {
-        console.log(error.response.data.message);
+        setErrorMessage(error.response.data.errors);
+        setLoading(false);
+        setWarningMessage("3秒後にレシピ一覧ページに戻ります");
+        setTimeout(() => {
+          router.push("/recipes");
+        }, 3000);
       }
     };
     getRecipeShow();
-  }, [setRecipeShow, token, id]);
+  }, [setRecipeShow, token, id, setWarningMessage, setErrorMessage, router]);
 
   // 販売価格の詳細を取得する
   useEffect(() => {
@@ -132,6 +147,31 @@ const RecipeShow = () => {
     }
   };
 
+  // レシピ削除
+  const handleDelete = async (id: number) => {
+    // 削除する関数を定義しモーダルから呼び出す
+    const confirmDeleteFunc = async () => {
+      try {
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setSuccessMessage("レシピを削除しました");
+        router.push("/recipes");
+      } catch (error: AxiosError | any) {
+        console.log(error.response.data.errors);
+        setErrorMessage(error.response.data.errors);
+      } finally {
+        // finallyは成功でも失敗でも最後に実行される
+        setDeleteModalOpen(false);
+      }
+    };
+
+    // 削除する関数をconrirmDeletestateに格納
+    setConfirmDelete(() => confirmDeleteFunc);
+    setDeleteModalOpen(true);
+  };
+
   // sellingPriceを監視し編集する際にテキストフィールドに販売価格を表示する
   useEffect(() => {
     setEditPrice(sellingPrice);
@@ -145,6 +185,8 @@ const RecipeShow = () => {
       <Head>
         <title>{recipeShow.name}</title>
       </Head>
+      <ErrorMessage />
+      <WarningMessage />
       {loading ? (
         <Loading />
       ) : (
@@ -170,26 +212,46 @@ const RecipeShow = () => {
               <SuccessMessage />
               {/* 販売価格データがなかったら設定ボタンのみであったら編集ボタンのみにする */}
               {sellingPrice === 0 ? (
-                <div>
-                  <SuccessButton>
-                    <div onClick={() => setSellingPriceOpen(true)}>
-                      販売価格を設定する
-                    </div>
-                  </SuccessButton>
-                  <p className="text-xs mt-2 text-gray-500">
-                    ※販売価格設定後に価格が表示されます
-                  </p>
+                <div className="grid grid-cols-2">
+                  <div className="col-span-1">
+                    <SuccessButton>
+                      <div onClick={() => setSellingPriceOpen(true)}>
+                        販売価格を設定する
+                      </div>
+                    </SuccessButton>
+                    <p className="text-xs mt-2 text-gray-500">
+                      ※販売価格設定後に価格が表示されます
+                    </p>
+                  </div>
+                  <div className="col-span-1">
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 hover:scale-110"
+                      onClick={() => handleDelete(recipeShow.id)}
+                    >
+                      レシピを削除する
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div>
-                  <EditButton>
-                    <div onClick={() => setEditSellingPriceOpen(true)}>
-                      販売価格を編集する
-                    </div>
-                  </EditButton>
-                  <p className="text-xs mt-2 text-gray-500">
-                    ※販売価格はこちらで変更できます
-                  </p>
+                <div className="grid grid-cols-2">
+                  <div className="col-span-1">
+                    <EditButton>
+                      <div onClick={() => setEditSellingPriceOpen(true)}>
+                        販売価格を編集する
+                      </div>
+                    </EditButton>
+                    <p className="text-xs mt-2 text-gray-500">
+                      ※販売価格はこちらで変更できます
+                    </p>
+                  </div>
+                  <div className="col-span-1">
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 hover:scale-110"
+                      onClick={() => handleDelete(recipeShow.id)}
+                    >
+                      レシピを削除する
+                    </button>
+                  </div>
                 </div>
               )}
               <div className="flex justify-between items-center">
@@ -228,7 +290,7 @@ const RecipeShow = () => {
           </h3>
           <div className="flex flex-col items-center">
             <div className="w-full">
-              <AlertBadge />
+              <AlertBadge text="必須" />
               <p className="text-xs text-red-500 mb-3">
                 ※半角数字でお願いします
               </p>
@@ -256,7 +318,7 @@ const RecipeShow = () => {
           </h3>
           <div className="flex flex-col items-center">
             <div className="w-full">
-              <AlertBadge />
+              <AlertBadge text="必須" />
               <p className="text-xs text-red-500 mb-3">
                 ※半角数字でお願いします
               </p>
@@ -276,6 +338,12 @@ const RecipeShow = () => {
           </div>
         </div>
       </Modal>
+      <DeleteModal
+        text="レシピ全体を削除しますか？"
+        open={deleteModalOpen}
+        setDeleteModalOpen={setDeleteModalOpen}
+        onConfirm={() => confirmDelete && confirmDelete()}
+      />
       <section>
         <h3 className="text-2xl font-bold my-7 text-gray-900">
           こちらから原材料名か手順かを選択してください

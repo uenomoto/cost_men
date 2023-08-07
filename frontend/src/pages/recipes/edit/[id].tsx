@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { Input } from "../../../../components/atoms/form/Input";
 import { TagCheckBox } from "../../../../components/molecules/checkbox/TagCheckBox";
 import { RecipeImage } from "../../../../components/molecules/recipe-image/RecipeImage";
@@ -11,7 +12,6 @@ import { tokenState } from "@/recoil/atoms/tokenState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { uploadImageToS3 } from "../../../../utils/s3Upload";
-import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
 import { SelectedIngredient, Tag, TagResponse } from "@/types";
 import { tagState } from "@/recoil/atoms/tagState";
 import { editTagState } from "@/recoil/atoms/editTagState";
@@ -19,6 +19,7 @@ import { RecipesEditTable } from "../../../../components/organisms/RecipesEditTa
 import { WarningMessage } from "../../../../components/atoms/messeage/WarningMessage";
 import { ErrorMessage } from "../../../../components/atoms/messeage/ErrorMessage";
 import { SuccessMessage } from "../../../../components/atoms/messeage/SuccessMessage";
+import { AlertBadge } from "../../../../components/atoms/badge/AlertBadge";
 
 const RecipesEdit = () => {
   const recipeShow = useRecoilValue(recipeShowState);
@@ -148,12 +149,16 @@ const RecipesEdit = () => {
 
   return (
     <>
+      <Head>
+        <title>{recipeShow.name}編集</title>
+      </Head>
       <SuccessMessage />
       <ErrorMessage />
       <WarningMessage />
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ編集画面</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
+          <AlertBadge text="入力必須" />
           <Input
             htmlfor="recipeName"
             text="レシピ名"
@@ -179,7 +184,7 @@ const RecipesEdit = () => {
         </div>
       </div>
       <RecipesEditTable setUpdatedIngredients={setUpdatedRecipeIngredients} />
-      <div className="mt-5">
+      <div className="mt-5 pb-5">
         <EditSubmit text="レシピ全体の編集" onClick={handleEditSubmissions} />
       </div>
     </>

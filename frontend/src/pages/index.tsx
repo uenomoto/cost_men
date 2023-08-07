@@ -14,19 +14,15 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="container mx-auto bg-white">
-        <div className="relative isolate overflow-hidden bg-gradient-to-b from-indigo-100/20 pt-14">
-          <div
-            className="absolute inset-y-0 right-1/2 -z-10 -mr-96 w-[200%] origin-top-right skew-x-[-30deg] bg-white shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:-mr-80 lg:-mr-96"
-            aria-hidden="true"
-          />
-          <div className="mx-auto max-w-7xl px-6 py-32 sm:py-40 sm:w-full lg:px-8">
-            <div className="mx-auto max-w-2xl lg:mx-0 lg:grid lg:max-w-none lg:grid-cols-2 lg:gap-x-16 lg:gap-y-6 xl:grid-cols-1 xl:grid-rows-1 xl:gap-x-8">
-              <h1 className="max-w-1xl text-6xl font-bold tracking-tight text-gray-900 lg:col-span-2 xl:col-auto">
-                コスト麺
+      <div className="w-full mx-auto bg-white">
+        <div className="mx-auto items-center mt-20 px-6 py-10 sm:py-40 lg:px-8">
+          <div className="mx-auto lg:mx-0 lg:grid lg:max-w-none grid-cols-12">
+            <div className="flex flex-col justify-center items-center lg:col-span-6 col-span-1">
+              <h1 className="text-5xl xl:text-7xl font-bold tracking-tight text-gray-700">
+                Cost Men
               </h1>
-              <div className="mt-6 text-center max-w-xl sm:text-center lg:mt-10 xl:col-end-1 xl:row-start-1">
-                <p className="text-2xl lg:text-3xl leading-8 flex justify-center text-gray-600 animate-pulse">
+              <div className="mt-6 max-w-xl lg:mt-10 xl:col-end-1 xl:row-start-1">
+                <p className="text-2xl xl:text-4xl leading-8 flex justify-center text-gray-600 animate-pulse">
                   誰でも簡単に原価計算アプリ！
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -35,17 +31,17 @@ export default function Home() {
                   </LoginButton>
                 </div>
               </div>
+            </div>
+            <div className="col-span-1 lg:col-span-6">
               <Image
-                src="/no_image.png"
-                alt="ラーメン"
+                src="/CalculationAtLeisure.png"
+                alt="image"
                 width={600}
                 height={700}
-                priority
-                className="hidden mt-10 aspect-[11/7] w-45 lg:w-90 max-w-lg rounded-3xl object-cover lg:flex justify-center sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-10 xl:ml-20"
+                className="aspect-[11/8] rounded-3xl object-cover lg:flex justify-center sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-10 xl:ml-20"
               />
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white sm:h-32" />
         </div>
       </div>
     </>

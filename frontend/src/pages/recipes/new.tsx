@@ -2,12 +2,14 @@ import React, { FormEvent, useState, useEffect } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { TagResponse } from "@/types";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { tagState } from "@/recoil/atoms/tagState";
 import { loadedState } from "@/recoil/atoms/loadedState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
+import { warningMessageState } from "@/recoil/atoms/warningMessageState";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { PrimaryButton } from "../../../components/atoms/button/PrimaryButton";
 import { Input } from "../../../components/atoms/form/Input";
@@ -23,6 +25,8 @@ import { SuccessMessage } from "../../../components/atoms/messeage/SuccessMessag
 import { ErrorMessage } from "../../../components/atoms/messeage/ErrorMessage";
 import { Loading } from "../../../components/molecules/loading/Loading";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
+import { DeleteModal } from "../../../components/modal/DeleteModal";
+import { AlertBadge } from "../../../components/atoms/badge/AlertBadge";
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
@@ -37,6 +41,12 @@ const RecipesNew = () => {
   // タグ編集
   const [editTagId, setEditTagId] = useState<number | null>(null);
   const [editTagName, setEditTagName] = useState("");
+  // タグ削除
+  const [confirmDelete, setConfirmDelete] = useState<
+    (() => Promise<void>) | null
+  >(null);
+  // delete用のモーダル
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // トークンを取得
   const token = useRecoilValue(tokenState);
@@ -45,6 +55,7 @@ const RecipesNew = () => {
   const [tags, setTags] = useRecoilState(tagState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
+  const setWarningMessage = useSetRecoilState(warningMessageState);
 
   // 画像アップロード状況を追跡する
   const [uploadStatus, setUploadStates] = useState<{
@@ -97,7 +108,6 @@ const RecipesNew = () => {
 
   // タグ一覧取得
   useEffect(() => {
-    if (!token || !loaded) return;
     const getTags = async () => {
       try {
         const res: AxiosResponse<TagResponse> = await axios.get(
@@ -109,20 +119,19 @@ const RecipesNew = () => {
       } catch (error: AxiosError | any) {
         setErrorMessage(error.response.data.errors);
         setLoading(false);
+        setWarningMessage("3秒後にレシピ一覧ページに戻ります");
+        setTimeout(() => {
+          router.push("/recipes");
+        }, 3000);
       }
     };
-    if (loaded) {
-      getTags();
-    }
-  }, [token, loaded, setTags, setErrorMessage]);
+    getTags();
+  }, [token, router, setTags, setErrorMessage, setWarningMessage]);
 
   // タグ削除
   const handleDelete = (id: number) => {
-    if (!token || !loaded) return;
     const deleteTag = async () => {
-      if (confirm("本当に削除しますか?") === false) return;
       const tagFind = tags.find((tag) => tag.id === id);
-
       try {
         await axios.delete(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/tags/${id}`,
@@ -134,9 +143,13 @@ const RecipesNew = () => {
         }
       } catch (error: AxiosError | any) {
         setErrorMessage(error.response.data.errors);
+      } finally {
+        setDeleteModalOpen(false);
       }
     };
-    deleteTag();
+
+    setConfirmDelete(() => deleteTag);
+    setDeleteModalOpen(true);
   };
 
   // タグを編集
@@ -202,7 +215,7 @@ const RecipesNew = () => {
           recipe_ingredients: recipeIngredients,
         },
       };
-      console.log(requestBody);
+      // console.log(requestBody);
 
       const res: AxiosResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes`,
@@ -224,12 +237,17 @@ const RecipesNew = () => {
 
   return (
     <>
+      <Head>
+        <title>レシピ新規登録</title>
+        <meta name="description" content="レシピ作成" />
+      </Head>
       <SuccessMessage />
       <ErrorMessage />
       <WarningMessage />
       <h1 className="text-2xl font-bold  lg:text-3xl">レシピ新規登録</h1>
       <div className="flex items-center mt-5 w-96">
         <div className="w-full">
+          <AlertBadge text="入力必須" />
           <Input
             htmlfor="recipeName"
             text="レシピ名"
@@ -255,7 +273,7 @@ const RecipesNew = () => {
         </div>
       </div>
       <RecipesTable />
-      <div className="mt-5">
+      <div className="mt-5 pb-5">
         <Submit text="登録" onClick={handleSubmissions} />
       </div>
 
@@ -266,6 +284,7 @@ const RecipesNew = () => {
           <div className="grid col-span-1 px-16">
             <h3 className="mb-16">タグ登録</h3>
             <div className="mb-11">
+              <AlertBadge text="入力必須" />
               <Input
                 htmlfor="tagName"
                 text="タグ名"
@@ -340,6 +359,12 @@ const RecipesNew = () => {
                       </div>
                       <div className="text-xs text-left col-span-1">
                         <DeleteButton onClick={() => handleDelete(tag.id)} />
+                        <DeleteModal
+                          text="タグを削除しますか？"
+                          open={deleteModalOpen}
+                          setDeleteModalOpen={setDeleteModalOpen}
+                          onConfirm={() => confirmDelete && confirmDelete()}
+                        />
                       </div>
                     </div>
                   </li>

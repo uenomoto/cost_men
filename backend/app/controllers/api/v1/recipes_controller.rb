@@ -8,15 +8,17 @@ module Api
 
       # レシピの一覧とそのレシピの原材料とレシピについているタグを取得
       def index
-        recipes = current_user.recipes.includes(:recipe_ingredients, :tags)
+        page_number = params[:page] || 1
+        recipes = current_user.recipes.includes(:recipe_ingredients, :tags).page(page_number).per(3)
         render json: { recipes: recipes.map do |recipe|
-          recipe.as_json(include: {
-                           recipe_ingredients: {
-                             include: :ingredient
-                           },
-                           tags: {}
-                         })
-        end }
+                                  recipe.as_json(include: {
+                                                   recipe_ingredients: {
+                                                     include: :ingredient
+                                                   },
+                                                   tags: {}
+                                                 })
+                                end,
+                       meta: { total_pages: recipes.total_pages } }
       end
 
       # 取得するものはindexと同じで1つの(/:id)レシピのみを取得

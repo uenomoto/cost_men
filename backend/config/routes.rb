@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       end
       resources :ingredients, only: %i[index show create update destroy]
       get 'suppliers/select_index', to: 'suppliers#select_index'
+      get 'suppliers/index_all', to: 'suppliers#index_all'
       resources :suppliers, only: %i[index show create update]
       resources :tags, only: %i[index create update destroy]
     end

@@ -11,7 +11,7 @@ const LoginButton = ({ children, loginWithRedirect }: ButtonProps) => {
     <button
       type="button"
       onClick={() => loginWithRedirect()}
-      className="bg-sky-500 hover:bg-blue-500 text-white text-xl lg:text-4xl font-medium py-3 px-5 lg:py-5 lg:px-7 rounded inline-flex items-center ease-in transition-all hover:shadow-lg hover:scale-105"
+      className="bg-sky-500 hover:bg-blue-500 text-white text-3xl xl:text-5xl font-medium py-3 px-5 lg:py-5 lg:px-7 rounded inline-flex items-center ease-in transition-all hover:shadow-lg hover:scale-105"
     >
       <svg
         className="fill-current w-5 h-5 lg:w-10 lg:h-10 mr-2"

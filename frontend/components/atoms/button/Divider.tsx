@@ -16,6 +16,7 @@ import { TextArea } from "../form/TextArea";
 import { SuccessMessage } from "../messeage/SuccessMessage";
 import { ErrorMessage } from "../messeage/ErrorMessage";
 import { Loading } from "../../molecules/loading/Loading";
+import { DeleteModal } from "../../modal/DeleteModal";
 
 export const Divider = () => {
   const token = useRecoilValue(tokenState);
@@ -34,6 +35,12 @@ export const Divider = () => {
   const [editprocedureId, setEditProcedureId] = useState<number | null>(null);
   const [editProcedure, setEditProcedure] = useState<string>("");
 
+  // 手順削除するステート
+  const [confirmDelete, setConfirmDelete] = useState<
+    (() => Promise<void>) | null
+  >(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
   // 手順を追加するテキストエリアを表示、空欄で再度追加はできないようにする
   const handleAddStep = useCallback(() => {
     const emptyProcedure = newProcedures.some((procedure) => procedure === "");
@@ -46,7 +53,7 @@ export const Divider = () => {
   // 手順を削除する
   const handleRemoveStep = useCallback(
     (index: number) => {
-      if (confirm("手順を削除しますか？")) {
+      if (confirm("保存前の手順を削除しますか？")) {
         setNewProcedures(newProcedures.filter((_, idx) => idx !== index));
       }
     },
@@ -114,21 +121,27 @@ export const Divider = () => {
 
   // 登録済みの手順を削除
   const handleDelete = async (procedureId: number) => {
-    if (confirm("手順を削除しますか？") === false) return;
-    try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures/${procedureId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+    const confirmDeleteFunc = async () => {
+      try {
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures/${procedureId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      setExistingProcedures(
-        existingProcedures.filter((procedure) => procedure.id !== procedureId)
-      );
-      setSuccessMessage("手順を削除しました");
-    } catch (error: AxiosError | any) {
-      console.log(error.message);
-      setErrorMessage("手順の削除に失敗しました");
-    }
+        setExistingProcedures(
+          existingProcedures.filter((procedure) => procedure.id !== procedureId)
+        );
+        setSuccessMessage("手順を削除しました");
+      } catch (error: AxiosError | any) {
+        console.log(error.message);
+        setErrorMessage("手順の削除に失敗しました");
+      } finally {
+        setDeleteModalOpen(false);
+      }
+    };
+
+    setConfirmDelete(() => confirmDeleteFunc);
+    setDeleteModalOpen(true);
   };
 
   // 手順を編集する
@@ -210,6 +223,12 @@ export const Divider = () => {
               className="h-6 w-6 text-gray-500 cursor-pointer transition-all duration-300 hover:scale-110 hover:text-red-500"
               aria-hidden="true"
               onClick={() => handleDelete(procedure.id)}
+            />
+            <DeleteModal
+              text="手順を削除しますか？"
+              open={deleteModalOpen}
+              setDeleteModalOpen={setDeleteModalOpen}
+              onConfirm={() => confirmDelete && confirmDelete()}
             />
           </div>
           <div className="relative my-4">
