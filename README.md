@@ -89,19 +89,17 @@ comming soon....
 
 ## ER 図
 
-![cost_men](https://github.com/uenomoto/cost_men/assets/113354283/504279f2-fbd3-4a0c-8590-4c363180862b)
+![cost_men](https://github.com/uenomoto/cost_men/assets/113354283/a64f3a4f-9e88-41d1-930c-c14cadf4c87a)
 
 
 ## システム構成図
 
-![AWSアーキテクチャ図](https://github.com/uenomoto/cost_men/assets/113354283/d2306de2-ec4d-4046-8f0e-cfe3d513203c)
+![AWSアーキテクチャ図](https://github.com/uenomoto/cost_men/assets/113354283/c22c4c19-f699-4579-8288-3b7fba76bafd)
 
 
 ## 開発途中な機能
 
 - 印刷機能
-- タグ検索機能
-- ページネーション
 - 原材料検索機能
 
 ## どんな思いで作ったのか、下準備
