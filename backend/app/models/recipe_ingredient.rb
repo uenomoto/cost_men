@@ -14,9 +14,10 @@ class RecipeIngredient < ApplicationRecord
 
   def update_total_cost
     total_cost = recipe.recipe_ingredients.sum do |recipe_ingredient|
-      (recipe_ingredient.ingredient.buy_cost / recipe_ingredient.ingredient.buy_quantity) * recipe_ingredient.quantity
+      unit_cost = (recipe_ingredient.ingredient.buy_cost.to_f / recipe_ingredient.ingredient.buy_quantity).round(1)
+      (unit_cost * recipe_ingredient.quantity).round(1)
     end
-    total_cost = total_cost.ceil
+    total_cost = total_cost.round
     recipe.update(total_cost:)
   end
 end
