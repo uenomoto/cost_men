@@ -1,6 +1,4 @@
 // 全てのコンポーネントで使用する関数を定義
-import { RecipeIngredient } from "@/types";
-import { Recipe } from "@/types";
 
 type Ingredient = {
   buy_cost: number;
