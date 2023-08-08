@@ -138,7 +138,7 @@ const RecipesIndex: NextPage = () => {
                           画像をタップして詳細画面へ
                         </span>
                         <Image
-                          className="rounded-3xl transition-transform duration-500 hover:scale-105 hover:opacity-90"
+                          className="rounded-3xl w-[400px] h-[350px] aspect-[11/8] transition-transform duration-500 hover:scale-105 hover:opacity-90"
                           src={recipe.image_aws_url}
                           alt="recipe-image"
                           width={400}

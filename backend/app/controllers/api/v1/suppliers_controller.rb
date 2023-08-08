@@ -25,7 +25,7 @@ module Api
 
       # セレクトボックスで使うためのindexのapi
       def select_index
-        suppliers = current_user.suppliers.select(:id, :name)
+        suppliers = current_user.suppliers.select(:id, :name).oldest
         render json: { suppliers: }, status: :ok
       end
 
