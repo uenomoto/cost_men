@@ -9,7 +9,7 @@ module Api
       # レシピの一覧とそのレシピの原材料とレシピについているタグを取得
       def index
         page_number = params[:page] || 1
-        recipes = current_user.recipes.includes(:recipe_ingredients, :tags).page(page_number).per(3)
+        recipes = current_user.recipes.includes(:recipe_ingredients, :tags).oldest.page(page_number).per(3)
         render json: { recipes: recipes.map do |recipe|
                                   recipe.as_json(include: {
                                                    recipe_ingredients: {

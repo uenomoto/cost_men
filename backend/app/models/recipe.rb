@@ -17,6 +17,8 @@ class Recipe < ApplicationRecord
   accepts_nested_attributes_for :recipe_ingredients, allow_destroy: true, reject_if: :all_blank
   validates_associated :recipe_ingredients
 
+  scope :oldest, -> { order(created_at: :asc) }
+
   # レシピで使用する原材料の合計金額を計算する(全て計算し終わったら、合計を四捨五入する。frontと計算方法を合わせる事！)
   def total_cost
     total = recipe_ingredients.sum do |recipe_ingredient|
