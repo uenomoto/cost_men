@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
-import LoginButton from "../../components/atoms/button/LoginButton";
 import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from "../../components/atoms/button/LoginButton";
 
 // 何もなければNextだとデフォルトですでにSSGで生成されてる
 export default function Home() {

@@ -54,6 +54,9 @@ const RecipeShow = () => {
   // レシピの詳細を取得する
   useEffect(() => {
     const getRecipeShow = async () => {
+      // アニメーション追加と動的ルーティングが原因でIDがundefinedになるのでAPIを叩かないようにする
+      if (!id) return;
+
       try {
         const res: AxiosResponse<RecipeResponse> = await axios.get(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}`,
@@ -78,16 +81,18 @@ const RecipeShow = () => {
   // 販売価格の詳細を取得する
   useEffect(() => {
     const getSellingPrice = async () => {
+      if (!id) return;
+
       try {
         const res: AxiosResponse<SellingPriceResponse> = await axios.get(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/selling_prices`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (res.status === 200) {
+        if (res.status === 200 && res.data.selling_price) {
           setSellingPrice(res.data.selling_price.price);
         }
       } catch (error: AxiosError | any) {
-        console.log(error.message);
+        console.log(error.response);
       }
     };
     getSellingPrice();
