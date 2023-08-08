@@ -17,11 +17,12 @@ class Recipe < ApplicationRecord
   accepts_nested_attributes_for :recipe_ingredients, allow_destroy: true, reject_if: :all_blank
   validates_associated :recipe_ingredients
 
-  # レシピで使用する原材料の合計金額を計算する(全て計算し終わったら、合計を小数点第一位で切り上げる)
+  # レシピで使用する原材料の合計金額を計算する(全て計算し終わったら、合計を四捨五入する。frontと計算方法を合わせる事！)
   def total_cost
     total = recipe_ingredients.sum do |recipe_ingredient|
-      (recipe_ingredient.ingredient.buy_cost / recipe_ingredient.ingredient.buy_quantity) * recipe_ingredient.quantity
+      unit_cost = (recipe_ingredient.ingredient.buy_cost.to_f / recipe_ingredient.ingredient.buy_quantity).round(1)
+      (unit_cost * recipe_ingredient.quantity).round(1)
     end
-    total.ceil
+    total.round
   end
 end
