@@ -9,8 +9,8 @@ https://cost-men.com/
 
 テストユーザーとしてお好きにログインしてお使いください。
 
-- email: test@email.com
-- password: Test4649
+- email: test@example.com
+- password: Pass1234
 
 LINE アカウントを持っている方は、LINE ログインで簡単にログインできます。
 

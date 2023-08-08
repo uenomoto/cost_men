@@ -85,7 +85,6 @@ export const Divider = () => {
         params,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log(res.data.recipe_procedures);
       setExistingProcedures([
         ...existingProcedures,
         ...res.data.recipe_procedures,
@@ -101,6 +100,7 @@ export const Divider = () => {
   // 手順一覧を取得
   useEffect(() => {
     const getProcedures = async () => {
+      if (!id) return;
       try {
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/recipes/${id}/procedures`,
