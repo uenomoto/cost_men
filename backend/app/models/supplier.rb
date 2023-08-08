@@ -13,26 +13,8 @@ class Supplier < ApplicationRecord
   # 仕入れ先一覧取得する1つの仕入れ先でページネーションを行う
   def self.with_ingredients_for_user(user, page = 1, per_page = 1)
     paginated_suppliers = user.suppliers.with_order_ingredients.page(page).per(per_page)
-    suppliers_data = paginated_suppliers.map do |supplier|
-      ingredients_data = supplier.ingredients.map do |ingredient|
-        {
-          id: ingredient.id,
-          supplier_id: ingredient.supplier_id,
-          buy_cost: ingredient.buy_cost,
-          buy_quantity: ingredient.buy_quantity,
-          unit: ingredient.unit,
-          name: ingredient.name
-        }
-      end
+    suppliers_data = paginated_suppliers.map { |supplier| formatted_supplier_data(supplier) }
 
-      {
-        id: supplier.id,
-        user_id: supplier.user_id,
-        name: supplier.name,
-        contact_info: supplier.contact_info,
-        ingredients: ingredients_data
-      }
-    end
     { suppliers: suppliers_data, total_pages: paginated_suppliers.total_pages }
   end
 
@@ -59,5 +41,29 @@ class Supplier < ApplicationRecord
   # 検索できるカラムの設定
   def self.ransackable_attributes(_auth_object = nil)
     ['name']
+  end
+
+  private
+
+  # 仕入れ先と原材料の作成日と更新日なしのフォーマットしたデータ
+  def self.formatted_supplier_data(supplier)
+    {
+      id: supplier.id,
+      user_id: supplier.user_id,
+      name: supplier.name,
+      contact_info: supplier.contact_info,
+      ingredients: supplier.ingredients.map { |ingredient| formatted_ingredient_data(ingredient) }
+    }
+  end
+
+  def self.formatted_ingredient_data(ingredient)
+    {
+      id: ingredient.id,
+      supplier_id: ingredient.supplier_id,
+      buy_cost: ingredient.buy_cost,
+      buy_quantity: ingredient.buy_quantity,
+      unit: ingredient.unit,
+      name: ingredient.name
+    }
   end
 end
