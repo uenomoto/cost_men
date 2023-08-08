@@ -280,8 +280,7 @@ const RecipeShow = () => {
                 alt="recipeImage"
                 width={450}
                 height={300}
-                priority
-                className="rounded-md transition-transform overflow-hidden object-cover duration-500 hover:scale-105 lg:mt-0 xl:mt-1 xl:ml-1"
+                className="rounded-3xl w-[400px] h-[350px] aspect-[11/8] transition-transform duration-500 hover:scale-105 lg:mt-0 xl:mt-1 xl:ml-1"
               />
             </div>
           </div>
