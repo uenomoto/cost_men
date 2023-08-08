@@ -43,8 +43,6 @@ class Supplier < ApplicationRecord
     ['name']
   end
 
-  private
-
   # 仕入れ先と原材料の作成日と更新日なしのフォーマットしたデータ
   def self.formatted_supplier_data(supplier)
     {
