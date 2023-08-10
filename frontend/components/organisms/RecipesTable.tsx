@@ -209,9 +209,10 @@ export const RecipesTable = () => {
                         className="px-3 py-5 text-left lg:text-xl sm:table-cell"
                         colSpan={3}
                       >
-                        <PrimaryButton>
-                          <div onClick={() => setOpen(true)}>原材料選択</div>
-                        </PrimaryButton>
+                        <PrimaryButton
+                          text="原材料を選択"
+                          onClick={() => setOpen(true)}
+                        />
                       </td>
                       <td colSpan={2}>
                         <XCircleIcon

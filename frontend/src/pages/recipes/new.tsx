@@ -265,9 +265,7 @@ const RecipesNew = () => {
         {uploadStatus.status === "error" && (
           <p>エラーが発生しました: {uploadStatus.error?.message}</p>
         )}
-        <PrimaryButton>
-          <div onClick={() => setOpen(true)}>タグを追加</div>
-        </PrimaryButton>
+        <PrimaryButton text="タグを追加" onClick={() => setOpen(true)} />
         <div className="lg:col-span-2">
           <TagCheckBox onTagCheckChange={setCheckedTags} />
         </div>

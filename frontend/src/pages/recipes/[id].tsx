@@ -219,11 +219,10 @@ const RecipeShow = () => {
               {sellingPrice === 0 ? (
                 <div className="grid grid-cols-2">
                   <div className="col-span-1">
-                    <SuccessButton>
-                      <div onClick={() => setSellingPriceOpen(true)}>
-                        販売価格を設定する
-                      </div>
-                    </SuccessButton>
+                    <SuccessButton
+                      text="販売価格を設定する"
+                      onClick={() => setSellingPriceOpen(true)}
+                    />
                     <p className="text-xs mt-2 text-gray-500">
                       ※販売価格設定後に価格が表示されます
                     </p>
@@ -240,11 +239,10 @@ const RecipeShow = () => {
               ) : (
                 <div className="grid grid-cols-2">
                   <div className="col-span-1">
-                    <EditButton>
-                      <div onClick={() => setEditSellingPriceOpen(true)}>
-                        販売価格を編集する
-                      </div>
-                    </EditButton>
+                    <EditButton
+                      text="販売価格を編集する"
+                      onClick={() => setEditSellingPriceOpen(true)}
+                    />
                     <p className="text-xs mt-2 text-gray-500">
                       ※販売価格はこちらで変更できます
                     </p>

@@ -33,11 +33,9 @@ export const IngredientIndex = () => {
             </h2>
           </div>
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <EditButton>
-              <Link href={`/recipes/edit/${recipeShow.id}`}>
-                <div className="text-xl">レシピ編集</div>
-              </Link>
-            </EditButton>
+            <Link href={`/recipes/edit/${recipeShow.id}`} className="text-xl">
+              <EditButton text="レシピ編集" />
+            </Link>
           </div>
         </div>
         <div className="mt-8 flow-root">
