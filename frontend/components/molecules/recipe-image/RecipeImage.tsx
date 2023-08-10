@@ -82,7 +82,7 @@ export const RecipeImage = ({ onImageChange, initialImageUrl }: Props) => {
       </div>
       <div className="col-span-1">
         {preview && (
-          <Image src={preview} alt="recipe" width={300} height={200} />
+          <Image src={preview} alt="recipe" width={200} height={200} />
         )}
       </div>
     </>

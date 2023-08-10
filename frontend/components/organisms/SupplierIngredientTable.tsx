@@ -302,9 +302,7 @@ export const SupplierIngredientTable = () => {
                 仕入れ先と原材料の一覧です。編集・削除を行うことができます。
               </p>
             </div>
-            <PrimaryButton>
-              <div onClick={() => setSlideOpen(true)}>検索する</div>
-            </PrimaryButton>
+            <PrimaryButton text="検索する" onClick={() => setSlideOpen(true)} />
             <SlideOver slideOpen={slideOpen} setSlideOpen={setSlideOpen} />
           </div>
           <div className="mt-8 flow-root">
@@ -503,15 +501,12 @@ export const SupplierIngredientTable = () => {
                                 "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-xs font-medium sm:pr-8 lg:pr-1"
                               )}
                             >
-                              <EditButton>
-                                <div
-                                  onClick={() =>
-                                    setSupplierIngredientEditOpen(ingredient.id)
-                                  }
-                                >
-                                  編集
-                                </div>
-                              </EditButton>
+                              <EditButton
+                                text="編集"
+                                onClick={() =>
+                                  setSupplierIngredientEditOpen(ingredient.id)
+                                }
+                              />
                               {supplierIngredienteditOpen === ingredient.id && (
                                 <Modal
                                   open={

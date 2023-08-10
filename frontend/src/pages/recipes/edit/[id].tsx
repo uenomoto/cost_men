@@ -171,6 +171,12 @@ const RecipesEdit = () => {
           />
         </div>
       </div>
+      <div className="mr-0">
+        <p className="text-xs text-gray-500 font-bold mb-2">
+          ※保存すると画像size
+          <span className="text-red-500">横400px縦350pxにリサイズ</span>します。
+        </p>
+      </div>
       <div className="grid grid-cols-1 place-items-center md:grid-cols-2 lg:grid-cols-3">
         <RecipeImage
           onImageChange={handleFileChange}

@@ -183,7 +183,18 @@ const RecipeShow = () => {
   }, [sellingPrice]);
 
   // 原価率の計算(売上原価 / 売上高)
-  const costRatio = Math.round((sellingPrice / recipeShow.total_cost) * 100);
+  const costRatio = () => {
+    // 販売価格がないことはないのですが念のためと0円(未設定)の場合は-(横線)を返す
+    if (!sellingPrice || sellingPrice === 0) return "-";
+
+    const costRatioCalc = Math.round(
+      (recipeShow.total_cost / sellingPrice) * 100
+    );
+
+    return costRatioCalc;
+  };
+
+  const costRatioresult = costRatio();
 
   return (
     <>
@@ -219,11 +230,10 @@ const RecipeShow = () => {
               {sellingPrice === 0 ? (
                 <div className="grid grid-cols-2">
                   <div className="col-span-1">
-                    <SuccessButton>
-                      <div onClick={() => setSellingPriceOpen(true)}>
-                        販売価格を設定する
-                      </div>
-                    </SuccessButton>
+                    <SuccessButton
+                      text="販売価格を設定する"
+                      onClick={() => setSellingPriceOpen(true)}
+                    />
                     <p className="text-xs mt-2 text-gray-500">
                       ※販売価格設定後に価格が表示されます
                     </p>
@@ -240,11 +250,10 @@ const RecipeShow = () => {
               ) : (
                 <div className="grid grid-cols-2">
                   <div className="col-span-1">
-                    <EditButton>
-                      <div onClick={() => setEditSellingPriceOpen(true)}>
-                        販売価格を編集する
-                      </div>
-                    </EditButton>
+                    <EditButton
+                      text="販売価格を編集する"
+                      onClick={() => setEditSellingPriceOpen(true)}
+                    />
                     <p className="text-xs mt-2 text-gray-500">
                       ※販売価格はこちらで変更できます
                     </p>
@@ -270,7 +279,7 @@ const RecipeShow = () => {
                   </span>
                 )}
                 <span className="font-bold mt-3 text-xl text-right lg:text-2xl">
-                  原価率: {costRatio} %
+                  原価率: {costRatioresult} %
                 </span>
               </div>
             </div>
