@@ -183,7 +183,18 @@ const RecipeShow = () => {
   }, [sellingPrice]);
 
   // 原価率の計算(売上原価 / 売上高)
-  const costRatio = Math.round((sellingPrice / recipeShow.total_cost) * 100);
+  const costRatio = () => {
+    // 販売価格がないことはないのですが念のためと0円(未設定)の場合は-(横線)を返す
+    if (!sellingPrice || sellingPrice === 0) return "-";
+
+    const costRatioCalc = Math.round(
+      (recipeShow.total_cost / sellingPrice) * 100
+    );
+
+    return costRatioCalc;
+  };
+
+  const costRatioresult = costRatio();
 
   return (
     <>
@@ -268,7 +279,7 @@ const RecipeShow = () => {
                   </span>
                 )}
                 <span className="font-bold mt-3 text-xl text-right lg:text-2xl">
-                  原価率: {costRatio} %
+                  原価率: {costRatioresult} %
                 </span>
               </div>
             </div>
