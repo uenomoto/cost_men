@@ -260,14 +260,18 @@ const RecipesNew = () => {
           />
         </div>
       </div>
+      <div className="mr-0 lg:mr-96">
+        <p className="text-xs text-gray-500 font-bold mb-1">
+          ※保存すると画像size
+          <span className="text-red-500">横400px縦350pxにリサイズ</span>します。
+        </p>
+      </div>
       <div className="grid grid-cols-1 place-items-center md:grid-cols-2 lg:grid-cols-5">
         <RecipeImage onImageChange={handleFileChange} />
         {uploadStatus.status === "error" && (
           <p>エラーが発生しました: {uploadStatus.error?.message}</p>
         )}
-        <PrimaryButton>
-          <div onClick={() => setOpen(true)}>タグを追加</div>
-        </PrimaryButton>
+        <PrimaryButton text="タグを追加" onClick={() => setOpen(true)} />
         <div className="lg:col-span-2">
           <TagCheckBox onTagCheckChange={setCheckedTags} />
         </div>
@@ -276,7 +280,6 @@ const RecipesNew = () => {
       <div className="mt-5 pb-5">
         <Submit text="登録" onClick={handleSubmissions} />
       </div>
-
       <Modal open={open} setModalOpen={setOpen}>
         <SuccessMessage />
         <ErrorMessage />
