@@ -24,10 +24,13 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
   // 仕入れ先検索フォーム(textfield)
   const [searchSupplier, setSearchSupplier] = useState("");
 
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
+
   const token = useRecoilValue(tokenState);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     const params = {
       supplier_q: searchSupplier,
@@ -48,6 +51,8 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
       setSlideOpen(false);
     } catch (error: AxiosError | any) {
       console.log(error.response.data);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
@@ -111,7 +116,11 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
                         id="searchSupplier"
                         onChange={setSearchSupplier}
                       />
-                      <Submit text="検索" onClick={handleSubmit} />
+                      <Submit
+                        text="検索"
+                        onClick={handleSubmit}
+                        disabled={dbOperationLoading}
+                      />
                     </div>
                   </div>
                 </Dialog.Panel>
