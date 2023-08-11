@@ -71,7 +71,6 @@ export const SupplierIngredientTable = () => {
 
   // RecoilのTokenを取得する
   const token = useRecoilValue(tokenState);
-  const loaded = useRecoilValue(loadedState); // tokenのロード状態を取得
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
   const isSearching = useRecoilValue(isSearchingState); // 検索中かどうかを取得
@@ -252,15 +251,15 @@ export const SupplierIngredientTable = () => {
         );
         setSuppliers(res.data.suppliers); // APIから取得した仕入れ先情報をステートに格納
         setTotalPages(res.data.meta.total_pages);
-        setLoading(false);
         setErrorMessage(null);
       } catch (error: AxiosError | any) {
-        setLoading(false);
         setErrorMessage(error.response.data.errors);
         setWarningMessage("3秒後にレシピ一覧ページに戻ります");
         setTimeout(() => {
           router.push("/recipes");
         }, 3000);
+      } finally {
+        setLoading(false);
       }
     };
     getSuppliers();

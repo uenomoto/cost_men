@@ -26,8 +26,6 @@ export const SuppliersForm = () => {
         contact_info: contactInfo,
       },
     };
-    // console.log(params);
-    // console.log(token);
     try {
       const res: AxiosResponse<Supplier> = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ENDPOINT}/suppliers`,
@@ -38,10 +36,8 @@ export const SuppliersForm = () => {
         setName("");
         setContactInfo("");
         setSuccessMessage("仕入れ先を登録しました");
-        setErrorMessage(null);
       }
     } catch (error: AxiosError | any) {
-      setSuccessMessage(null);
       setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
     }
   };

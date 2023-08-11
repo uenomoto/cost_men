@@ -64,15 +64,15 @@ const RecipeShow = () => {
         );
         if (res.status === 200) {
           setRecipeShow(res.data.recipe);
-          setLoading(false);
         }
       } catch (error: AxiosError | any) {
         setErrorMessage(error.response.data.errors);
-        setLoading(false);
         setWarningMessage("3秒後にレシピ一覧ページに戻ります");
         setTimeout(() => {
           router.push("/recipes");
         }, 3000);
+      } finally {
+        setLoading(false);
       }
     };
     getRecipeShow();

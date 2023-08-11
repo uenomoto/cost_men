@@ -111,9 +111,10 @@ export const Divider = () => {
             (procedure: ExistingRecipeProcedure) => procedure
           )
         );
-        setLoading(false);
       } catch (error: AxiosError | any) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     getProcedures();
