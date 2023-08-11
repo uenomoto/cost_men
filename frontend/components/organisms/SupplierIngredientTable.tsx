@@ -7,7 +7,6 @@ import { Supplier } from "@/types";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
-import { loadedState } from "@/recoil/atoms/loadedState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
@@ -36,6 +35,7 @@ const classNames = (...classes: (string | false)[]): string => {
 
 export const SupplierIngredientTable = () => {
   const [loading, setLoading] = useState(true);
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
   const setWarningMessage = useSetRecoilState(warningMessageState);
   const router = useRouter();
 
@@ -82,6 +82,7 @@ export const SupplierIngredientTable = () => {
   // 原材料の編集
   const editHandleSubmitIngredient = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     try {
       const params = {
@@ -120,12 +121,15 @@ export const SupplierIngredientTable = () => {
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
   // 仕入れ先の編集
   const editHandleSubmitSupplier = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     try {
       const params = {
@@ -152,6 +156,8 @@ export const SupplierIngredientTable = () => {
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
@@ -432,6 +438,7 @@ export const SupplierIngredientTable = () => {
                                         <EditSubmit
                                           text="仕入れ先を編集する"
                                           onClick={editHandleSubmitSupplier}
+                                          disabled={dbOperationLoading}
                                         />
                                       </div>
                                     </Modal>
@@ -574,6 +581,7 @@ export const SupplierIngredientTable = () => {
                                       <EditSubmit
                                         text="原材料を編集する"
                                         onClick={editHandleSubmitIngredient}
+                                        disabled={dbOperationLoading}
                                       />
                                     </div>
                                   </div>
