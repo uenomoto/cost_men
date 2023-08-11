@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FormEvent } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -13,6 +13,7 @@ import { Submit } from "../../atoms/form/Submit";
 export const SuppliersForm = () => {
   const [name, setName] = useState<string>("");
   const [contactInfo, setContactInfo] = useState<string>("");
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false); // DB操作中はボタンを非活性
 
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
   const setErrorMessage = useSetRecoilState(errorMessageState);
@@ -20,6 +21,7 @@ export const SuppliersForm = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
     const params = {
       supplier: {
         name: name,
@@ -39,6 +41,8 @@ export const SuppliersForm = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
@@ -79,7 +83,11 @@ export const SuppliersForm = () => {
             onChange={setContactInfo}
           />
         </div>
-        <Submit text="登録する" onClick={handleSubmit} />
+        <Submit
+          text="登録する"
+          onClick={handleSubmit}
+          disabled={dbOperationLoading}
+        />
       </div>
     </div>
   );
