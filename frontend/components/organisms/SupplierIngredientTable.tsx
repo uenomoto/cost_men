@@ -7,7 +7,6 @@ import { Supplier } from "@/types";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
-import { loadedState } from "@/recoil/atoms/loadedState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { suppliersState } from "@/recoil/atoms/suppliersState";
@@ -36,6 +35,7 @@ const classNames = (...classes: (string | false)[]): string => {
 
 export const SupplierIngredientTable = () => {
   const [loading, setLoading] = useState(true);
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
   const setWarningMessage = useSetRecoilState(warningMessageState);
   const router = useRouter();
 
@@ -71,7 +71,6 @@ export const SupplierIngredientTable = () => {
 
   // RecoilのTokenを取得する
   const token = useRecoilValue(tokenState);
-  const loaded = useRecoilValue(loadedState); // tokenのロード状態を取得
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
   const isSearching = useRecoilValue(isSearchingState); // 検索中かどうかを取得
@@ -83,6 +82,7 @@ export const SupplierIngredientTable = () => {
   // 原材料の編集
   const editHandleSubmitIngredient = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     try {
       const params = {
@@ -121,12 +121,15 @@ export const SupplierIngredientTable = () => {
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
   // 仕入れ先の編集
   const editHandleSubmitSupplier = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     try {
       const params = {
@@ -153,6 +156,8 @@ export const SupplierIngredientTable = () => {
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
       setSuccessMessage(null);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
@@ -252,15 +257,15 @@ export const SupplierIngredientTable = () => {
         );
         setSuppliers(res.data.suppliers); // APIから取得した仕入れ先情報をステートに格納
         setTotalPages(res.data.meta.total_pages);
-        setLoading(false);
         setErrorMessage(null);
       } catch (error: AxiosError | any) {
-        setLoading(false);
         setErrorMessage(error.response.data.errors);
         setWarningMessage("3秒後にレシピ一覧ページに戻ります");
         setTimeout(() => {
           router.push("/recipes");
         }, 3000);
+      } finally {
+        setLoading(false);
       }
     };
     getSuppliers();
@@ -433,6 +438,7 @@ export const SupplierIngredientTable = () => {
                                         <EditSubmit
                                           text="仕入れ先を編集する"
                                           onClick={editHandleSubmitSupplier}
+                                          disabled={dbOperationLoading}
                                         />
                                       </div>
                                     </Modal>
@@ -575,6 +581,7 @@ export const SupplierIngredientTable = () => {
                                       <EditSubmit
                                         text="原材料を編集する"
                                         onClick={editHandleSubmitIngredient}
+                                        disabled={dbOperationLoading}
                                       />
                                     </div>
                                   </div>

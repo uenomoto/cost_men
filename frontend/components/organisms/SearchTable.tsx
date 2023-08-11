@@ -20,9 +20,9 @@ export const SearchTable = () => {
             </h1>
           </div>
         </div>
-        <div className="mt-8 flow-root">
+        <div className="mt-8">
           <div
-            className="bg-red-600 hover:bg-red-900 text-white font-bold py-2 px-4 rounded ease-in transition-all cursor-pointer inline-block"
+            className="hover:text-red-900 text-red-600 font-bold py-2 px-4 rounded ease-in transition-all cursor-pointer inline-block"
             onClick={() => setIsSearching(false)}
           >
             検索結果を閉じる

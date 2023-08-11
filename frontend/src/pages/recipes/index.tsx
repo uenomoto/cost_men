@@ -74,9 +74,10 @@ const RecipesIndex: NextPage = () => {
         );
         setRecipes(res.data.recipes);
         setTotalPages(res.data.meta.total_pages); // ページネーションの総ページ数
-        setLoading(false);
       } catch (e: AxiosError | any) {
         console.log(e.message);
+      } finally {
+        setLoading(false);
       }
     };
     if (loaded) {

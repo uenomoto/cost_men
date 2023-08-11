@@ -28,6 +28,9 @@ const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
   const [sellingPriceOpen, setSellingPriceOpen] = useState(false);
   const [editSellingPriceOpen, setEditSellingPriceOpen] = useState(false);
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
+  const [dbEditOperationLoading, setDbEditOperationLoading] =
+    useState<boolean>(false);
   // 販売価格を格納し表示する
   const [sellingPrice, setSellingPrice] = useState<number>(0);
 
@@ -64,15 +67,15 @@ const RecipeShow = () => {
         );
         if (res.status === 200) {
           setRecipeShow(res.data.recipe);
-          setLoading(false);
         }
       } catch (error: AxiosError | any) {
         setErrorMessage(error.response.data.errors);
-        setLoading(false);
         setWarningMessage("3秒後にレシピ一覧ページに戻ります");
         setTimeout(() => {
           router.push("/recipes");
         }, 3000);
+      } finally {
+        setLoading(false);
       }
     };
     getRecipeShow();
@@ -101,6 +104,7 @@ const RecipeShow = () => {
   // 販売価格の登録用
   const handlePriceSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     const params = {
       selling_price: {
@@ -120,14 +124,16 @@ const RecipeShow = () => {
         setSuccessMessage("販売価格を登録しました");
       }
     } catch (error: AxiosError | any) {
-      console.log(error.response.data.errors);
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
   // 販売価格の編集用
   const handleEditPriceSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setDbEditOperationLoading(true);
 
     const params = {
       selling_price: {
@@ -147,8 +153,10 @@ const RecipeShow = () => {
         setSuccessMessage("販売価格を編集しました");
       }
     } catch (error: AxiosError | any) {
-      console.log(error.response.data.errors);
+      // console.log(error.response.data.errors);
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setDbEditOperationLoading(false);
     }
   };
 
@@ -318,7 +326,11 @@ const RecipeShow = () => {
                 value={price}
                 onChange={(value) => setPrice(Number(value))}
               />
-              <Submit text="価格登録する" onClick={handlePriceSubmit} />
+              <Submit
+                text="価格登録する"
+                onClick={handlePriceSubmit}
+                disabled={dbOperationLoading}
+              />
             </div>
           </div>
         </div>
@@ -341,12 +353,15 @@ const RecipeShow = () => {
                 type="number"
                 id="price"
                 name="price"
-                min={0}
                 placeholder="販売価格を0以上で入力してください"
                 value={editPrice}
                 onChange={(value) => setEditPrice(Number(value))}
               />
-              <EditSubmit text="価格編集する" onClick={handleEditPriceSubmit} />
+              <EditSubmit
+                text="価格編集する"
+                onClick={handleEditPriceSubmit}
+                disabled={dbEditOperationLoading}
+              />
             </div>
           </div>
         </div>
