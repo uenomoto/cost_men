@@ -28,6 +28,7 @@ const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
   const [sellingPriceOpen, setSellingPriceOpen] = useState(false);
   const [editSellingPriceOpen, setEditSellingPriceOpen] = useState(false);
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
   // 販売価格を格納し表示する
   const [sellingPrice, setSellingPrice] = useState<number>(0);
 
@@ -101,6 +102,7 @@ const RecipeShow = () => {
   // 販売価格の登録用
   const handlePriceSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     const params = {
       selling_price: {
@@ -120,8 +122,9 @@ const RecipeShow = () => {
         setSuccessMessage("販売価格を登録しました");
       }
     } catch (error: AxiosError | any) {
-      console.log(error.response.data.errors);
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
@@ -318,7 +321,11 @@ const RecipeShow = () => {
                 value={price}
                 onChange={(value) => setPrice(Number(value))}
               />
-              <Submit text="価格登録する" onClick={handlePriceSubmit} />
+              <Submit
+                text="価格登録する"
+                onClick={handlePriceSubmit}
+                disabled={dbOperationLoading}
+              />
             </div>
           </div>
         </div>

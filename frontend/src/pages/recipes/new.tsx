@@ -32,6 +32,7 @@ const RecipesNew = () => {
   // タグ追加のモーダルを開く
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true); // tag一覧取得のロード
+  const [tagDbOperationLoading, setTagDbOperationLoading] = useState(false);
 
   const router = useRouter();
 
@@ -82,6 +83,7 @@ const RecipesNew = () => {
   // タグ登録
   const tagHendleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setTagDbOperationLoading(true);
 
     const params = {
       tag: {
@@ -103,6 +105,8 @@ const RecipesNew = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setTagDbOperationLoading(false);
     }
   };
 
@@ -298,7 +302,11 @@ const RecipesNew = () => {
                 value={tagName}
                 onChange={setTagName}
               />
-              <Submit text="タグ登録" onClick={tagHendleSubmit} />
+              <Submit
+                text="タグ登録"
+                onClick={tagHendleSubmit}
+                disabled={tagDbOperationLoading}
+              />
             </div>
           </div>
           <div className="col-span-1 overflow-auto px-1 h-72">

@@ -17,6 +17,7 @@ import { SuccessMessage } from "../messeage/SuccessMessage";
 import { ErrorMessage } from "../messeage/ErrorMessage";
 import { Loading } from "../../molecules/loading/Loading";
 import { DeleteModal } from "../../modal/DeleteModal";
+import { LoadingSpinner } from "../../molecules/loading/LoadingSpinner";
 
 export const Divider = () => {
   const token = useRecoilValue(tokenState);
@@ -25,6 +26,7 @@ export const Divider = () => {
   const setSuccessMessage = useSetRecoilState(successMessageState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const [loading, setLoading] = useState<boolean>(true);
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
 
   const [existingProcedures, setExistingProcedures] = useState<
     ExistingRecipeProcedure[]
@@ -73,6 +75,7 @@ export const Divider = () => {
   // 手順を保存する
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
 
     try {
       const params = {
@@ -85,15 +88,19 @@ export const Divider = () => {
         params,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setExistingProcedures([
-        ...existingProcedures,
-        ...res.data.recipe_procedures,
-      ]);
-      setNewProcedures([]);
-      setSuccessMessage("手順を保存しました");
+      if (res.status === 201) {
+        setExistingProcedures([
+          ...existingProcedures,
+          ...res.data.recipe_procedures,
+        ]);
+        setNewProcedures([]);
+        setSuccessMessage("手順を保存しました");
+      }
     } catch (error: AxiosError | any) {
       console.log(error.response.data.errors);
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
@@ -289,17 +296,18 @@ export const Divider = () => {
       <ErrorMessage />
       <SuccessMessage />
       <div className="my-7 flex justify-end">
-        <div className="text-center">
+        <div className="mb-12">
           <button
             type="submit"
             onClick={handleSubmit}
             disabled={
+              dbOperationLoading ||
               newProcedures.length === 0 ||
               newProcedures.every((p) => p.trim() === "")
             }
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 lg:px-24 rounded disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            手順を保存する
+            {dbOperationLoading ? <LoadingSpinner /> : "手順を保存する"}
           </button>
         </div>
       </div>
