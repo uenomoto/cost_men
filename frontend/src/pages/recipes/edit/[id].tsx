@@ -36,6 +36,9 @@ const RecipesEdit = () => {
   // タグの名前登録とレシピの名前登録
   const [recipeEditName, setRecipeEditName] = useState(recipeShow.name);
 
+  const [recipeEditDbOperationLoading, setRecipeEditDbOperationLoading] =
+    useState<boolean>(false);
+
   // RecipeImageコンポーネントから情報を受け取り管理する
   const [recipeEditImageUrl, setRecipeEditImageUrl] = useState<string | null>(
     recipeShow.image_aws_url
@@ -118,6 +121,7 @@ const RecipesEdit = () => {
   // recipe編集のリクエストボディを作成する
   const handleEditSubmissions = async (e: FormEvent) => {
     e.preventDefault();
+    setRecipeEditDbOperationLoading(true);
     try {
       const requestBody = {
         recipe: {
@@ -144,6 +148,8 @@ const RecipesEdit = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.data);
+    } finally {
+      setRecipeEditDbOperationLoading(false);
     }
   };
 
@@ -191,7 +197,11 @@ const RecipesEdit = () => {
       </div>
       <RecipesEditTable setUpdatedIngredients={setUpdatedRecipeIngredients} />
       <div className="mt-5 pb-5">
-        <EditSubmit text="レシピ全体の編集" onClick={handleEditSubmissions} />
+        <EditSubmit
+          text="レシピ全体の編集"
+          onClick={handleEditSubmissions}
+          disabled={recipeEditDbOperationLoading}
+        />
       </div>
     </>
   );

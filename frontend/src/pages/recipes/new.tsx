@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { tagState } from "@/recoil/atoms/tagState";
-import { loadedState } from "@/recoil/atoms/loadedState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
@@ -38,6 +37,10 @@ const RecipesNew = () => {
   const [tagDbEditOperationLoading, setTagDbEditOperationLoading] =
     useState<boolean>(false);
 
+  // レシピ登録のローディング
+  const [recipeDbOperationLoading, setRecipeDbOperationLoading] =
+    useState<boolean>(false);
+
   const router = useRouter();
 
   // タグの名前登録とレシピの名前登録
@@ -55,7 +58,6 @@ const RecipesNew = () => {
 
   // トークンを取得
   const token = useRecoilValue(tokenState);
-  const loaded = useRecoilValue(loadedState); // トークンのロード
   // タグの一覧を管理
   const [tags, setTags] = useRecoilState(tagState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
@@ -216,6 +218,7 @@ const RecipesNew = () => {
   // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
   const handleSubmissions = async (e: FormEvent) => {
     e.preventDefault();
+    setRecipeDbOperationLoading(true);
     try {
       const requestBody = {
         recipe: {
@@ -242,6 +245,8 @@ const RecipesNew = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.data);
+    } finally {
+      setRecipeDbOperationLoading(false);
     }
   };
 
@@ -288,7 +293,11 @@ const RecipesNew = () => {
       </div>
       <RecipesTable />
       <div className="mt-5 pb-5">
-        <Submit text="登録" onClick={handleSubmissions} />
+        <Submit
+          text="登録"
+          onClick={handleSubmissions}
+          disabled={recipeDbOperationLoading}
+        />
       </div>
       <Modal open={open} setModalOpen={setOpen}>
         <SuccessMessage />
