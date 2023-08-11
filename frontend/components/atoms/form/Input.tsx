@@ -52,7 +52,7 @@ export const Input = ({
           }`}
         />
         {validationErrors && (
-          <p className="text-sm font-bold text-red-500 text-left">
+          <p className="text-xs font-bold text-red-500 text-left">
             {validationErrors}
           </p>
         )}

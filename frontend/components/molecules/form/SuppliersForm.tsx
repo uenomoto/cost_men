@@ -82,8 +82,8 @@ export const SuppliersForm = () => {
             id="name"
             name="name"
             value={name}
-            onBlur={handleNameChange}
             onChange={handleNameChange}
+            onBlur={handleNameChange}
             validationErrors={validationErrors && validationErrors[0]}
           />
           <div className="text-left">

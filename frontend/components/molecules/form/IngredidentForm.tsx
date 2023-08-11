@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Ingredient, IngredientResponse, SupplierSelect } from "@/types";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -12,10 +12,21 @@ import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { SuppliersSelectBox } from "../selectbox/SuppliersSelectBox";
 import { Submit } from "../../atoms/form/Submit";
 
+type ValidationErrorState = {
+  name?: string;
+  unit?: string;
+  buy_cost?: string;
+  buy_quantity?: string;
+};
+
 export const IngredidentForm = () => {
   // Recoilでグローバルに管理している仕入れ先のリストを取得
   const [suppliers, setSuppliers] = useRecoilState(suppliersState);
   const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
+
+  // バリデーションエラーを格納するステート
+  const [validationErrors, setValidationErrors] =
+    useState<ValidationErrorState>({});
 
   const [ingredientName, setName] = useState<string>("");
   const [buyCost, setBuyCost] = useState<string>("");
@@ -93,9 +104,72 @@ export const IngredidentForm = () => {
         setSuccessMessage("原材料を登録しました");
       }
     } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data.errors);
+      if (error.response && error.response.data.errors) {
+        setValidationErrors(error.response.data.errors);
+      }
     } finally {
       setDbOperationLoading(false);
+    }
+  };
+
+  // 入力したその時に値を監視し送信ボタンを押さなくても、一度フォーカスしてフォーカスが外れた場合、入力必須バリデーションを実行
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const nameValue = e.target.value;
+    setName(nameValue);
+
+    if (!nameValue) {
+      setValidationErrors((prev) => ({ ...prev, name: "入力必須項目です" }));
+    } else {
+      setValidationErrors((prev) => ({ ...prev, name: undefined }));
+    }
+  };
+
+  const handleUnitChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const unitValue = e.target.value;
+    setUnit(unitValue);
+
+    if (
+      unitValue !== "g" &&
+      unitValue !== "cc" &&
+      unitValue !== "ml" &&
+      unitValue !== "個"
+    ) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        unit: "正しい単位で入力してください",
+      }));
+    } else {
+      setValidationErrors((prev) => ({ ...prev, unit: undefined }));
+    }
+  };
+
+  // 1以下の数値が入力されたらバリデーションエラーを表示
+  const handleBuyCostChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const buyCostValue = e.target.value;
+    setBuyCost(buyCostValue);
+
+    if (Number(buyCostValue) <= 0) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        buy_cost: "1以上の数値を入力してください",
+      }));
+    } else {
+      setValidationErrors((prev) => ({ ...prev, buy_cost: undefined }));
+    }
+  };
+
+  // フロント側でバリデーションを実行
+  const handleBuyQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const buyQuantityValue = e.target.value;
+    setBuyQuantity(buyQuantityValue);
+
+    if (Number(buyQuantityValue) <= 0) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        buy_quantity: "1以上の数値を入力してください",
+      }));
+    } else {
+      setValidationErrors((prev) => ({ ...prev, buy_quantity: undefined }));
     }
   };
 
@@ -126,7 +200,11 @@ export const IngredidentForm = () => {
               id="name"
               name="name"
               value={ingredientName}
-              onChange={setName}
+              onChange={handleNameChange}
+              onBlur={handleNameChange}
+              validationErrors={
+                validationErrors.name ? validationErrors.name : null
+              }
             />
             <AlertBadge text="半角英数字 入力必須" />
             <Input
@@ -137,7 +215,13 @@ export const IngredidentForm = () => {
               id="buy_quantity"
               name="buy_quantity"
               value={buyQuantity}
-              onChange={setBuyQuantity}
+              onChange={handleBuyQuantityChange}
+              onBlur={handleBuyQuantityChange}
+              validationErrors={
+                validationErrors.buy_quantity
+                  ? validationErrors.buy_quantity
+                  : null
+              }
             />
           </div>
           <div className="col-span-1">
@@ -150,7 +234,11 @@ export const IngredidentForm = () => {
               id="buy_cost"
               name="buy_cost"
               value={buyCost}
-              onChange={setBuyCost}
+              onChange={handleBuyCostChange}
+              onBlur={handleBuyCostChange}
+              validationErrors={
+                validationErrors.buy_cost ? validationErrors.buy_cost : null
+              }
             />
             <AlertBadge text="入力必須" />
             <Input
@@ -161,7 +249,11 @@ export const IngredidentForm = () => {
               id="unit"
               name="unit"
               value={unit}
-              onChange={setUnit}
+              onChange={handleUnitChange}
+              onBlur={handleUnitChange}
+              validationErrors={
+                validationErrors.unit ? validationErrors.unit : null
+              }
             />
           </div>
         </div>

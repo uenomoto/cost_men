@@ -21,7 +21,7 @@ module Api
         if ingredient.save
           render json: { ingredient: }, status: :created
         else
-          render json: { errors: ingredient.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(ingredient) }, status: :unprocessable_entity
         end
       end
 
@@ -32,7 +32,7 @@ module Api
           ingredient_with_supplier = Ingredient.ingredient_with_supplier(ingredient)
           render json: { ingredient: ingredient_with_supplier }, status: :ok
         else
-          render json: { errors: ingredient.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(ingredient) }, status: :unprocessable_entity
         end
       end
 
@@ -52,6 +52,16 @@ module Api
 
         render json: { errors: 'あなたが作成した仕入れ先ではありません' }, status: :not_found
         nil
+      end
+
+      # エラーメッセージをフロント側で扱いやすい形、配列ではなくオブジェクトに変換する
+      def format_errors(record)
+        formatted_errors = {}
+        record.errors.details.each do |field, errors|
+          messages = errors.map { |error_detail| record.errors.full_message(field, error_detail[:error]) }
+          formatted_errors[field] = messages
+        end
+        formatted_errors
       end
 
       def ingredient_params
