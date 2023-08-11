@@ -27,12 +27,16 @@ import { Loading } from "../../../components/molecules/loading/Loading";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
 import { DeleteModal } from "../../../components/modal/DeleteModal";
 import { AlertBadge } from "../../../components/atoms/badge/AlertBadge";
+import { LoadingSpinner } from "../../../components/molecules/loading/LoadingSpinner";
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true); // tag一覧取得のロード
-  const [tagDbOperationLoading, setTagDbOperationLoading] = useState(false);
+  const [tagDbOperationLoading, setTagDbOperationLoading] =
+    useState<boolean>(false);
+  const [tagDbEditOperationLoading, setTagDbEditOperationLoading] =
+    useState<boolean>(false);
 
   const router = useRouter();
 
@@ -159,7 +163,7 @@ const RecipesNew = () => {
   // タグを編集
   const editHandleSubmitTagName = async (e: FormEvent, id: number) => {
     e.preventDefault();
-    if (!token || !loaded) return;
+    setTagDbEditOperationLoading(true);
 
     try {
       const params = {
@@ -182,6 +186,8 @@ const RecipesNew = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setTagDbEditOperationLoading(false);
     }
   };
 
@@ -348,12 +354,17 @@ const RecipesNew = () => {
                         {editTagId === tag.id ? (
                           <>
                             <button
-                              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+                              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all disabled:hover:bg-green-500 disabled:cursor-not-allowed"
                               onClick={(e) =>
                                 editHandleSubmitTagName(e, tag.id)
                               }
+                              disabled={tagDbEditOperationLoading}
                             >
-                              保存
+                              {tagDbEditOperationLoading ? (
+                                <LoadingSpinner />
+                              ) : (
+                                "保存"
+                              )}
                             </button>
                           </>
                         ) : (
