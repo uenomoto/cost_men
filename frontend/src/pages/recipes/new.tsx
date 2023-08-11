@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { tagState } from "@/recoil/atoms/tagState";
-import { loadedState } from "@/recoil/atoms/loadedState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { recipeIngredientState } from "@/recoil/atoms/recipeIngredeintState";
@@ -27,11 +26,20 @@ import { Loading } from "../../../components/molecules/loading/Loading";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
 import { DeleteModal } from "../../../components/modal/DeleteModal";
 import { AlertBadge } from "../../../components/atoms/badge/AlertBadge";
+import { LoadingSpinner } from "../../../components/molecules/loading/LoadingSpinner";
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true); // tag一覧取得のロード
+  const [tagDbOperationLoading, setTagDbOperationLoading] =
+    useState<boolean>(false);
+  const [tagDbEditOperationLoading, setTagDbEditOperationLoading] =
+    useState<boolean>(false);
+
+  // レシピ登録のローディング
+  const [recipeDbOperationLoading, setRecipeDbOperationLoading] =
+    useState<boolean>(false);
 
   const router = useRouter();
 
@@ -50,7 +58,6 @@ const RecipesNew = () => {
 
   // トークンを取得
   const token = useRecoilValue(tokenState);
-  const loaded = useRecoilValue(loadedState); // トークンのロード
   // タグの一覧を管理
   const [tags, setTags] = useRecoilState(tagState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
@@ -82,6 +89,7 @@ const RecipesNew = () => {
   // タグ登録
   const tagHendleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setTagDbOperationLoading(true);
 
     const params = {
       tag: {
@@ -103,6 +111,8 @@ const RecipesNew = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setTagDbOperationLoading(false);
     }
   };
 
@@ -155,7 +165,7 @@ const RecipesNew = () => {
   // タグを編集
   const editHandleSubmitTagName = async (e: FormEvent, id: number) => {
     e.preventDefault();
-    if (!token || !loaded) return;
+    setTagDbEditOperationLoading(true);
 
     try {
       const params = {
@@ -178,6 +188,8 @@ const RecipesNew = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
+    } finally {
+      setTagDbEditOperationLoading(false);
     }
   };
 
@@ -206,6 +218,7 @@ const RecipesNew = () => {
   // recipeの送信(レシピ登録に対して必要な情報が全て詰まってる)
   const handleSubmissions = async (e: FormEvent) => {
     e.preventDefault();
+    setRecipeDbOperationLoading(true);
     try {
       const requestBody = {
         recipe: {
@@ -232,6 +245,8 @@ const RecipesNew = () => {
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.data);
+    } finally {
+      setRecipeDbOperationLoading(false);
     }
   };
 
@@ -278,7 +293,11 @@ const RecipesNew = () => {
       </div>
       <RecipesTable />
       <div className="mt-5 pb-5">
-        <Submit text="登録" onClick={handleSubmissions} />
+        <Submit
+          text="登録"
+          onClick={handleSubmissions}
+          disabled={recipeDbOperationLoading}
+        />
       </div>
       <Modal open={open} setModalOpen={setOpen}>
         <SuccessMessage />
@@ -298,7 +317,11 @@ const RecipesNew = () => {
                 value={tagName}
                 onChange={setTagName}
               />
-              <Submit text="タグ登録" onClick={tagHendleSubmit} />
+              <Submit
+                text="タグ登録"
+                onClick={tagHendleSubmit}
+                disabled={tagDbOperationLoading}
+              />
             </div>
           </div>
           <div className="col-span-1 overflow-auto px-1 h-72">
@@ -340,12 +363,17 @@ const RecipesNew = () => {
                         {editTagId === tag.id ? (
                           <>
                             <button
-                              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all"
+                              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ease-in transition-all disabled:hover:bg-green-500 disabled:cursor-not-allowed"
                               onClick={(e) =>
                                 editHandleSubmitTagName(e, tag.id)
                               }
+                              disabled={tagDbEditOperationLoading}
                             >
-                              保存
+                              {tagDbEditOperationLoading ? (
+                                <LoadingSpinner />
+                              ) : (
+                                "保存"
+                              )}
                             </button>
                           </>
                         ) : (

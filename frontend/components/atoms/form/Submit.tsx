@@ -1,19 +1,22 @@
 import React, { FormEvent } from "react";
+import { LoadingSpinner } from "../../molecules/loading/LoadingSpinner";
 
 type SubmitProps = {
   text: string;
   onClick: (e: FormEvent) => void;
+  disabled: boolean;
 };
 
-export const Submit = ({ text, onClick }: SubmitProps) => {
+export const Submit = ({ text, onClick, disabled }: SubmitProps) => {
   return (
     <div className="text-center">
       <button
         type="submit"
         onClick={onClick}
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 lg:px-24 rounded"
+        disabled={disabled}
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 lg:px-24 rounded disabled:hover:bg-green-500 disabled:cursor-not-allowed"
       >
-        {text}
+        {disabled ? <LoadingSpinner /> : text}
       </button>
     </div>
   );

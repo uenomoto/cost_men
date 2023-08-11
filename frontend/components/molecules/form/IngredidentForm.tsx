@@ -15,6 +15,7 @@ import { Submit } from "../../atoms/form/Submit";
 export const IngredidentForm = () => {
   // Recoilでグローバルに管理している仕入れ先のリストを取得
   const [suppliers, setSuppliers] = useRecoilState(suppliersState);
+  const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false);
 
   const [ingredientName, setName] = useState<string>("");
   const [buyCost, setBuyCost] = useState<string>("");
@@ -57,6 +58,7 @@ export const IngredidentForm = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setDbOperationLoading(true);
     const params = {
       ingredient: {
         name: ingredientName,
@@ -73,8 +75,6 @@ export const IngredidentForm = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 201) {
-        setSuccessMessage("原材料を登録しました");
-        setErrorMessage(null);
         setName("");
         setBuyCost("");
         setBuyQuantity("");
@@ -90,10 +90,12 @@ export const IngredidentForm = () => {
             : supplier
         );
         setSuppliers(updatedSuppliers);
+        setSuccessMessage("原材料を登録しました");
       }
     } catch (error: AxiosError | any) {
       setErrorMessage(error.response.data.errors);
-      setSuccessMessage(null);
+    } finally {
+      setDbOperationLoading(false);
     }
   };
 
@@ -163,7 +165,11 @@ export const IngredidentForm = () => {
             />
           </div>
         </div>
-        <Submit text="登録する" onClick={handleSubmit} />
+        <Submit
+          text="登録する"
+          onClick={handleSubmit}
+          disabled={dbOperationLoading}
+        />
       </div>
     </div>
   );
