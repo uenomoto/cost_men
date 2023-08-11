@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { FormEvent } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
-import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { Supplier } from "@/types";
 import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { Submit } from "../../atoms/form/Submit";
+
+type ValidationErrorState = string[];
 
 export const SuppliersForm = () => {
   const [name, setName] = useState<string>("");
@@ -16,8 +17,10 @@ export const SuppliersForm = () => {
   const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false); // DB操作中はボタンを非活性
 
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
-  const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
+
+  const [validationErrors, setValidationErrors] =
+    useState<ValidationErrorState>([]); // バリデーションエラーを格納するステート
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -40,9 +43,23 @@ export const SuppliersForm = () => {
         setSuccessMessage("仕入れ先を登録しました");
       }
     } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
+      if (error.response && error.response.data.errors) {
+        setValidationErrors(error.response.data.errors);
+      }
     } finally {
       setDbOperationLoading(false);
+    }
+  };
+
+  // 入力したその時に値を監視し送信ボタンを押さなくても、一度フォーカスしてフォーカスが外れた場合、入力必須バリデーションを実行
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setName(value);
+
+    if (!value) {
+      setValidationErrors(["入力必須項目です"]);
+    } else {
+      setValidationErrors([]);
     }
   };
 
@@ -65,7 +82,9 @@ export const SuppliersForm = () => {
             id="name"
             name="name"
             value={name}
-            onChange={setName}
+            onBlur={handleNameChange}
+            onChange={handleNameChange}
+            validationErrors={validationErrors && validationErrors[0]}
           />
           <div className="text-left">
             <span className="inline-flex items-start rounded-full mb-3 bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
@@ -80,7 +99,7 @@ export const SuppliersForm = () => {
             id="contactInfo"
             name="contactInfo"
             value={contactInfo}
-            onChange={setContactInfo}
+            onChange={(e) => setContactInfo(e.target.value)}
           />
         </div>
         <Submit

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 
 type InputProps = {
   htmlfor: string;
@@ -9,7 +9,9 @@ type InputProps = {
   name: string;
   min?: number;
   id: string;
-  onChange: (value: string) => void;
+  validationErrors?: string | null;
+  onBlur?: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export const Input = ({
@@ -21,6 +23,8 @@ export const Input = ({
   name,
   id,
   min,
+  validationErrors,
+  onBlur,
   onChange,
 }: InputProps) => {
   return (
@@ -39,9 +43,19 @@ export const Input = ({
           name={name}
           id={id}
           min={min}
-          onChange={(e) => onChange(e.target.value)}
-          className="block w-full rounded-md border-0 py-3 mb-5 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
+          onChange={onChange}
+          onBlur={onBlur} // 一度focusされてfocusが失った時に空欄だったら空欄禁止バリデーションを実行
+          className={`block w-full rounded-md border-0 py-3 mb-1 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 ${
+            validationErrors
+              ? "focus:ring-2 focus:ring-inset focus:ring-red-500 bg-red-50"
+              : "focus:ring-2 focus:ring-inset focus:ring-sky-500"
+          }`}
         />
+        {validationErrors && (
+          <p className="text-sm font-bold text-red-500 text-left">
+            {validationErrors}
+          </p>
+        )}
       </div>
     </>
   );
