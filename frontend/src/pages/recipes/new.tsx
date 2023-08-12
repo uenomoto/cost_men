@@ -1,8 +1,8 @@
-import React, { FormEvent, useState, useEffect } from "react";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { TagResponse } from "@/types";
+import React, { FormEvent, useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { TagResponse } from "@/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { tokenState } from "@/recoil/atoms/tokenState";
 import { tagState } from "@/recoil/atoms/tagState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
@@ -27,6 +27,10 @@ import { WarningMessage } from "../../../components/atoms/messeage/WarningMessag
 import { DeleteModal } from "../../../components/modal/DeleteModal";
 import { AlertBadge } from "../../../components/atoms/badge/AlertBadge";
 import { LoadingSpinner } from "../../../components/molecules/loading/LoadingSpinner";
+
+type TagValidationErrorState = {
+  name?: string;
+};
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
@@ -64,6 +68,10 @@ const RecipesNew = () => {
   const setErrorMessage = useSetRecoilState(errorMessageState);
   const setWarningMessage = useSetRecoilState(warningMessageState);
 
+  // タグのバリデーション
+  const [tagValidationError, setTagValidationError] =
+    useState<TagValidationErrorState>({});
+
   // 画像アップロード状況を追跡する
   const [uploadStatus, setUploadStates] = useState<{
     status: "idle" | "uploading" | "error";
@@ -85,6 +93,26 @@ const RecipesNew = () => {
       quantity: parseInt(ingredientData.quantity),
     };
   });
+
+  // タグフロント側のバリデーション
+  const handleTagChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTagName(value);
+
+    if (value.length > 20) {
+      setTagValidationError((prev) => ({
+        ...prev,
+        name: "20文字以内で入力してください",
+      }));
+    } else if (!value) {
+      setTagValidationError((prev) => ({
+        ...prev,
+        name: "タグ名を入力してください",
+      }));
+    } else {
+      setTagValidationError((prev) => ({ ...prev, name: undefined }));
+    }
+  };
 
   // タグ登録
   const tagHendleSubmit = async (e: FormEvent) => {
@@ -110,7 +138,7 @@ const RecipesNew = () => {
         setSuccessMessage("タグを登録しました");
       }
     } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data.errors);
+      setTagValidationError(error.response.data.errors);
     } finally {
       setTagDbOperationLoading(false);
     }
@@ -271,12 +299,12 @@ const RecipesNew = () => {
             name="recipeName"
             id="recipeName"
             value={recipeName}
-            onChange={setRecipeName}
+            onChange={(e) => setRecipeName(e.target.value)}
           />
         </div>
       </div>
       <div className="mr-0 lg:mr-96">
-        <p className="text-xs text-gray-500 font-bold mb-1">
+        <p className="text-xs text-gray-500 font-bold mb-1 mt-5">
           ※保存すると画像size
           <span className="text-red-500">横400px縦350pxにリサイズ</span>します。
         </p>
@@ -302,11 +330,10 @@ const RecipesNew = () => {
       <Modal open={open} setModalOpen={setOpen}>
         <SuccessMessage />
         <ErrorMessage />
-        <div className="grid grid-cols-2 font-bold text-center w-full max-w-6xl m-auto p-3 lg:p-5">
-          <div className="grid col-span-1 px-16">
-            <h3 className="mb-16">タグ登録</h3>
-            <div className="mb-11">
-              <AlertBadge text="入力必須" />
+        <div className="grid grid-cols-2 font-bold text-center w-full md:max-w-6xl p-3 lg:p-5">
+          <div className="grid col-span-1 px-1 place-content-start justify-center">
+            <h3 className="h-28">タグ登録</h3>
+            <div className="flex items-center space-x-5">
               <Input
                 htmlfor="tagName"
                 text="タグ名"
@@ -315,13 +342,20 @@ const RecipesNew = () => {
                 name="tagName"
                 id="tagName"
                 value={tagName}
-                onChange={setTagName}
+                onChange={handleTagChange}
+                onBlur={handleTagChange}
+                validationErrors={
+                  tagValidationError.name ? tagValidationError.name : null
+                }
               />
-              <Submit
-                text="タグ登録"
+              <button
+                type="submit"
                 onClick={tagHendleSubmit}
                 disabled={tagDbOperationLoading}
-              />
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-5 rounded disabled:hover:bg-green-500 disabled:cursor-not-allowed"
+              >
+                {tagDbOperationLoading ? <LoadingSpinner /> : "タグ登録"}
+              </button>
             </div>
           </div>
           <div className="col-span-1 overflow-auto px-1 h-72">
@@ -345,7 +379,7 @@ const RecipesNew = () => {
                             />
                             <input
                               type="text"
-                              placeholder="タグ名を編集"
+                              placeholder="タグ名を入力してください"
                               name="editTagName"
                               id="editTagName"
                               className="border-0 focus:ring-0 focus:border-transparent"
