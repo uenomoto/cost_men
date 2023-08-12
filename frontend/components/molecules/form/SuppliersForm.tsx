@@ -80,7 +80,7 @@ export const SuppliersForm = () => {
             htmlfor="name"
             text="仕入れ先名"
             type="text"
-            placeholder="仕入れ先名をに入力してください"
+            placeholder="仕入れ先名を入力してください"
             id="name"
             name="name"
             value={name}
