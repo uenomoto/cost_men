@@ -9,7 +9,9 @@ import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { Submit } from "../../atoms/form/Submit";
 
-type ValidationErrorState = string[];
+type ValidationErrorState = {
+  name?: string;
+};
 
 export const SuppliersForm = () => {
   const [name, setName] = useState<string>("");
@@ -20,7 +22,7 @@ export const SuppliersForm = () => {
   const setSuccessMessage = useSetRecoilState(successMessageState);
 
   const [validationErrors, setValidationErrors] =
-    useState<ValidationErrorState>([]); // バリデーションエラーを格納するステート
+    useState<ValidationErrorState>({}); // バリデーションエラーを格納するステート
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -57,9 +59,9 @@ export const SuppliersForm = () => {
     setName(value);
 
     if (!value) {
-      setValidationErrors(["入力必須項目です"]);
+      setValidationErrors((prev) => ({ ...prev, name: "入力必須項目です" }));
     } else {
-      setValidationErrors([]);
+      setValidationErrors((prev) => ({ ...prev, name: undefined }));
     }
   };
 
@@ -84,7 +86,9 @@ export const SuppliersForm = () => {
             value={name}
             onChange={handleNameChange}
             onBlur={handleNameChange}
-            validationErrors={validationErrors && validationErrors[0]}
+            validationErrors={
+              validationErrors.name ? validationErrors.name : null
+            }
           />
           <div className="text-left">
             <span className="inline-flex items-start rounded-full mb-3 bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
