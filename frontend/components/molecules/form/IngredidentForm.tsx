@@ -26,7 +26,12 @@ export const IngredidentForm = () => {
 
   // バリデーションエラーを格納するステート
   const [validationErrors, setValidationErrors] =
-    useState<ValidationErrorState>({});
+    useState<ValidationErrorState>({
+      name: "",
+      unit: "",
+      buy_cost: "",
+      buy_quantity: "",
+    });
 
   const [ingredientName, setName] = useState<string>("");
   const [buyCost, setBuyCost] = useState<string>("");
@@ -109,6 +114,12 @@ export const IngredidentForm = () => {
       }
     } finally {
       setDbOperationLoading(false);
+      setValidationErrors({
+        name: "",
+        unit: "",
+        buy_cost: "",
+        buy_quantity: "",
+      });
     }
   };
 
@@ -173,8 +184,13 @@ export const IngredidentForm = () => {
     }
   };
 
+  // validationErrorsに格納されているのがundefined以外(検証エラーなし)だったらボタンを押せないようにする
+  const isSubmitButtonDisabled = Object.values(validationErrors).some(
+    (error) => error !== undefined
+  );
+
   return (
-    <div className="mt-5 bg-gray-200 shadow-lg rounded-2xl">
+    <div className="mt-5 bg-gray-200 shadow-lg rounded-2xl lg:w-[40rem]">
       <div className="px-4 py-5 sm:p-6">
         <h3 className="text-base font-semibold leading-6 text-gray-900">
           原材料登録
@@ -260,7 +276,8 @@ export const IngredidentForm = () => {
         <Submit
           text="登録する"
           onClick={handleSubmit}
-          disabled={dbOperationLoading}
+          disabled={dbOperationLoading || isSubmitButtonDisabled}
+          dbOperationLoading={dbOperationLoading}
         />
       </div>
     </div>

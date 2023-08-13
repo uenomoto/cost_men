@@ -325,6 +325,7 @@ const RecipesNew = () => {
           text="登録"
           onClick={handleSubmissions}
           disabled={recipeDbOperationLoading}
+          dbOperationLoading={recipeDbOperationLoading}
         />
       </div>
       <Modal open={open} setModalOpen={setOpen}>
