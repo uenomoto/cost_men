@@ -24,7 +24,7 @@ export const Submit = ({
         ${disabled && "opacity-50"} 
         ${dbOperationLoading && "disabled:opacity-100"}`}
       >
-        {dbOperationLoading ? <LoadingSpinner /> : disabled ? text : text}
+        {dbOperationLoading ? <LoadingSpinner /> : text}
       </button>
     </div>
   );

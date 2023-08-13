@@ -368,13 +368,7 @@ const RecipesNew = () => {
                 ${isTagSubmitDisabled && "opacity-50"}
                 ${tagDbOperationLoading && "disabled:opacity-100"}`}
               >
-                {tagDbOperationLoading ? (
-                  <LoadingSpinner />
-                ) : isTagSubmitDisabled ? (
-                  "タグ登録"
-                ) : (
-                  "タグ登録"
-                )}
+                {tagDbOperationLoading ? <LoadingSpinner /> : "タグ登録"}
               </button>
             </div>
           </div>
