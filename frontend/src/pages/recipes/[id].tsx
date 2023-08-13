@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
@@ -24,6 +24,10 @@ import { SuccessButton } from "../../../components/atoms/button/SuccessButton";
 import { WarningMessage } from "../../../components/atoms/messeage/WarningMessage";
 import { DeleteModal } from "../../../components/modal/DeleteModal";
 
+type SellingPriceValidationErrorsState = {
+  price?: string;
+};
+
 const RecipeShow = () => {
   const token = useRecoilValue(tokenState);
   const [sellingPriceOpen, setSellingPriceOpen] = useState(false);
@@ -38,6 +42,10 @@ const RecipeShow = () => {
   const [price, setPrice] = useState<number>(0);
   // 販売価格の編集用のテキストフィールドのstate
   const [editPrice, setEditPrice] = useState<number>(sellingPrice);
+
+  // レシピの販売価格のバリデーションを格納するステート
+  const [sellingValidationErrors, setSellingValidationErrors] =
+    useState<SellingPriceValidationErrorsState>({});
 
   const [recipeShow, setRecipeShow] = useRecoilState<Recipe>(recipeShowState);
   const setErrorMessage = useSetRecoilState(errorMessageState);
@@ -124,7 +132,7 @@ const RecipeShow = () => {
         setSuccessMessage("販売価格を登録しました");
       }
     } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data.errors);
+      setSellingValidationErrors(error.response.data.errors);
     } finally {
       setDbOperationLoading(false);
     }
@@ -153,8 +161,7 @@ const RecipeShow = () => {
         setSuccessMessage("販売価格を編集しました");
       }
     } catch (error: AxiosError | any) {
-      // console.log(error.response.data.errors);
-      setErrorMessage(error.response.data.errors);
+      setSellingValidationErrors(error.response.data.errors);
     } finally {
       setDbEditOperationLoading(false);
     }
@@ -201,8 +208,49 @@ const RecipeShow = () => {
 
     return costRatioCalc;
   };
-
   const costRatioresult = costRatio();
+
+  // レシピの販売価格のフロント側のバリデーション
+  const handleSellingPriceChenge = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setPrice(value);
+
+    if (value < 1) {
+      setSellingValidationErrors((prev) => ({
+        ...prev,
+        price: "販売価格は1以上で入力してください",
+      }));
+    } else if (!Number.isInteger(value)) {
+      setSellingValidationErrors((prev) => ({
+        ...prev,
+        price: "販売価格は整数で入力してください",
+      }));
+    } else {
+      setSellingValidationErrors((prev) => ({ ...prev, price: undefined }));
+    }
+  };
+  const editHandleSellingPriceChenge = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setEditPrice(value);
+
+    if (value < 1) {
+      setSellingValidationErrors((prev) => ({
+        ...prev,
+        price: "販売価格は1以上で入力してください",
+      }));
+    } else if (!Number.isInteger(value)) {
+      setSellingValidationErrors((prev) => ({
+        ...prev,
+        price: "販売価格は整数で入力してください",
+      }));
+    } else {
+      setSellingValidationErrors((prev) => ({ ...prev, price: undefined }));
+    }
+  };
+
+  const isSubmitDisabled = Object.values(sellingValidationErrors).some(
+    (error) => error !== undefined
+  );
 
   return (
     <>
@@ -321,15 +369,20 @@ const RecipeShow = () => {
                 type="number"
                 id="price"
                 name="price"
-                min={1}
                 placeholder="販売価格を0以上で入力してください"
                 value={price}
-                onChange={(value) => setPrice(Number(value))}
+                onChange={handleSellingPriceChenge}
+                validationErrors={
+                  sellingValidationErrors.price
+                    ? sellingValidationErrors.price
+                    : null
+                }
               />
               <Submit
                 text="価格登録する"
                 onClick={handlePriceSubmit}
-                disabled={dbOperationLoading}
+                disabled={dbOperationLoading || isSubmitDisabled}
+                dbOperationLoading={dbOperationLoading}
               />
             </div>
           </div>
@@ -355,7 +408,12 @@ const RecipeShow = () => {
                 name="price"
                 placeholder="販売価格を0以上で入力してください"
                 value={editPrice}
-                onChange={(value) => setEditPrice(Number(value))}
+                onChange={editHandleSellingPriceChenge}
+                validationErrors={
+                  sellingValidationErrors.price
+                    ? sellingValidationErrors.price
+                    : null
+                }
               />
               <EditSubmit
                 text="価格編集する"

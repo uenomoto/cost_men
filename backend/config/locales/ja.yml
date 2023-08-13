@@ -36,44 +36,44 @@ ja:
         supplier:
           attributes:
             name:
-              blank: "を入力してください"
+              blank: "入力してください"
               taken: "既に存在する仕入れ先名です"
-              too_long: "は%{count}文字以内で入力してください"
+              too_long: "%{count}文字以内で入力してください"
             contact_info:
-              too_long: "は%{count}文字以内で入力してください"
+              too_long: "%{count}文字以内で入力してください"
         ingredient:
           attributes:
             name:
-              blank: "を入力してください"
+              blank: "入力してください"
             unit:
-              blank: "を入力してください"
+              blank: "入力してください"
             buy_cost:
-              greater_than_or_equal_to: "は%{count}以上である必要があります"
+              greater_than_or_equal_to: "%{count}以上である必要があります"
             buy_quantity:
-              greater_than_or_equal_to: "は%{count}以上である必要があります"
+              greater_than_or_equal_to: "%{count}以上である必要があります"
         recipe:
           attributes:
             name:
-              blank: "を入力してください"
+              blank: "入力してください"
             image_aws_url:
               not_image_url: "画像のURLが正しくありません又は画像が選択されていません"
         selling_price:
           attributes:
             price:
-              blank: "を入力してください"
-              greater_than_or_equal_to: "は%{count}以上である必要があります"
-              not_an_integer: "は整数で入力してください"
+              blank: "入力してください"
+              greater_than_or_equal_to: "%{count}以上である必要があります"
+              not_an_integer: "整数で入力してください"
         tag:
           attributes:
             name:
-              blank: "を入力してください"
-              too_long: "は%{count}文字以内で入力してください"
+              blank: "入力してください"
+              too_long: "%{count}文字以内で入力してください"
               taken: "既に存在するタグ名です"
         recipe_procedure:
           attributes:
             procedure:
-              blank: "を入力してください"
-              too_long: "は%{count}文字以内で入力してください"
+              blank: "入力してください"
+              too_long: "%{count}文字未満で入力してください"
   # フォームオブジェクトのエラーメッセージ↓
   activemodel:
     models:

@@ -16,7 +16,7 @@ module Api
         if tag.save
           render json: { tag: }, status: :created
         else
-          render json: { errors: tag.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(tag) }, status: :unprocessable_entity
         end
       end
 

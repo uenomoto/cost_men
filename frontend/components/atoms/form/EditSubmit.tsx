@@ -14,7 +14,7 @@ export const EditSubmit = ({ text, onClick, disabled }: SubmitProps) => {
         type="submit"
         onClick={onClick}
         disabled={disabled}
-        className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-24 rounded disabled:hover:bg-sky-500 disabled:cursor-not-allowed"
+        className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-24 mt-3 rounded disabled:hover:bg-sky-500 disabled:cursor-not-allowed"
       >
         {disabled ? <LoadingSpinner /> : text}
       </button>

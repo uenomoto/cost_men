@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { FormEvent } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { tokenState } from "@/recoil/atoms/tokenState";
-import { errorMessageState } from "@/recoil/atoms/errorMessageState";
 import { successMessageState } from "@/recoil/atoms/successMessageState";
 import { Supplier } from "@/types";
 import { Input } from "../../atoms/form/Input";
 import { AlertBadge } from "../../atoms/badge/AlertBadge";
 import { Submit } from "../../atoms/form/Submit";
+
+type ValidationErrorState = {
+  name?: string;
+};
 
 export const SuppliersForm = () => {
   const [name, setName] = useState<string>("");
@@ -16,8 +19,11 @@ export const SuppliersForm = () => {
   const [dbOperationLoading, setDbOperationLoading] = useState<boolean>(false); // DB操作中はボタンを非活性
 
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
-  const setErrorMessage = useSetRecoilState(errorMessageState);
   const setSuccessMessage = useSetRecoilState(successMessageState);
+
+  // バリデーションエラーを格納するステート
+  const [validationErrors, setValidationErrors] =
+    useState<ValidationErrorState>({ name: "" });
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,13 +44,32 @@ export const SuppliersForm = () => {
         setName("");
         setContactInfo("");
         setSuccessMessage("仕入れ先を登録しました");
+        setValidationErrors({ name: "" });
       }
     } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data.errors); // railsから返されたエラーメッセージをステートに格納
+      if (error.response && error.response.data.errors) {
+        setValidationErrors(error.response.data.errors);
+      }
     } finally {
       setDbOperationLoading(false);
     }
   };
+
+  // 入力したその時に値を監視し送信ボタンを押さなくても、一度フォーカスしてフォーカスが外れた場合、入力必須バリデーションを実行
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setName(value);
+
+    if (!value) {
+      setValidationErrors((prev) => ({ ...prev, name: "入力必須項目です" }));
+    } else {
+      setValidationErrors((prev) => ({ ...prev, name: undefined }));
+    }
+  };
+
+  const isSubmitButtonDisabled = Object.values(validationErrors).some(
+    (error) => error !== undefined
+  );
 
   return (
     <div className="mt-5 bg-gray-200 shadow-lg rounded-2xl">
@@ -61,11 +86,15 @@ export const SuppliersForm = () => {
             htmlfor="name"
             text="仕入れ先名"
             type="text"
-            placeholder="仕入れ先名をに入力してください"
+            placeholder="仕入れ先名を入力してください"
             id="name"
             name="name"
             value={name}
-            onChange={setName}
+            onChange={handleNameChange}
+            onBlur={handleNameChange}
+            validationErrors={
+              validationErrors.name ? validationErrors.name : null
+            }
           />
           <div className="text-left">
             <span className="inline-flex items-start rounded-full mb-3 bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
@@ -80,13 +109,14 @@ export const SuppliersForm = () => {
             id="contactInfo"
             name="contactInfo"
             value={contactInfo}
-            onChange={setContactInfo}
+            onChange={(e) => setContactInfo(e.target.value)}
           />
         </div>
         <Submit
           text="登録する"
           onClick={handleSubmit}
-          disabled={dbOperationLoading}
+          disabled={dbOperationLoading || isSubmitButtonDisabled}
+          dbOperationLoading={dbOperationLoading}
         />
       </div>
     </div>

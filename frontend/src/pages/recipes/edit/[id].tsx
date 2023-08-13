@@ -173,12 +173,12 @@ const RecipesEdit = () => {
             name="recipeName"
             id="recipeName"
             value={recipeEditName}
-            onChange={setRecipeEditName}
+            onChange={(e) => setRecipeEditName(e.target.value)}
           />
         </div>
       </div>
       <div className="mr-0">
-        <p className="text-xs text-gray-500 font-bold mb-2">
+        <p className="text-xs text-gray-500 font-bold mb-2 mt-3">
           ※保存すると画像size
           <span className="text-red-500">横400px縦350pxにリサイズ</span>します。
         </p>

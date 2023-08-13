@@ -21,7 +21,7 @@ module Api
         if ingredient.save
           render json: { ingredient: }, status: :created
         else
-          render json: { errors: ingredient.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(ingredient) }, status: :unprocessable_entity
         end
       end
 
@@ -32,7 +32,7 @@ module Api
           ingredient_with_supplier = Ingredient.ingredient_with_supplier(ingredient)
           render json: { ingredient: ingredient_with_supplier }, status: :ok
         else
-          render json: { errors: ingredient.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(ingredient) }, status: :unprocessable_entity
         end
       end
 

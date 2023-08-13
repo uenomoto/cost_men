@@ -46,7 +46,7 @@ module Api
         if supplier.save
           render_supplier(status: :created)
         else
-          render json: { errors: supplier.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(supplier) }, status: :unprocessable_entity
         end
       end
 
@@ -56,7 +56,7 @@ module Api
           supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
           render json: { supplier: supplier_with_ingredient }, status: :ok
         else
-          render json: { errors: supplier.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(supplier) }, status: :unprocessable_entity
         end
       end
 

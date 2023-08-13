@@ -114,12 +114,13 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
                         value={searchSupplier}
                         name="searchSupplier"
                         id="searchSupplier"
-                        onChange={setSearchSupplier}
+                        onChange={(e) => setSearchSupplier(e.target.value)}
                       />
                       <Submit
                         text="検索"
                         onClick={handleSubmit}
                         disabled={dbOperationLoading}
+                        dbOperationLoading={dbOperationLoading}
                       />
                     </div>
                   </div>

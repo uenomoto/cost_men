@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { SupplierResponse } from "@/types";
 import { IngredientResponse } from "@/types";
@@ -27,7 +27,17 @@ import { Loading } from "../molecules/loading/Loading";
 import { WarningMessage } from "../atoms/messeage/WarningMessage";
 import { Pagination } from "../molecules/pagination/Pagination";
 import { IngredientsEnptyStates } from "../molecules/enptyStates/IngredientsEnptyStates";
-import { ErrorMessage } from "../atoms/messeage/ErrorMessage";
+
+type SupplersValidationErrorState = {
+  name?: string;
+};
+
+type IngredientValidationErrorState = {
+  name?: string;
+  buy_cost?: string;
+  buy_quantity?: string;
+  unit?: string;
+};
 
 const classNames = (...classes: (string | false)[]): string => {
   return classes.filter(Boolean).join(" ");
@@ -62,6 +72,12 @@ export const SupplierIngredientTable = () => {
   const [editBuyCost, setEditBuyCost] = useState("");
   const [editBuyQuantity, setEditBuyQuantity] = useState("");
   const [editUnit, setEditUnit] = useState("");
+
+  // バリデーションエラーを格納するステート
+  const [supplersValidationErrors, setSupplersValidationErrors] =
+    useState<SupplersValidationErrorState>({});
+  const [ingredientValidationErrors, setIngredientValidationErrors] =
+    useState<IngredientValidationErrorState>({});
 
   // 原材料の削除用ステート
   const [confirmDelete, setConfirmDelete] = useState<
@@ -100,7 +116,6 @@ export const SupplierIngredientTable = () => {
       );
       if (res.status === 200) {
         setSuccessMessage("原材料の編集に成功しました");
-        setErrorMessage(null);
         setSupplierIngredientEditOpen(null);
 
         // 原材料の編集に成功したら、仕入れ先情報を更新する
@@ -119,8 +134,7 @@ export const SupplierIngredientTable = () => {
         setSuppliers(updatedSuppliers);
       }
     } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data.errors);
-      setSuccessMessage(null);
+      setIngredientValidationErrors(error.response.data.errors);
     } finally {
       setDbOperationLoading(false);
     }
@@ -145,7 +159,6 @@ export const SupplierIngredientTable = () => {
       );
       if (res.status === 200) {
         setSuccessMessage("仕入れ先の編集に成功しました");
-        setErrorMessage(null);
         setSupplierEditOpen(null);
 
         const updatedSuppliers: Supplier[] = suppliers.map((supplier) =>
@@ -154,8 +167,7 @@ export const SupplierIngredientTable = () => {
         setSuppliers(updatedSuppliers);
       }
     } catch (error: AxiosError | any) {
-      setErrorMessage(error.response.data.errors);
-      setSuccessMessage(null);
+      setSupplersValidationErrors(error.response.data.errors);
     } finally {
       setDbOperationLoading(false);
     }
@@ -277,6 +289,83 @@ export const SupplierIngredientTable = () => {
     setSuppliers,
     setWarningMessage,
   ]);
+
+  // 仕入れ先編集のフロント側バリデーション
+  const editHandleSupplierNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEditSupplierName(value);
+    if (!value) {
+      setSupplersValidationErrors((prev) => ({
+        ...prev,
+        name: "入力必須項目です",
+      }));
+    } else {
+      setSupplersValidationErrors((prev) => ({ ...prev, name: undefined }));
+    }
+  };
+
+  // 原材料編集のフロント側バリデーション
+  const editHandleIngredinetNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEditName(value);
+    if (!value) {
+      setIngredientValidationErrors((prev) => ({
+        ...prev,
+        name: "入力必須項目です",
+      }));
+    } else {
+      setIngredientValidationErrors((prev) => ({ ...prev, name: undefined }));
+    }
+  };
+  const editHandleIngredinetBuyCostChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setEditBuyCost(value);
+
+    if (Number(value) <= 0) {
+      setIngredientValidationErrors((prev) => ({
+        ...prev,
+        buy_cost: "1以上の数値を入力してください",
+      }));
+    } else {
+      setIngredientValidationErrors((prev) => ({
+        ...prev,
+        buy_cost: undefined,
+      }));
+    }
+  };
+  const editHandleIngredinetBuyQuantityChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setEditBuyQuantity(value);
+
+    if (Number(value) <= 0) {
+      setIngredientValidationErrors((prev) => ({
+        ...prev,
+        buy_quantity: "1以上の数値を入力してください",
+      }));
+    } else {
+      setIngredientValidationErrors((prev) => ({
+        ...prev,
+        buy_quantity: undefined,
+      }));
+    }
+  };
+  const editHandleIngredinetUnitChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEditUnit(value);
+
+    if (value !== "g" && value !== "cc" && value !== "ml" && value !== "個") {
+      setIngredientValidationErrors((prev) => ({
+        ...prev,
+        unit: "正しい単位で入力してください",
+      }));
+    } else {
+      setIngredientValidationErrors((prev) => ({ ...prev, unit: undefined }));
+    }
+  };
 
   return (
     <>
@@ -401,7 +490,6 @@ export const SupplierIngredientTable = () => {
                                       }
                                     >
                                       <div className="md:p-5">
-                                        <ErrorMessage />
                                         <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
                                           仕入れ先編集
                                         </h3>
@@ -415,7 +503,17 @@ export const SupplierIngredientTable = () => {
                                             id="name"
                                             name="name"
                                             value={editSupplierName}
-                                            onChange={setEditSupplierName}
+                                            onChange={
+                                              editHandleSupplierNameChange
+                                            }
+                                            onBlur={
+                                              editHandleSupplierNameChange
+                                            }
+                                            validationErrors={
+                                              supplersValidationErrors.name
+                                                ? supplersValidationErrors.name
+                                                : null
+                                            }
                                           />
                                           <div className="text-left">
                                             <span className="inline-flex items-start rounded-full mb-3 bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
@@ -430,8 +528,10 @@ export const SupplierIngredientTable = () => {
                                             id="contact_info"
                                             name="contact_info"
                                             value={editSupplierContactInfo}
-                                            onChange={
-                                              setEditSupplierContactInfo
+                                            onChange={(e) =>
+                                              setEditSupplierContactInfo(
+                                                e.target.value
+                                              )
                                             }
                                           />
                                         </div>
@@ -523,7 +623,6 @@ export const SupplierIngredientTable = () => {
                                   }
                                 >
                                   <div className="md:p-5">
-                                    <ErrorMessage />
                                     <h3 className="text-xl lg:text-3xl text-center font-semibold leading-6 text-gray-900">
                                       原材料編集
                                     </h3>
@@ -539,7 +638,17 @@ export const SupplierIngredientTable = () => {
                                             id="name"
                                             name="name"
                                             value={editName}
-                                            onChange={setEditName}
+                                            onChange={
+                                              editHandleIngredinetNameChange
+                                            }
+                                            onBlur={
+                                              editHandleIngredinetNameChange
+                                            }
+                                            validationErrors={
+                                              ingredientValidationErrors.name
+                                                ? ingredientValidationErrors.name
+                                                : null
+                                            }
                                           />
                                           <AlertBadge text="半角英数字 入力必須" />
                                           <Input
@@ -550,7 +659,17 @@ export const SupplierIngredientTable = () => {
                                             id="buy_quantity"
                                             name="buy_quantity"
                                             value={editBuyQuantity}
-                                            onChange={setEditBuyQuantity}
+                                            onChange={
+                                              editHandleIngredinetBuyQuantityChange
+                                            }
+                                            onBlur={
+                                              editHandleIngredinetBuyQuantityChange
+                                            }
+                                            validationErrors={
+                                              ingredientValidationErrors.buy_quantity
+                                                ? ingredientValidationErrors.buy_quantity
+                                                : null
+                                            }
                                           />
                                         </div>
                                         <div className="col-span-1">
@@ -563,7 +682,17 @@ export const SupplierIngredientTable = () => {
                                             id="buy_cost"
                                             name="buy_cost"
                                             value={editBuyCost}
-                                            onChange={setEditBuyCost}
+                                            onChange={
+                                              editHandleIngredinetBuyCostChange
+                                            }
+                                            onBlur={
+                                              editHandleIngredinetBuyCostChange
+                                            }
+                                            validationErrors={
+                                              ingredientValidationErrors.buy_cost
+                                                ? ingredientValidationErrors.buy_cost
+                                                : null
+                                            }
                                           />
                                           <AlertBadge text="入力必須" />
                                           <Input
@@ -574,7 +703,17 @@ export const SupplierIngredientTable = () => {
                                             id="unit"
                                             name="unit"
                                             value={editUnit}
-                                            onChange={setEditUnit}
+                                            onChange={
+                                              editHandleIngredinetUnitChange
+                                            }
+                                            onBlur={
+                                              editHandleIngredinetUnitChange
+                                            }
+                                            validationErrors={
+                                              ingredientValidationErrors.unit
+                                                ? ingredientValidationErrors.unit
+                                                : null
+                                            }
                                           />
                                         </div>
                                       </div>
