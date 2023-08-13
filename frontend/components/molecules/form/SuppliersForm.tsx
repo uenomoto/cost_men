@@ -21,8 +21,9 @@ export const SuppliersForm = () => {
   const token = useRecoilValue(tokenState); // RecoilのTokenを取得する
   const setSuccessMessage = useSetRecoilState(successMessageState);
 
+  // バリデーションエラーを格納するステート
   const [validationErrors, setValidationErrors] =
-    useState<ValidationErrorState>({}); // バリデーションエラーを格納するステート
+    useState<ValidationErrorState>({ name: "" });
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -43,6 +44,7 @@ export const SuppliersForm = () => {
         setName("");
         setContactInfo("");
         setSuccessMessage("仕入れ先を登録しました");
+        setValidationErrors({ name: "" });
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.data.errors) {
@@ -64,6 +66,10 @@ export const SuppliersForm = () => {
       setValidationErrors((prev) => ({ ...prev, name: undefined }));
     }
   };
+
+  const isSubmitButtonDisabled = Object.values(validationErrors).some(
+    (error) => error !== undefined
+  );
 
   return (
     <div className="mt-5 bg-gray-200 shadow-lg rounded-2xl">
@@ -109,7 +115,8 @@ export const SuppliersForm = () => {
         <Submit
           text="登録する"
           onClick={handleSubmit}
-          disabled={dbOperationLoading}
+          disabled={dbOperationLoading || isSubmitButtonDisabled}
+          dbOperationLoading={dbOperationLoading}
         />
       </div>
     </div>
