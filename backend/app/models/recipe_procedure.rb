@@ -12,11 +12,15 @@ class RecipeProcedure < ApplicationRecord
       recipe.recipe_procedures.build(procedure:)
     end
 
-    if recipe_procedures.all?(&:save)
+  ActiveRecord::Base.transaction do
+    if recipe_procedures.all?(&:save!)
       [recipe_procedures, nil]
     else
       failed = recipe_procedures.find { |procedure| !procedure.valid? }
       [nil, failed.errors.full_messages]
     end
+  end
+rescue ActiveRecord::RecordInvalid => e
+  [nil, e.record.errors.full_messages]
   end
 end
