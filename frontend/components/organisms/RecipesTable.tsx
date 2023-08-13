@@ -242,7 +242,7 @@ export const RecipesTable = () => {
                           onChange={(e) =>
                             handleChange(selectedIngredient.ingredient.id, e)
                           }
-                          className="border rounded py-2 w-20 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
+                          className="border rounded py-2 w-20 md:w-32 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
                         />{" "}
                         {selectedIngredient.ingredient.unit}
                       </td>

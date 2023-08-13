@@ -16,7 +16,7 @@ module Api
         if selling_price.save
           render json: { selling_price: }, status: :created
         else
-          render json: { errors: selling_price.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(selling_price) }, status: :unprocessable_entity
         end
       end
 
@@ -25,7 +25,7 @@ module Api
         if @selling_price.update(selling_price_params)
           render json: { selling_price: @selling_price }, status: :ok
         else
-          render json: { errors: @selling_price.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(@selling_price) }, status: :unprocessable_entity
         end
       end
 
