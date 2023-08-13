@@ -340,6 +340,7 @@ export const Divider = () => {
             onClick={handleSubmit}
             disabled={
               dbOperationLoading ||
+              newProcedures.length === 0 ||
               newProcedures.some((procedure) => procedure === "") ||
               procedureValidationErrors.some((error) => error !== "")
             }
