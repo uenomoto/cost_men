@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::API
-
   # エラーメッセージをフロント側で扱いやすい形、配列ではなくオブジェクトに変換する
   def format_errors(record)
     formatted_errors = {}
