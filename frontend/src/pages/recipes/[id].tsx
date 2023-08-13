@@ -220,6 +220,11 @@ const RecipeShow = () => {
         ...prev,
         price: "販売価格は1以上で入力してください",
       }));
+    } else if (!Number.isInteger(value)) {
+      setSellingValidationErrors((prev) => ({
+        ...prev,
+        price: "販売価格は整数で入力してください",
+      }));
     } else {
       setSellingValidationErrors((prev) => ({ ...prev, price: undefined }));
     }
@@ -233,10 +238,19 @@ const RecipeShow = () => {
         ...prev,
         price: "販売価格は1以上で入力してください",
       }));
+    } else if (!Number.isInteger(value)) {
+      setSellingValidationErrors((prev) => ({
+        ...prev,
+        price: "販売価格は整数で入力してください",
+      }));
     } else {
       setSellingValidationErrors((prev) => ({ ...prev, price: undefined }));
     }
   };
+
+  const isSubmitDisabled = Object.values(sellingValidationErrors).some(
+    (error) => error !== undefined
+  );
 
   return (
     <>
@@ -367,7 +381,8 @@ const RecipeShow = () => {
               <Submit
                 text="価格登録する"
                 onClick={handlePriceSubmit}
-                disabled={dbOperationLoading}
+                disabled={dbOperationLoading || isSubmitDisabled}
+                dbOperationLoading={dbOperationLoading}
               />
             </div>
           </div>
