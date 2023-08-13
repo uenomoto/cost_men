@@ -340,7 +340,7 @@ export const Divider = () => {
             onClick={handleSubmit}
             disabled={
               dbOperationLoading ||
-              newProcedures.every((p) => p.trim() === "") ||
+              newProcedures.some((procedure) => procedure === "") ||
               procedureValidationErrors.some((error) => error !== "")
             }
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 lg:px-24 rounded disabled:opacity-50 disabled:cursor-not-allowed"
