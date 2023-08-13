@@ -107,6 +107,12 @@ export const IngredidentForm = () => {
         );
         setSuppliers(updatedSuppliers);
         setSuccessMessage("原材料を登録しました");
+        setValidationErrors({
+          name: "",
+          unit: "",
+          buy_cost: "",
+          buy_quantity: "",
+        });
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.data.errors) {
@@ -114,12 +120,6 @@ export const IngredidentForm = () => {
       }
     } finally {
       setDbOperationLoading(false);
-      setValidationErrors({
-        name: "",
-        unit: "",
-        buy_cost: "",
-        buy_quantity: "",
-      });
     }
   };
 
