@@ -73,7 +73,7 @@ ja:
           attributes:
             procedure:
               blank: "を入力してください"
-              too_long: "は%{count}文字以内で入力してください"
+              too_long: "は%{count}文字未満で入力してください"
   # フォームオブジェクトのエラーメッセージ↓
   activemodel:
     models:

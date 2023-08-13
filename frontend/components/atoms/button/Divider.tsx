@@ -206,8 +206,8 @@ export const Divider = () => {
     const updatedErrors = [...procedureValidationErrors];
     if (!value) {
       updatedErrors[index] = "手順を入力してください";
-    } else if (value.length >= 10) {
-      updatedErrors[index] = "手順は100文字以内で入力してください";
+    } else if (value.length > 100) {
+      updatedErrors[index] = "手順は100文字未満で入力してください";
     } else {
       updatedErrors[index] = "";
     }
@@ -340,8 +340,8 @@ export const Divider = () => {
             onClick={handleSubmit}
             disabled={
               dbOperationLoading ||
-              newProcedures.length === 0 ||
-              newProcedures.every((p) => p.trim() === "")
+              newProcedures.every((p) => p.trim() === "") ||
+              procedureValidationErrors.some((error) => error !== "")
             }
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 lg:px-24 rounded disabled:opacity-50 disabled:cursor-not-allowed"
           >
