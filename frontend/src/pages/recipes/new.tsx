@@ -34,8 +34,8 @@ type TagValidationErrorState = {
 
 const RecipesNew = () => {
   // タグ追加のモーダルを開く
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true); // tag一覧取得のロード
+  const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true); // tag一覧取得のロード
   const [tagDbOperationLoading, setTagDbOperationLoading] =
     useState<boolean>(false);
   const [tagDbEditOperationLoading, setTagDbEditOperationLoading] =
@@ -70,7 +70,7 @@ const RecipesNew = () => {
 
   // タグのバリデーション
   const [tagValidationError, setTagValidationError] =
-    useState<TagValidationErrorState>({});
+    useState<TagValidationErrorState>({ name: "" });
 
   // 画像アップロード状況を追跡する
   const [uploadStatus, setUploadStates] = useState<{
@@ -109,10 +109,20 @@ const RecipesNew = () => {
         ...prev,
         name: "タグ名を入力してください",
       }));
+    } else if (value.match(/\s+/)) {
+      setTagValidationError((prev) => ({
+        ...prev,
+        name: "空白は入力できません",
+      }));
     } else {
       setTagValidationError((prev) => ({ ...prev, name: undefined }));
     }
   };
+
+  // タグのバリデーションエラーがあれば登録ボタンを押せないようにする
+  const isTagSubmitDisabled = Object.values(tagValidationError).some(
+    (error) => error !== undefined
+  );
 
   // タグ登録
   const tagHendleSubmit = async (e: FormEvent) => {
@@ -136,6 +146,7 @@ const RecipesNew = () => {
         setTags(updatedTags);
         setTagName("");
         setSuccessMessage("タグを登録しました");
+        setTagValidationError({ name: "" });
       }
     } catch (error: AxiosError | any) {
       setTagValidationError(error.response.data.errors);
@@ -352,10 +363,18 @@ const RecipesNew = () => {
               <button
                 type="submit"
                 onClick={tagHendleSubmit}
-                disabled={tagDbOperationLoading}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-5 rounded disabled:hover:bg-green-500 disabled:cursor-not-allowed"
+                disabled={tagDbOperationLoading || isTagSubmitDisabled}
+                className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-5 rounded disabled:hover:bg-green-500 disabled:cursor-not-allowed
+                ${isTagSubmitDisabled && "opacity-50"}
+                ${tagDbOperationLoading && "disabled:opacity-100"}`}
               >
-                {tagDbOperationLoading ? <LoadingSpinner /> : "タグ登録"}
+                {tagDbOperationLoading ? (
+                  <LoadingSpinner />
+                ) : isTagSubmitDisabled ? (
+                  "タグ登録"
+                ) : (
+                  "タグ登録"
+                )}
               </button>
             </div>
           </div>

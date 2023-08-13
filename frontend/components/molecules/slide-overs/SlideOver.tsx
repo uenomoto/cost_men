@@ -120,6 +120,7 @@ export const SlideOver = ({ slideOpen, setSlideOpen }: Props) => {
                         text="検索"
                         onClick={handleSubmit}
                         disabled={dbOperationLoading}
+                        dbOperationLoading={dbOperationLoading}
                       />
                     </div>
                   </div>

@@ -21,7 +21,7 @@ export const Submit = ({
         onClick={onClick}
         disabled={dbOperationLoading || disabled}
         className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 mt-5 lg:px-24 rounded  disabled:hover:bg-green-500 disabled:cursor-not-allowed 
-        ${disabled && "disabled:opacity-50"} 
+        ${disabled && "opacity-50"} 
         ${dbOperationLoading && "disabled:opacity-100"}`}
       >
         {dbOperationLoading ? <LoadingSpinner /> : disabled ? text : text}
