@@ -137,12 +137,12 @@ https://github.com/uenomoto/cost_men/assets/113354283/f5779c75-d8f9-444b-8bd5-f1
 
 https://github.com/uenomoto/cost_men/assets/113354283/aba1f16a-06cb-4fc7-bb57-00a6cf15cb9e
 
-仕入れ先と原材料とタグの編集をしています↑
+仕入れ先と原材料とタグの編集をしています↑<br>
 次の動画で注目して欲しいのはしっかりと1/円が変わりレシピに対する原材料の単価も変わっていることです
 
 https://github.com/uenomoto/cost_men/assets/113354283/2c008fea-661d-4a1c-a00a-103ba82c119e
 
-レシピの編集と販売価格の編集と手順の編集を行い全て削除しています。
+レシピの編集と販売価格の編集と手順の編集を行い全て削除しています。<br>
 最後にログアウトをしURLからアクセスされても認可されていなければ認証必須ページには遷移できません。
 
 
