@@ -1,4 +1,10 @@
-import React, { useState, useCallback, FormEvent, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  FormEvent,
+  useEffect,
+  ChangeEvent,
+} from "react";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import ReactMarkdown from "react-markdown";
@@ -19,6 +25,8 @@ import { Loading } from "../../molecules/loading/Loading";
 import { DeleteModal } from "../../modal/DeleteModal";
 import { LoadingSpinner } from "../../molecules/loading/LoadingSpinner";
 
+type ProcedureValidationErrorsState = string[];
+
 export const Divider = () => {
   const token = useRecoilValue(tokenState);
   const router = useRouter();
@@ -32,6 +40,10 @@ export const Divider = () => {
     ExistingRecipeProcedure[]
   >([]); // 既存の手順一覧state
   const [newProcedures, setNewProcedures] = useState<string[]>([]); // 新規に追加する手順一覧state
+
+  // 手順バリデーションエラー格納するstate
+  const [procedureValidationErrors, setProcedureValidationErrors] =
+    useState<ProcedureValidationErrorsState>([]);
 
   // 手順編集する際にIDを取得管理するstate
   const [editprocedureId, setEditProcedureId] = useState<number | null>(null);
@@ -57,19 +69,15 @@ export const Divider = () => {
     (index: number) => {
       if (confirm("保存前の手順を削除しますか？")) {
         setNewProcedures(newProcedures.filter((_, idx) => idx !== index));
+
+        // バリデーションエラーメッセージも削除
+        const updatedErrors = procedureValidationErrors.filter(
+          (_, idx) => idx !== index
+        );
+        setProcedureValidationErrors(updatedErrors);
       }
     },
-    [newProcedures]
-  );
-
-  // 新しい手順の文字を状態管理する
-  const handleChange = useCallback(
-    (index: number, newProcedure: string) => {
-      const updatedProcedures = [...newProcedures];
-      updatedProcedures[index] = newProcedure;
-      setNewProcedures(updatedProcedures);
-    },
-    [newProcedures]
+    [newProcedures, procedureValidationErrors]
   );
 
   // 手順を保存する
@@ -95,9 +103,10 @@ export const Divider = () => {
         ]);
         setNewProcedures([]);
         setSuccessMessage("手順を保存しました");
+        setProcedureValidationErrors([]);
       }
     } catch (error: AxiosError | any) {
-      console.log(error.response.data.errors);
+      // console.log(error.response.data.errors);
       setErrorMessage(error.response.data.errors);
     } finally {
       setDbOperationLoading(false);
@@ -181,6 +190,30 @@ export const Divider = () => {
     }
   };
 
+  // 手順のフロント側のバリデーション
+  const handleProcedureChange = (
+    e: ChangeEvent<HTMLTextAreaElement>,
+    index: number
+  ) => {
+    const value = e.target.value;
+
+    // 登録前の手順を配列で管理し値を更新
+    const updatedProcedures = [...newProcedures];
+    updatedProcedures[index] = value;
+    setNewProcedures(updatedProcedures);
+
+    // バリデーションエラーを更新
+    const updatedErrors = [...procedureValidationErrors];
+    if (!value) {
+      updatedErrors[index] = "手順を入力してください";
+    } else if (value.length >= 10) {
+      updatedErrors[index] = "手順は100文字以内で入力してください";
+    } else {
+      updatedErrors[index] = "";
+    }
+    setProcedureValidationErrors(updatedErrors);
+  };
+
   return (
     <>
       {loading && <Loading />}
@@ -259,9 +292,14 @@ export const Divider = () => {
       {newProcedures.map((procedure, index) => (
         <div key={index}>
           <TextArea
-            text={procedure}
-            setText={(newProcedure: string) =>
-              handleChange(index, newProcedure)
+            name="procedure"
+            id={`procedure-${index}`}
+            value={procedure}
+            onChange={(e) => handleProcedureChange(e, index)}
+            validationErrors={
+              procedureValidationErrors[index]
+                ? [procedureValidationErrors[index]]
+                : []
             }
           />
           <div className="text-right">
