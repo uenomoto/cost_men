@@ -78,8 +78,12 @@ const RecipesNew = () => {
     error?: Error | null;
   }>({ status: "idle", error: null });
 
-  // 子コンポーネント達の状態を管理する
-  const [recipeImageUrl, setRecipeImageUrl] = useState<string | null>(null);
+  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+  // 子コンポーネント達の状態を管理する,TypeScriptからだと.envがあるのかわからないためどうしてもnull使ってしまいました。。
+  const [recipeImageUrl, setRecipeImageUrl] = useState<string | null>(
+    s3Url || ""
+  );
+
   const [checkedTags, setCheckedTags] = useState<Record<number, boolean>>({});
 
   // レシピの原材料の状態管理
@@ -278,7 +282,7 @@ const RecipesNew = () => {
         setSuccessMessage("レシピを登録しました");
         router.push("/recipes");
         setRecipeName("");
-        setRecipeImageUrl(null);
+        setRecipeImageUrl(s3Url || "");
         setCheckedTags({});
         setRecipeIngredients([]);
       }
