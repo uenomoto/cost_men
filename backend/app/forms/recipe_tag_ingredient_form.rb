@@ -100,6 +100,6 @@ class RecipeTagIngredientForm
     url_regex = %r{\Ahttps://cost-men-bucket\.s3\.ap-northeast-1\.amazonaws\.com/\w+(-\w+)*\.(jpg|jpeg|png|gif|svg|webp)\z}
     return if recipe_image_url =~ url_regex
 
-    errors.add(:recipe_image_url, '画像のURLが正しくありません又は画像が選択されていません')
+    errors.add(:recipe_image_url, '画像のURLが正しくありません')
   end
 end
