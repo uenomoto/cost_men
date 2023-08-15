@@ -29,22 +29,11 @@ module Api
         render json: { suppliers: }, status: :ok
       end
 
-      # 編集時に詳細を取得するためのapiとして作ったがupdateアクションの中に統合したため使わないのでテストしながら消していく
-      # def show
-      #   supplier = current_user.suppliers.find(params[:id])
-      #   supplier_with_ingredient = Supplier.with_ingredient_for_user(supplier)
-      #   if supplier_with_ingredient
-      #     render json: { supplier: supplier_with_ingredient }, status: :ok
-      #   else
-      #     render_not_found_response
-      #   end
-      # end
-
       def create
         # 仕入れ先とuserが紐付いていれば↓この記述でuser_idが自動的に現在のuserのsubになる。
         supplier = current_user.suppliers.build(supplier_params)
         if supplier.save
-          render_supplier(status: :created)
+          render json: { supplier: }, status: :created
         else
           render json: { errors: format_errors(supplier) }, status: :unprocessable_entity
         end
@@ -61,14 +50,6 @@ module Api
       end
 
       private
-
-      def render_supplier(status: :ok)
-        render json: { supplier: @supplier.as_json }, status:
-      end
-
-      def render_not_found_response
-        render json: { error: '特定の仕入れ先のデータはありません' }, status: :not_found
-      end
 
       def supplier_params
         params.require(:supplier).permit(:name, :contact_info)
