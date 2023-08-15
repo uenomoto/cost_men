@@ -11,7 +11,20 @@ RSpec.describe 'Api::V1::Suppliers' do
     allow(AuthorizationService).to receive(:new).and_return(double(current_user: user))
   end
 
-  describe 'GET /index' do
+  describe 'GET /index_all' do
+    let!(:supplier1) { create(:supplier, user:) }
+    let!(:supplier2) { create(:supplier, user:) }
+    let!(:ingredient1) { create(:ingredient, supplier: supplier1) }
+    let!(:ingredient2) { create(:ingredient, supplier: supplier2) }
+
+    it "しっかりと仕入れ先とその仕入れ先と紐づいている原材料が取得できるか" do
+      get '/api/v1/suppliers/index_all'
+      json = JSON.parse(response.body)
+      expect(json['suppliers'].length).to eq(2)
+      expect(json['suppliers'][0]['ingredients'].length).to eq(1)
+      expect(json['suppliers'][1]['ingredients'].length).to eq(1)
+    end
+
     it 'returns http success' do
       get '/api/v1/suppliers'
       expect(response).to have_http_status(:success)
