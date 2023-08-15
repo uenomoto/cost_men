@@ -10,18 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_15_142416) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "auth_tokens", force: :cascade do |t|
-    t.string "user_id", null: false
-    t.text "token", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["token"], name: "index_auth_tokens_on_token", unique: true
-    t.index ["user_id"], name: "index_auth_tokens_on_user_id"
-  end
 
   create_table "ingredients", force: :cascade do |t|
     t.bigint "supplier_id", null: false
@@ -108,7 +99,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_125112) do
     t.index ["sub"], name: "index_users_on_sub", unique: true
   end
 
-  add_foreign_key "auth_tokens", "users", primary_key: "sub"
   add_foreign_key "ingredients", "suppliers"
   add_foreign_key "recipe_ingredients", "ingredients"
   add_foreign_key "recipe_ingredients", "recipes"
