@@ -22,13 +22,7 @@ class Supplier < ApplicationRecord
   def self.with_all_ingredients_for_user(user)
     suppliers_with_ingredients = user.suppliers.with_order_ingredients
 
-    suppliers_with_ingredients.map do |supplier|
-      supplier.attributes.merge(
-        ingredients: supplier.ingredients.map do |ingredient|
-                       ingredient.slice(:id, :supplier_id, :buy_cost, :buy_quantity, :unit, :name)
-                     end
-      )
-    end
+    suppliers_with_ingredients.map { |supplier| formatted_supplier_data(supplier) }
   end
 
   # 詳細取得し編集後のデータを返す
