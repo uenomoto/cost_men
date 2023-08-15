@@ -11,10 +11,10 @@ Rails.application.routes.draw do
         resources :recipe_procedures, only: %i[index create update destroy], path: 'procedures'
         resource :selling_prices, only: %i[show create update]
       end
-      resources :ingredients, only: %i[index show create update destroy]
+      resources :ingredients, only: %i[create update destroy]
       get 'suppliers/select_index', to: 'suppliers#select_index'
       get 'suppliers/index_all', to: 'suppliers#index_all'
-      resources :suppliers, only: %i[index show create update]
+      resources :suppliers, only: %i[index create update]
       resources :tags, only: %i[index create update destroy]
     end
   end

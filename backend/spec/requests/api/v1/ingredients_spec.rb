@@ -13,59 +13,6 @@ RSpec.describe 'Api::V1::Ingredients' do
     allow(AuthorizationService).to receive(:new).and_return(double(current_user: user))
   end
 
-  describe 'GET /index' do
-    # let!は即時実行されるletは呼ばれたときに実行される
-    let!(:ingredient) do
-      create(:ingredient, supplier:, name: 'サンプル材料', buy_cost: 100, buy_quantity: 100, unit: 'g')
-    end
-    # テスト実行のたびに日付は変わるので、テスト環境のみcreated_at,updated_atを削除する
-    let(:json_response) do
-      get '/api/v1/ingredients'
-      JSON.parse(response.body, symbolize_names: true)[:ingredients].map do |ingredient|
-        ingredient.tap do |ing|
-          ing.delete(:created_at)
-          ing.delete(:updated_at)
-        end
-      end
-    end
-
-    let(:expected_response) do
-      [
-        {
-          id: ingredient.id,
-          supplier_id: ingredient.supplier_id,
-          buy_cost: ingredient.buy_cost.to_s,
-          buy_quantity: ingredient.buy_quantity.to_s,
-          unit: ingredient.unit,
-          name: ingredient.name
-        }
-      ]
-    end
-
-    it 'returns http success' do
-      get '/api/v1/ingredients'
-      expect(response).to have_http_status(:success)
-    end
-
-    it 'テスト環境のみjsonのcreated_at,updated_atが含まれていないか' do
-      json_response.each do |ingredient|
-        expect(ingredient).not_to have_key(:created_at)
-        expect(ingredient).not_to have_key(:updated_at)
-      end
-    end
-
-    it '仕入れ先に紐づいている原材料のjsonが取得できているか' do
-      expect(json_response).to eq expected_response
-    end
-  end
-
-  describe 'GET /show' do
-    it 'returns http success' do
-      get "/api/v1/ingredients/#{ingredient.id}"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
   describe 'POST /create' do
     let(:ingredient_params) do
       {
