@@ -11,7 +11,31 @@ RSpec.describe 'Api::V1::Suppliers' do
     allow(AuthorizationService).to receive(:new).and_return(double(current_user: user))
   end
 
-  describe 'GET /index' do
+  describe 'GET /index_all' do
+    let!(:first_supplier) { create(:supplier, user:) }
+    let!(:second_supplier) { create(:supplier, user:) }
+    let!(:ingredient_for_first_supplier) { create(:ingredient, supplier: first_supplier) }
+    let!(:ingredient_for_second_supplier) { create(:ingredient, supplier: second_supplier) }
+    let(:json) { response.parsed_body }
+
+    describe 'しっかりと仕入れ先とその仕入れ先と紐づいている原材料が取得できるか' do
+      before do
+        get '/api/v1/suppliers/index_all'
+      end
+
+      it '2つの仕入れ先の情報が取得できているか' do
+        expect(json['suppliers'].length).to eq(2)
+      end
+
+      it '1番目の仕入れ先から紐付いている原材料が正しく取得できるか' do
+        expect(json['suppliers'][0]['ingredients'].length).to eq(1)
+      end
+
+      it '2番目の仕入れ先から紐付いている原材料が正しく取得できるか' do
+        expect(json['suppliers'][1]['ingredients'].length).to eq(1)
+      end
+    end
+
     it 'returns http success' do
       get '/api/v1/suppliers'
       expect(response).to have_http_status(:success)

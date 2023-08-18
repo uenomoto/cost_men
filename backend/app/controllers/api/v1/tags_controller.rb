@@ -8,7 +8,7 @@ module Api
 
       def index
         tags = current_user.tags.oldest
-        render json: { tags: tags.map(&:as_json) }, status: :ok
+        render json: { tags: }, status: :ok
       end
 
       def create
@@ -22,9 +22,9 @@ module Api
 
       def update
         if @tag.update(tag_params)
-          render_tag
+          render json: { tag: @tag }, status: :ok
         else
-          render_tag_errors
+          render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
@@ -41,14 +41,6 @@ module Api
 
       def tag_params
         params.require(:tag).permit(:name)
-      end
-
-      def render_tag_errors
-        render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
-      end
-
-      def render_tag(status: :ok)
-        render json: { tag: @tag.as_json }, status:
       end
     end
   end
