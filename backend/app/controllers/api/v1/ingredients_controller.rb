@@ -5,15 +5,6 @@ module Api
     class IngredientsController < SecuredController
       before_action :authorize_request
 
-      def index
-        # ingredientsは仕入れ先と紐づいているので、仕入れ先のuser_idと現在のuserのsubが一致するもののみ取得する。
-        ingredients = Ingredient.joins(:supplier).where(suppliers: { user_id: current_user.sub }).leatest
-        render json: { ingredients: ingredients.map(&:as_json) }, status: :ok
-      end
-
-      # 一覧で全ての情報が見れるため、showは不要かもしれません。。。
-      def show; end
-
       def create
         # /api/v1/ingredientsなのでリクエストボディからsupplier_idを取得する必要がある。
         supplier_id = params[:ingredient][:supplier_id]

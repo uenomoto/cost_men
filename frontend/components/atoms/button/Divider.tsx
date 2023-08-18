@@ -218,8 +218,8 @@ export const Divider = () => {
     <>
       {loading && <Loading />}
       {existingProcedures.map((procedure, index) => (
-        <>
-          <div key={procedure.id}>
+        <React.Fragment key={procedure.id}>
+          <div>
             {editprocedureId === procedure.id ? (
               <>
                 <div className="flex items-center space-x-10">
@@ -287,7 +287,7 @@ export const Divider = () => {
             </div>
             <div className="relative flex justify-center"></div>
           </div>
-        </>
+        </React.Fragment>
       ))}
       {newProcedures.map((procedure, index) => (
         <div key={index}>

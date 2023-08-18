@@ -16,3 +16,5 @@ RSpec/MultipleExpectations:
   Max: 2
 RSpec/MultipleMemoizedHelpers:
   Max: 10
+RSpec/LetSetup:
+  Enabled: false

@@ -158,7 +158,7 @@ export const RecipesTable = () => {
 
   return (
     <>
-      <div className="px-4 mt-10 lg:w-5/6 max-w-2xl sm:w-full  sm:px-6 lg:px-8">
+      <div className="px-4 mt-10 lg:w-[55rem] md:w-[45rem] sm:w-[35rem] sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={() => handleAddIngredient()}
@@ -166,7 +166,7 @@ export const RecipesTable = () => {
         >
           原材料追加
         </button>
-        <div className="mx-auto mt-8 flow-root lg:max-w-7xl max-w-2xl sm:mx-0">
+        <div className="mx-auto mt-8 flow-root sm:mx-0">
           <table className="w-full">
             <thead className="border-b border-gray-300 text-gray-900">
               <tr>
