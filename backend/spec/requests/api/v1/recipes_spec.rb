@@ -19,9 +19,39 @@ RSpec.describe 'Api::V1::Recipes' do
   end
 
   describe 'GET /show' do
-    it 'returns http success' do
-      get "/api/v1/recipes/#{recipe.id}"
-      expect(response).to have_http_status(:success)
+    let!(:first_recipe_ingredients) { create(:recipe_ingredient, recipe:) }
+    let!(:second_recipe_ingredients) { create(:recipe_ingredient, recipe:) }
+    let!(:first_tags) { create(:tag, user:) }
+    let!(:second_tags) { create(:tag, user:) }
+    let(:json) { response.parsed_body }
+
+    describe 'レシピのエンドポイントがあるか' do
+      before do
+        recipe.tags << first_tags
+        recipe.tags << second_tags
+
+        get "/api/v1/recipes/#{recipe.id}"
+      end
+
+      it 'レシピの情報が取得できているか' do
+        expect(json['recipe']['id']).to eq(recipe.id)
+      end
+
+      it 'レシピ名が取得できているか' do
+        expect(json['recipe']['name']).to eq(recipe.name)
+      end
+
+      it 'レシピに関する原材料が正しく2つ取得できるか' do
+        expect(json['recipe']['recipe_ingredients'].count).to eq(2)
+      end
+
+      it 'レシピに関するタグが正しく取得できるか' do
+        expect(json['recipe']['tags'].count).to eq(2)
+      end
+
+      it 'returns http success' do
+        expect(response).to have_http_status(:success)
+      end
     end
   end
 
