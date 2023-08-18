@@ -9,7 +9,7 @@ module Api
 
       def index
         recipe_procedures = @recipe.recipe_procedures.oldest
-        render json: { recipe_procedures: recipe_procedures.map(&:as_json) }, status: :ok
+        render json: { recipe_procedures: }, status: :ok
       end
 
       def create
